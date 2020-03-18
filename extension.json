@@ -223,53 +223,27 @@
 		"ext.MachineVision": {
 			"packageFiles": [
 				"init.js",
-				"base/DOMLessGroupWidget.js",
-				"base/TemplateRenderingDOMLessGroupWidget.js",
-				"models/ImageData.js",
-				"models/SuggestionData.js",
-				"widgets/ConfirmTagsDialog.js",
-				"widgets/ConfirmTagsDialogContent.js",
-				"widgets/ImageWithSuggestionsWidget.js",
-				"widgets/OnboardingDialog.js",
-				"widgets/PersonalUploadsCount.js",
-				"widgets/SuggestedTagsCardstack.js",
-				"widgets/SuggestedTagsPage.js",
-				"widgets/SuggestionWidget.js",
-				"widgets/UserMessage.js"
+				"components/App.vue",
+				"plugins/api.js",
+				"store/index.js"
 			],
-			"styles": [
-				"widgets/ConfirmTagsDialog.less",
-				"widgets/ConfirmTagsDialogContent.less",
-				"widgets/ImageWithSuggestionsWidget.less",
-				"widgets/OnboardingDialog.less",
-				"widgets/PersonalUploadsCount.less",
-				"widgets/SuggestedTagsCardstack.less",
-				"widgets/SuggestedTagsPage.less",
-				"widgets/SuggestionWidget.less",
-				"widgets/UserMessage.less"
-			],
+			"styles": [],
 			"dependencies": [
 				"ext.MachineVision.config",
+				"ext.MachineVision.vuex",
 				"ext.eventLogging",
 				"oojs",
 				"oojs-ui-core",
 				"oojs-ui-widgets",
 				"oojs-ui-windows",
 				"mediawiki.template.mustache+dom",
+				"vue",
 				"wikibase.api.RepoApi",
 				"wikibase.datamodel",
 				"wikibase.serialization",
 				"wikibase.utilities.ClaimGuidGenerator"
 			],
-			"templates": [
-				"widgets/ConfirmTagsDialogContent.mustache+dom",
-				"widgets/ImageWithSuggestionsWidget.mustache+dom",
-				"widgets/PersonalUploadsCount.mustache+dom",
-				"widgets/SuggestedTagsCardstack.mustache+dom",
-				"widgets/SuggestedTagsPage.mustache+dom",
-				"widgets/SuggestionWidget.mustache+dom",
-				"widgets/UserMessage.mustache+dom"
-			],
+			"templates": [],
 			"messages": [
 				"machinevision-machineaidedtagging",
 				"machinevision-machineaidedtagging-intro",
@@ -312,6 +286,14 @@
 			"targets": [
 				"mobile",
 				"desktop"
+			]
+		},
+		"ext.MachineVision.vuex": {
+			"packageFiles": [
+				"vendor/vuex.js"
+			],
+			"dependencies": [
+				"vue"
 			]
 		}
 	},
