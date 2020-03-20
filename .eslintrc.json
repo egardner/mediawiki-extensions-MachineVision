@@ -13,6 +13,7 @@
 	},
 	"rules": {
 		"vue/html-indent": [ "warn", "tab" ],
+		"vue/html-closing-bracket-newline": "off",
 		"vue/max-attributes-per-line": [ "warn", {
 			"singleline": 2,
 			"multiline": {
