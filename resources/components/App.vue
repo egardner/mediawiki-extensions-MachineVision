@@ -13,7 +13,9 @@ module.exports = {
 	] ),
 	mounted: function () {
 		initialData.forEach( function ( image ) {
-			this.addImage( image );
+			this.addImage( {
+				image: image
+			} );
 		}.bind( this ) );
 	}
 };
