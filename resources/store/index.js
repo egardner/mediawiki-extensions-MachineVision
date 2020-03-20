@@ -2,6 +2,9 @@
 
 var Vue = require( 'vue' ),
 	Vuex = require( 'ext.MachineVision.vuex' ),
+	ImageData = require( '../models/ImageData.js' ),
+	SuggestionData = require( '../models/SuggestionData.js' ),
+	api,
 	initialData,
 	userGroups,
 	TABS;
@@ -12,6 +15,9 @@ TABS = {
 	USER: 'user',
 	POPULAR: 'popular'
 };
+
+// Set up API client
+api = new mw.Api();
 
 /**
  * @type {Array}
@@ -31,7 +37,7 @@ module.exports = new Vuex.Store( {
 		 */
 		images: {
 			user: [],
-			popular: initialData
+			popular: []
 		},
 
 		user: {
@@ -144,9 +150,67 @@ module.exports = new Vuex.Store( {
 		 * real promises here if possible.
 		 *
 		 * @param {Object} context
-		 * @param {Object} options
+		 * @return {$.Deferred} Promise
 		 */
-		getImages: function ( context, options ) {
+		getImages: function ( context ) {
+			var query = {
+				action: 'query',
+				format: 'json',
+				formatversion: 2,
+				generator: 'unreviewedimagelabels',
+				guillimit: 10,
+				prop: 'imageinfo|imagelabels',
+				iiprop: 'url',
+				iiurlwidth: 800,
+				ilstate: 'unreviewed',
+				meta: 'unreviewedimagecount',
+				uselang: mw.config.get( 'wgUserLanguage' )
+			};
+
+			if ( context.state.currentTab === TABS.USER ) {
+				query.guiluploader = mw.user.getId();
+				query.ilstate = 'unreviewed|withheld';
+			}
+
+			// Request images from the API
+			return api.get( query ).then( function ( res ) {
+				// @TODO is it really necessary to check for all of this?
+				var responseIsValid = res.query && res.query.pages && Array.isArray( res.query.pages ),
+					validItems,
+					images;
+
+				// Ensure only images with the data we need get passed along
+				if ( responseIsValid ) {
+					validItems = res.query.pages.filter( function ( item ) {
+						return item.imageinfo && item.imagelabels && item.imagelabels.length;
+					} );
+				}
+
+				// Return ImageData objects for each item in the API response
+				images = validItems.map( function ( item ) {
+					return new ImageData(
+						item.title,
+						item.pageid,
+						item.imageinfo[ 0 ].descriptionurl,
+						item.imageinfo[ 0 ].thumburl,
+						item.imageinfo[ 0 ].thumbheight,
+						item.imagelabels.map( function ( labelData ) {
+							return new SuggestionData( labelData.label, labelData.wikidata_id );
+						} )
+					);
+				} );
+
+				// Commit the ImageData objects to the state in the appropriate queue
+				images.map( function ( image ) {
+					context.commit( 'addImage', {
+						image: image,
+						queue: context.state.currentTab
+					} );
+				} );
+			
+			} ).catch( function ( error ) {
+				// @TODO error handling logic
+			} );
 		},
 
 		/**

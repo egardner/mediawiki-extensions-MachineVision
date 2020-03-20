@@ -224,8 +224,11 @@
 			"packageFiles": [
 				"init.js",
 				"components/App.vue",
+				"components/Tabs.vue",
 				"plugins/api.js",
-				"store/index.js"
+				"store/index.js",
+				"models/ImageData.js",
+				"models/SuggestionData.js"
 			],
 			"styles": [],
 			"dependencies": [

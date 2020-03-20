@@ -1,13 +1,16 @@
 <template>
-	<div>
-		<h1>Hello from Vue</h1>
-
+	<div class="wbmad-suggested-tags-page">
 		<div v-if="showTabs">
-			<h2>{{ currentTab }}</h2>
-		</div>
+			<h2
+				v-i18n-html:machinevision-machineaidedtagging-tabs-heading
+				class="wbmad-suggested-tags-page-tabs-heading"
+			/>
 
+			<mv-tabs />
+
+		</div>
 		<div v-else>
-			You don't have permission to see tabs.
+			Sorry, you can't see the tabs.
 		</div>
 	</div>
 </template>
@@ -40,10 +43,16 @@
  */
 
 var mapState = require( 'ext.MachineVision.vuex' ).mapState,
-	mapGetters = require( 'ext.MachineVision.vuex' ).mapGetters;
+	mapGetters = require( 'ext.MachineVision.vuex' ).mapGetters,
+	mapActions = require( 'ext.MachineVision.vuex' ).mapActions,
+	Tabs = require( './Tabs.vue' );
 
 module.exports = {
 	name: 'MachineVision',
+
+	components: {
+		'mv-tabs': Tabs
+	},
 
 	/**
 	 * Due to the need to support ES5, we can't use spread operator or
@@ -55,13 +64,13 @@ module.exports = {
 		mapGetters( [ 'showTabs' ] )
 	),
 
-	/**
-	 * Due to the need to support ES5, we still have to manually bind these
-	 * functions; make sure to remember!
-	 */
-	mounted: function () {
+	methods: mapActions( [ 'getImages' ] ),
 
-	}.bind( this )
+	mounted: function () {
+		this.getImages().then( function ( response ) {
+			console.log( 'done' );
+		} );
+	}
 };
 </script>
 
