@@ -2,14 +2,26 @@
 
 var Vue = require( 'vue' ),
 	Vuex = require( 'ext.MachineVision.vuex' ),
+	initialData,
+	userGroups,
 	TABS;
+
+Vue.use( Vuex );
 
 TABS = {
 	USER: 'user',
 	POPULAR: 'popular'
 };
 
-Vue.use( Vuex );
+/**
+ * @type {Array}
+ */
+userGroups = mw.config.get( 'wgUserGroups' ) || [];
+
+/**
+ * @type {Array} pre-populated collection of images from PHP
+ */
+initialData = mw.config.get( 'wgMVSuggestedTagsInitialData' ) || [];
 
 module.exports = new Vuex.Store( {
 	state: {
@@ -19,7 +31,12 @@ module.exports = new Vuex.Store( {
 		 */
 		images: {
 			user: [],
-			popular: []
+			popular: initialData
+		},
+
+		user: {
+			isAuthenticated: !!mw.config.get( 'wgUserName' ),
+			isAutoConfirmed: userGroups.indexOf( 'autoconfirmed' ) !== -1
 		}
 	},
 
@@ -47,6 +64,14 @@ module.exports = new Vuex.Store( {
 			} else {
 				return null;
 			}
+		},
+
+		/**
+		 * @param {Object} state
+		 * @return {bool}
+		 */
+		showTabs: function ( state ) {
+			return state.user.isAuthenticated && state.user.isAutoConfirmed;
 		}
 	},
 
