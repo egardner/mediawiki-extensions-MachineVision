@@ -1,7 +1,7 @@
 'use strict';
 
 var Vue = require( 'vue' ),
-	Vuex = require( 'ext.MachineVision.vuex' ),
+	Vuex = require( 'vuex' ),
 	ImageData = require( '../models/ImageData.js' ),
 	SuggestionData = require( '../models/SuggestionData.js' ),
 	api,

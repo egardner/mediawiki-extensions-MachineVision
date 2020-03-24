@@ -233,7 +233,6 @@
 			"styles": [],
 			"dependencies": [
 				"ext.MachineVision.config",
-				"ext.MachineVision.vuex",
 				"ext.eventLogging",
 				"oojs",
 				"oojs-ui-core",
@@ -241,6 +240,7 @@
 				"oojs-ui-windows",
 				"mediawiki.template.mustache+dom",
 				"vue",
+				"vuex",
 				"wikibase.api.RepoApi",
 				"wikibase.datamodel",
 				"wikibase.serialization",
@@ -291,7 +291,7 @@
 				"desktop"
 			]
 		},
-		"ext.MachineVision.vuex": {
+		"vuex": {
 			"packageFiles": [
 				"vendor/vuex.js"
 			],

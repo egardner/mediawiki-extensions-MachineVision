@@ -1,5 +1,6 @@
 <template>
 	<div class="wbmad-suggested-tags-page">
+		<h1>Hello from Vue</h1>
 		<div v-if="showTabs">
 			<h2
 				v-i18n-html:machinevision-machineaidedtagging-tabs-heading
@@ -7,7 +8,6 @@
 			/>
 
 			<mv-tabs />
-
 		</div>
 		<div v-else>
 			Sorry, you can't see the tabs.
@@ -42,9 +42,9 @@
  *   children responsible for showing the rest of the UI
  */
 
-var mapState = require( 'ext.MachineVision.vuex' ).mapState,
-	mapGetters = require( 'ext.MachineVision.vuex' ).mapGetters,
-	mapActions = require( 'ext.MachineVision.vuex' ).mapActions,
+var mapState = require( 'vuex' ).mapState,
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions,
 	Tabs = require( './Tabs.vue' );
 
 module.exports = {

@@ -24,8 +24,5 @@
 		"vue/v-on-style": [ "error", "longform" ],
 		"vue/v-bind-style": [ "error", "longform" ],
 		"vue/v-slot-style": [ "error", "longform" ]
-	},
-	"ignorePatterns": [
-		"resources/vendor"
-	]
+	}
 }

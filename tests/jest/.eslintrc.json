@@ -1,6 +1,5 @@
 {
 	"extends": [
-		"wikimedia/qunit",
 		"../../.eslintrc.json"
 	],
 	"globals": {
@@ -9,6 +8,10 @@
 	},
 	"rules": {
 		"no-implicit-globals": "off",
-		"no-unused-vars": "off"
+		"max-len": "off",
+		"one-var": "off"
+	},
+	"env": {
+		"jest": true
 	}
 }
