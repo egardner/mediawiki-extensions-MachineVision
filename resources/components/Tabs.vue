@@ -45,6 +45,7 @@ module.exports = {
 	watch: {
 		selectedIndex: function ( newIndex ) {
 			this.setTabState( newIndex );
+			this.$emit( 'tab-change', this.tabs[ this.selectedIndex ] );
 		}
 	}
 };

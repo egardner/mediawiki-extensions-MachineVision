@@ -6,13 +6,11 @@
 				class="wbmad-suggested-tags-page-tabs-heading"
 			/>
 
-			<tabs>
-				<tab title="popular">
-					<p>Tab 1</p>
-				</tab>
-
-				<tab title="user">
-					<p>Tab 2</p>
+			<tabs v-on:tab-change="onTabChange">
+				<tab v-for="( tab, index ) in tabs"
+					v-bind:key="index"
+					v-bind:title="tab">
+					<p>{{ tab }}</p>
 				</tab>
 			</tabs>
 		</div>
@@ -50,7 +48,8 @@
  *   children responsible for showing the rest of the UI
  */
 
-var mapGetters = require( 'vuex' ).mapGetters,
+var mapState = require( 'vuex' ).mapState,
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	Tabs = require( './Tabs.vue' ),
 	Tab = require( './Tab.vue' );
@@ -63,15 +62,21 @@ module.exports = {
 		tab: Tab
 	},
 
-	computed: mapGetters( [ 'showTabs' ] ),
+	computed: $.extend( {}, mapState( [
+		'tabs',
+		'pending'
+	] ), mapGetters( [
+		'showTabs'
+	] ) ),
 
-	methods: mapActions( [ 'getImages' ] ),
-
-	mounted: function () {
-		this.getImages().then( function ( response ) {
-			console.log( 'done' );
-		} );
-	}
+	methods: $.extend( {}, mapActions( [
+		'updateCurrentTab',
+		'getImages'
+	] ), {
+		onTabChange: function ( tab ) {
+			this.updateCurrentTab( tab.title );
+		}
+	} )
 };
 </script>
 

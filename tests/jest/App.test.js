@@ -31,11 +31,6 @@ describe( 'App', () => {
 		} );
 	} );
 
-	it( 'dispatches the getImages action as soon as it is mounted', () => {
-		VueTestUtils.shallowMount( App, { store, localVue } );
-		expect( actions.getImages ).toHaveBeenCalled();
-	} );
-
 	it( 'displays tabs if "showTabs" is true', () => {
 		getters.showTabs.mockReturnValue( true );
 		const wrapper = VueTestUtils.shallowMount( App, { store, localVue } );
