@@ -1,14 +1,22 @@
 <template>
 	<div class="wbmad-suggested-tags-page">
-		<h1>Hello from Vue</h1>
 		<div v-if="showTabs">
 			<h2
 				v-i18n-html:machinevision-machineaidedtagging-tabs-heading
 				class="wbmad-suggested-tags-page-tabs-heading"
 			/>
 
-			<mv-tabs />
+			<tabs>
+				<tab title="popular">
+					<p>Tab 1</p>
+				</tab>
+
+				<tab title="user">
+					<p>Tab 2</p>
+				</tab>
+			</tabs>
 		</div>
+
 		<div v-else>
 			Sorry, you can't see the tabs.
 		</div>
@@ -42,27 +50,20 @@
  *   children responsible for showing the rest of the UI
  */
 
-var mapState = require( 'vuex' ).mapState,
-	mapGetters = require( 'vuex' ).mapGetters,
+var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	Tabs = require( './Tabs.vue' );
+	Tabs = require( './Tabs.vue' ),
+	Tab = require( './Tab.vue' );
 
 module.exports = {
 	name: 'MachineVision',
 
 	components: {
-		'mv-tabs': Tabs
+		tabs: Tabs,
+		tab: Tab
 	},
 
-	/**
-	 * Due to the need to support ES5, we can't use spread operator or
-	 * Object.assign; jQuery.extend is our best option
-	 */
-	computed: $.extend(
-		{},
-		mapState( [ 'currentTab' ] ),
-		mapGetters( [ 'showTabs' ] )
-	),
+	computed: mapGetters( [ 'showTabs' ] ),
 
 	methods: mapActions( [ 'getImages' ] ),
 
