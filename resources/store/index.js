@@ -23,6 +23,39 @@ userGroups = mw.config.get( 'wgUserGroups' ) || [];
  */
 initialData = mw.config.get( 'wgMVSuggestedTagsInitialData' ) || [];
 
+/**
+ * Helper function to normalize the data we get upfront and the data we get
+ * from future API requests
+ *
+ * @param {Array} data
+ * @return {ImageData[]}
+ */
+function processInitialData( data ) {
+	return data.map( function ( item ) {
+		var height = item.height,
+			width = item.width;
+
+		// Find thumbheight for images wider than 800px.
+		if ( width > 800 ) {
+			height = height * 800 / width;
+		}
+
+		return new ImageData(
+			item.title,
+			item.pageid,
+			item.description_url,
+			item.thumb_url,
+			height,
+			item.suggested_labels.map( function ( labelData ) {
+				return new SuggestionData( labelData.label, labelData.wikidata_id );
+			} )
+		);
+	} );
+}
+
+/**
+ * Vuex Store: shared application state lives here
+ */
 module.exports = new Vuex.Store( {
 	state: {
 		tabs: [
@@ -30,7 +63,7 @@ module.exports = new Vuex.Store( {
 			'user'
 		],
 		currentTab: 'popular',
-		images: initialData,
+		images: processInitialData( initialData ),
 		pending: false,
 		user: {
 			isAuthenticated: !!mw.config.get( 'wgUserName' ),
@@ -38,6 +71,9 @@ module.exports = new Vuex.Store( {
 		}
 	},
 
+	/**
+	 * Getters are like computed properties for Vuex state
+	 */
 	getters: {
 		/**
 		 * @param {Object} state
@@ -54,7 +90,7 @@ module.exports = new Vuex.Store( {
 		 */
 		currentSuggestions: function ( _state, getters ) {
 			if ( getters.currentImage ) {
-				return getters.currentImage.suggested_labels;
+				return getters.currentImage.suggestions;
 			} else {
 				return null;
 			}
@@ -69,6 +105,11 @@ module.exports = new Vuex.Store( {
 		}
 	},
 
+	/**
+	 * State can only be modified by mutations, which must be synchronous.
+	 * Each mutation is called with the state as its first argument; additional
+	 * arguments are allowed.
+	 */
 	mutations: {
 		/**
 		 * Set the current tab; name must be one of the predefined items in state.tabs.
@@ -125,6 +166,11 @@ module.exports = new Vuex.Store( {
 		}
 	},
 
+	/**
+	 * Actions are functions that may be dispatched by components or inside of
+	 * other actions. They are called with a context argument and an optional
+	 * payload argument. Actions may be asynchronous but do not have to be.
+	 */
 	actions: {
 		/**
 		 * @param {Object} context
@@ -142,14 +188,11 @@ module.exports = new Vuex.Store( {
 		},
 
 		/**
-		 * @TODO implement this
+		 * @TODO add support for API request options (number of images to
+		 * fetch, etc.)
 		 *
 		 * Request images for review in the appropriate queue from the API.
-		 * Options should include: queue (default to popular?)
-		 * as well as any API request options (number of images to retrieve, etc)
-		 *
-		 * This action should return a promise so we can chain it. Let's use
-		 * real promises here if possible.
+		 * This action should return a promise so we can chain it.
 		 *
 		 * @param {Object} context
 		 * @return {$.Deferred} Promise
