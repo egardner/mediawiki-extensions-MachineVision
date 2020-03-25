@@ -7,10 +7,12 @@
 			/>
 
 			<tabs v-on:tab-change="onTabChange">
-				<tab v-for="( tab, index ) in tabs"
-					v-bind:key="index"
-					v-bind:title="tab">
-					<p>{{ tab }}</p>
+				<tab title="Popular">
+					<card-stack queue="popular" />
+				</tab>
+
+				<tab title="User">
+					<card-stack queue="user" />
 				</tab>
 			</tabs>
 		</div>
@@ -51,15 +53,17 @@
 var mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	Tabs = require( './Tabs.vue' ),
-	Tab = require( './Tab.vue' );
+	Tabs = require( './base/Tabs.vue' ),
+	Tab = require( './base/Tab.vue' ),
+	CardStack = require( './CardStack.vue' );
 
 module.exports = {
 	name: 'MachineVision',
 
 	components: {
 		tabs: Tabs,
-		tab: Tab
+		tab: Tab,
+		'card-stack': CardStack
 	},
 
 	computed: $.extend( {}, mapState( [
@@ -74,7 +78,7 @@ module.exports = {
 		'getImages'
 	] ), {
 		onTabChange: function ( tab ) {
-			this.updateCurrentTab( tab.title );
+			this.updateCurrentTab( tab.title.toLowerCase() );
 		}
 	} )
 };

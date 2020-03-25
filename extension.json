@@ -224,8 +224,9 @@
 			"packageFiles": [
 				"init.js",
 				"components/App.vue",
-				"components/Tabs.vue",
-				"components/Tab.vue",
+				"components/CardStack.vue",
+				"components/base/Tabs.vue",
+				"components/base/Tab.vue",
 				"plugins/api.js",
 				"store/index.js",
 				"models/ImageData.js",
