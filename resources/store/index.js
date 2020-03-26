@@ -85,27 +85,6 @@ module.exports = new Vuex.Store( {
 	getters: {
 		/**
 		 * @param {Object} state
-		 * @return {Object|null} image object, or null if no images remain in the queue
-		 */
-		currentImage: function ( state ) {
-			return state.images[ 0 ];
-		},
-
-		/**
-		 * @param {Object} _state
-		 * @param {Object} getters
-		 * @return {Array|null} array of suggested labels, or null if no images remain in the queue
-		 */
-		currentSuggestions: function ( _state, getters ) {
-			if ( getters.currentImage ) {
-				return getters.currentImage.suggestions;
-			} else {
-				return null;
-			}
-		},
-
-		/**
-		 * @param {Object} state
 		 * @return {bool}
 		 */
 		showTabs: function ( state ) {
