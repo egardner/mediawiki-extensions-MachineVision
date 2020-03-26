@@ -1,5 +1,16 @@
 <template>
 	<div class="wbmad-suggested-tags-page">
+		<!-- Error message box: convert to component -->
+		<div v-if="error" class="wbmad-toast wbmad-publish-error-toast">
+			<p v-i18n-html:machinevision-publish-error-message />
+		</div>
+
+		<!-- Success message box: convert to component -->
+		<div v-if="success" class="wbmad-toast wbmad-success-toast">
+			<p v-i18n-html:machinevision-success-message />
+		</div>
+
+		<!-- Tabs container -->
 		<div v-if="showTabs">
 			<h2
 				v-i18n-html:machinevision-machineaidedtagging-tabs-heading
@@ -17,6 +28,7 @@
 			</tabs>
 		</div>
 
+		<!-- Login message container -->
 		<div v-else>
 			Sorry, you can't see the tabs.
 		</div>
@@ -68,7 +80,9 @@ module.exports = {
 
 	computed: $.extend( {}, mapState( [
 		'tabs',
-		'pending'
+		'pending',
+		'success',
+		'error'
 	] ), mapGetters( [
 		'showTabs'
 	] ) ),

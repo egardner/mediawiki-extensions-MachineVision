@@ -62,9 +62,17 @@ module.exports = new Vuex.Store( {
 			'popular',
 			'user'
 		],
+
 		currentTab: 'popular',
+
 		images: processInitialData( initialData ),
+
 		pending: false,
+
+		error: false,
+
+		success: false,
+
 		user: {
 			isAuthenticated: !!mw.config.get( 'wgUserName' ),
 			isAutoConfirmed: userGroups.indexOf( 'autoconfirmed' ) !== -1
