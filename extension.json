@@ -225,6 +225,7 @@
 				"init.js",
 				"components/App.vue",
 				"components/CardStack.vue",
+				"components/Spinner.vue",
 				"components/base/Tabs.vue",
 				"components/base/Tab.vue",
 				"plugins/api.js",

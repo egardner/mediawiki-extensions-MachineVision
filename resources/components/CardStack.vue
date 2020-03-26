@@ -4,11 +4,7 @@
 			Showing image from {{ queue }} feed
 		</h3>
 
-		<div v-if="pending">
-			<p>
-				Loading...
-			</p>
-		</div>
+		<wbmad-spinner v-if="pending" />
 
 		<div v-else>
 			<ul>
@@ -21,10 +17,16 @@
 </template>
 
 <script>
-var mapState = require( 'vuex' ).mapState;
+var mapState = require( 'vuex' ).mapState,
+	Spinner = require( './Spinner.vue' );
 
 module.exports = {
 	name: 'CardStack',
+
+	components: {
+		'wbmad-spinner': Spinner
+	},
+
 	props: {
 		queue: {
 			type: String,
