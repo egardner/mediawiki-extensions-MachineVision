@@ -19,16 +19,38 @@
 				</ul>
 			</div>
 
-			<div class="wbmad-buttons">
-				BUTTONS GO HERE
+			<div class="wbmad-action-buttons">
+				<base-button
+					class="wbmad-action-buttons__publish"
+					v-bind:primary="true"
+					v-bind:progressive="true"
+					v-bind:title="$i18n( 'machinevision-publish-title' )"
+					v-on:click="onPublish"
+				>
+					<span v-i18n-html:machinevision-publish />
+				</base-button>
+				<base-button
+					class="wbmad-action-buttons__skip"
+					v-bind:framed="false"
+					v-bind:title="$i18n( 'machinevision-skip-title', title ).parse()"
+					v-on:click="onSkip"
+				>
+					<span v-i18n-html:machinevision-skip />
+				</base-button>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+var Button = require( './base/Button.vue' );
+
 module.exports = {
 	name: 'ImageCard',
+
+	components: {
+		'base-button': Button
+	},
 
 	props: {
 		image: {
@@ -68,6 +90,12 @@ module.exports = {
 	methods: {
 		toggleConfirmed: function ( suggestion ) {
 			suggestion.confirmed = !suggestion.confirmed;
+		},
+		onPublish: function () {
+			console.log( 'On publish' );
+		},
+		onSkip: function () {
+			console.log( 'On skip' );
 		}
 	}
 };

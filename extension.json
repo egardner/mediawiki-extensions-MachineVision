@@ -223,6 +223,8 @@
 		"ext.MachineVision": {
 			"packageFiles": [
 				"init.js",
+				"components/base/Button.vue",
+				"components/base/Icon.vue",
 				"components/App.vue",
 				"components/CardStack.vue",
 				"components/Spinner.vue",
