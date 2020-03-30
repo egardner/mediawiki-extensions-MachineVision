@@ -3,7 +3,6 @@
 		class="wbmad-button"
 		v-bind:class="classObject"
 		v-bind:disabled="disabled"
-		v-bind:title="title"
 		v-on:click="$emit( 'click' )"
 	>
 		<icon
@@ -26,10 +25,6 @@ module.exports = {
 	},
 
 	props: {
-		title: {
-			type: [ String, Object ],
-			default: null
-		},
 		disabled: {
 			type: Boolean,
 			default: false

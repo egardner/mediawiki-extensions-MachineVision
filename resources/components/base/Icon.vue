@@ -2,7 +2,6 @@
 	<span
 		class="wbmad-icon"
 		v-bind:class="classArray"
-		v-bind:title="title"
 	/>
 </template>
 
@@ -17,10 +16,6 @@ module.exports = {
 		invert: {
 			type: Boolean,
 			default: false
-		},
-		title: {
-			type: [ String, Object ],
-			default: null
 		}
 	},
 
