@@ -1,7 +1,7 @@
 <template>
 	<span
 		class="wbmad-icon"
-		v-bind:class="classArray"
+		v-bind:class="classObject"
 	/>
 </template>
 
@@ -20,15 +20,12 @@ module.exports = {
 	},
 
 	computed: {
-		classArray() {
-			// If we could use a computed property name for the icon class we
-			// could return an object here and ditch the ternary operator for
-			// the inverted class.
-			return [
-				// Use the existing OOUI classes for icon images for now.
-				'oo-ui-icon-' + this.icon,
-				this.invert ? 'oo-ui-image-invert' : ''
-			];
+		classObject() {
+			// Use the existing OOUI classes for icon images for now.
+			var iconClass = 'oo-ui-icon-' + this.icon,
+				classes = { 'oo-ui-image-invert': this.invert };
+			classes[ iconClass ] = true;
+			return classes;
 		}
 	}
 };
