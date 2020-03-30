@@ -2,7 +2,9 @@
 	<span
 		class="wbmad-icon"
 		v-bind:class="builtInClasses"
-	/>
+	>
+		{{ label }}
+	</span>
 </template>
 
 <script>
@@ -16,6 +18,10 @@ module.exports = {
 		invert: {
 			type: Boolean,
 			default: false
+		},
+		label: {
+			type: [ String, Object ],
+			default: null
 		}
 	},
 
@@ -43,6 +49,7 @@ module.exports = {
 	overflow: hidden;
 	padding: 0;
 	position: static;
+	text-indent: -9999px;
 	vertical-align: middle;
 	width: 1.42857143em;
 	user-select: none;

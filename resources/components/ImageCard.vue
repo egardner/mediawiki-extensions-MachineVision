@@ -1,5 +1,9 @@
 <template>
-	<div class="wbmad-image-with-suggestions-container">
+	<div
+		class="wbmad-image-with-suggestions"
+		v-bind:class="{ 'wbmad-hide-outline': hideOutline }"
+		v-on:keydown.tab="hideOutline = false"
+	>
 		<div class="wbmad-image-with-suggestions-image">
 			<div class="wbmad-image-with-suggestions-image-wrapper">
 				<a v-bind:href="descriptionUrl" target="_blank">
@@ -10,13 +14,14 @@
 
 		<div class="wbmad-image-with-suggestions-tags">
 			<div class="wbmad-suggestion-group">
-				<ul>
-					<li v-for="(suggestion, index) in suggestions"
-						v-bind:key="index"
-						v-on:click="toggleConfirmed( suggestion )">
-						{{ suggestion }}
-					</li>
-				</ul>
+				<suggestion v-for="( suggestion, index ) in suggestions"
+					v-bind:key="index"
+					v-bind:text="suggestion.text"
+					v-bind:confirmed="suggestion.confirmed"
+					v-on:click="toggleConfirmed( suggestion )"
+				>
+					{{ suggestion.text }}
+				</suggestion>
 			</div>
 
 			<div class="wbmad-action-buttons">
@@ -43,13 +48,15 @@
 </template>
 
 <script>
-var Button = require( './base/Button.vue' );
+var Button = require( './base/Button.vue' ),
+	Suggestion = require( './base/Suggestion.vue' );
 
 module.exports = {
 	name: 'ImageCard',
 
 	components: {
-		'base-button': Button
+		'base-button': Button,
+		suggestion: Suggestion
 	},
 
 	props: {
@@ -63,7 +70,8 @@ module.exports = {
 		return {
 			// copy suggestions from props into state so we can modify their
 			// "confirmed" properties in place
-			suggestions: this.image.suggestions
+			suggestions: this.image.suggestions,
+			hideOutline: true
 		};
 	},
 
@@ -100,3 +108,13 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+@import 'mediawiki.mixins';
+@import '../style-variables.less';
+
+.wbmad-suggestion-group {
+	.flex-display();
+	.flex-wrap( wrap );
+}
+</style>
