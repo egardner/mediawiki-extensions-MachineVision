@@ -1,7 +1,7 @@
 <template>
 	<button
 		class="wbmad-button"
-		v-bind:class="classObject"
+		v-bind:class="builtInClasses"
 		v-bind:disabled="disabled"
 		v-on:click="$emit( 'click' )"
 	>
@@ -56,7 +56,7 @@ module.exports = {
 	},
 
 	computed: {
-		classObject() {
+		builtInClasses() {
 			return {
 				'wbmad-button--framed': this.framed,
 				'wbmad-button--icon': this.icon,

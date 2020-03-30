@@ -1,7 +1,7 @@
 <template>
 	<span
 		class="wbmad-icon"
-		v-bind:class="classObject"
+		v-bind:class="builtInClasses"
 	/>
 </template>
 
@@ -20,7 +20,7 @@ module.exports = {
 	},
 
 	computed: {
-		classObject() {
+		builtInClasses() {
 			// Use the existing OOUI classes for icon images for now.
 			var iconClass = 'oo-ui-icon-' + this.icon,
 				classes = { 'oo-ui-image-invert': this.invert };
