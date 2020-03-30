@@ -7,24 +7,28 @@
 		<wbmad-spinner v-if="pending" />
 
 		<div v-else>
-			<ul>
-				<li v-for="(image, index) in images" v-bind:key="index">
-					{{ image }}
-				</li>
-			</ul>
+			<div v-if="currentImage">
+				<wbmad-image-card v-bind:image="currentImage" />
+			</div>
+
+			<div v-else>
+				No images
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
 var mapState = require( 'vuex' ).mapState,
-	Spinner = require( './Spinner.vue' );
+	Spinner = require( './Spinner.vue' ),
+	ImageCard = require( './ImageCard.vue' );
 
 module.exports = {
 	name: 'CardStack',
 
 	components: {
-		'wbmad-spinner': Spinner
+		'wbmad-spinner': Spinner,
+		'wbmad-image-card': ImageCard
 	},
 
 	props: {
@@ -38,6 +42,10 @@ module.exports = {
 		'currentTab',
 		'pending',
 		'images'
-	] ) )
+	] ), {
+		currentImage: function () {
+			return this.images[ 0 ];
+		}
+	} )
 };
 </script>
