@@ -1,6 +1,6 @@
 <template>
 	<span
-		class="wbmad-icon"
+		class="mw-icon"
 		v-bind:class="builtInClasses"
 	>
 		{{ label }}
@@ -38,7 +38,7 @@ module.exports = {
 </script>
 
 <style lang="less">
-.wbmad-icon {
+.mw-icon {
 	background-size: contain;
 	background-position: center center;
 	background-repeat: no-repeat;

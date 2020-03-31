@@ -1,19 +1,19 @@
 <template>
 	<div
-		class="wbmad-suggestion"
+		class="mw-suggestion"
 		tabindex="0"
 		v-bind:class="classObject"
 		v-on:click="onClick"
 		v-on:keydown.enter="onClick"
 	>
-		<label class="wbmad-suggestion__label">
+		<label class="mw-suggestion__label">
 			<slot />
 		</label>
 		<icon
 			v-if="confirmed"
 			icon="check"
-			v-bind:title="$i18n( 'machinevision-suggestion-confirm-undo-title', text ).parse()"
-			v-bind:label="$i18n( 'machinevision-suggestion-confirm-undo-title', text ).parse()"
+			v-bind:title="iconText"
+			v-bind:label="iconText"
 		/>
 	</div>
 </template>
@@ -41,6 +41,7 @@ module.exports = {
 
 	data: function () {
 		return {
+			iconText: this.$i18n( 'machinevision-suggestion-confirm-undo-title', this.text ).parse(),
 			toggled: false
 		};
 	},
@@ -48,8 +49,8 @@ module.exports = {
 	computed: {
 		classObject() {
 			return {
-				'wbmad-suggestion--confirmed': this.confirmed,
-				'wbmad-suggestion--toggled': this.toggled
+				'mw-suggestion--confirmed': this.confirmed,
+				'mw-suggestion--toggled': this.toggled
 			};
 		}
 	},
@@ -72,7 +73,7 @@ module.exports = {
 @import 'mediawiki.mixins';
 @import '../../style-variables.less';
 
-.wbmad-suggestion {
+.mw-suggestion {
 	.transition( color @transition-duration-base );
 	background-color: @base90;
 	border: @suggestion-border-width solid @base50;
@@ -88,14 +89,14 @@ module.exports = {
 		color: @base0;
 	}
 
-	.wbmad-suggestion__label {
+	.mw-suggestion__label {
 		cursor: pointer;
 		display: inline-block;
 	}
 
 	// Animate the process of moving a label back to center when unconfirmed.
 	&--toggled {
-		.wbmad-suggestion__label {
+		.mw-suggestion__label {
 			@keyframes slideRight {
 				0% {
 					.transform( translateX( -0.5em ) );
@@ -115,7 +116,7 @@ module.exports = {
 		color: @base0;
 		position: relative;
 
-		.wbmad-suggestion__label {
+		.mw-suggestion__label {
 			@keyframes slideLeft {
 				0% {
 					.transform( translateX( 0 ) );
@@ -129,7 +130,7 @@ module.exports = {
 			animation: slideLeft 0.2s;
 		}
 
-		.wbmad-icon {
+		.mw-icon {
 			.fade-in( 0.2s );
 			min-height: 0;
 			min-width: 0;
@@ -140,7 +141,7 @@ module.exports = {
 	}
 }
 
-.wbmad-hide-outline .wbmad-suggestion {
+.mw-hide-outline .mw-suggestion {
 	outline: 0;
 }
 </style>

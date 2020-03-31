@@ -1,7 +1,7 @@
 <template>
 	<div
 		class="wbmad-image-with-suggestions"
-		v-bind:class="{ 'wbmad-hide-outline': hideOutline }"
+		v-bind:class="{ 'mw-hide-outline': hideOutline }"
 		v-on:keydown.tab="hideOutline = false"
 	>
 		<div class="wbmad-image-with-suggestions-image">

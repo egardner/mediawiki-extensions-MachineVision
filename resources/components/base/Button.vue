@@ -1,6 +1,6 @@
 <template>
 	<button
-		class="wbmad-button"
+		class="mw-button"
 		v-bind:class="builtInClasses"
 		v-bind:disabled="disabled"
 		v-on:click="$emit( 'click' )"
@@ -58,11 +58,11 @@ module.exports = {
 	computed: {
 		builtInClasses() {
 			return {
-				'wbmad-button--framed': this.framed,
-				'wbmad-button--icon': this.icon,
-				'wbmad-button--progressive': this.progressive,
-				'wbmad-button--destructive': this.destructive,
-				'wbmad-button--primary': this.primary
+				'mw-button--framed': this.framed,
+				'mw-button--icon': this.icon,
+				'mw-button--progressive': this.progressive,
+				'mw-button--destructive': this.destructive,
+				'mw-button--primary': this.primary
 			};
 		},
 		invert() {
@@ -76,7 +76,7 @@ module.exports = {
 @import 'mediawiki.mixins';
 @import '../../style-variables.less';
 
-.wbmad-button {
+.mw-button {
 	background-color: transparent;
 	border: 0;
 	color: @base10;
@@ -93,7 +93,7 @@ module.exports = {
 		color: @base0;
 	}
 
-	.wbmad-icon {
+	.mw-icon {
 		height: 100%;
 		left: 5/14em;
 		position: absolute;
@@ -124,13 +124,13 @@ module.exports = {
 			color: @base10-hover;
 		}
 
-		&.wbmad-button--icon {
+		&.mw-button--icon {
 			padding-left: 38/14em;
 			position: relative;
 		}
 
 		/* stylelint-disable-next-line no-descending-specificity */
-		.wbmad-icon {
+		.mw-icon {
 			left: 11/14em;
 		}
 	}
@@ -143,7 +143,7 @@ module.exports = {
 			color: @progressive-hover;
 		}
 
-		&.wbmad-button--framed {
+		&.mw-button--framed {
 			&:hover,
 			&:focus {
 				border-color: @progressive;
@@ -160,7 +160,7 @@ module.exports = {
 			color: @destructive-hover;
 		}
 
-		&.wbmad-button--framed {
+		&.mw-button--framed {
 			&:hover,
 			&:focus {
 				border-color: @destructive;
@@ -170,7 +170,7 @@ module.exports = {
 	}
 
 	&--primary {
-		&.wbmad-button--framed {
+		&.mw-button--framed {
 			// Default to progressive.
 			background-color: @progressive;
 			border-color: @progressive;
@@ -184,7 +184,7 @@ module.exports = {
 				color: @base100;
 			}
 
-			&.wbmad-button--destructive {
+			&.mw-button--destructive {
 				background-color: @destructive;
 				border-color: @destructive;
 
@@ -207,7 +207,7 @@ module.exports = {
 			background-color: @base100;
 		}
 
-		&.wbmad-button--framed {
+		&.mw-button--framed {
 			background-color: @base70;
 			border-color: @base70;
 			color: @base100;
@@ -220,7 +220,7 @@ module.exports = {
 			}
 		}
 
-		&:not( .wbmad-button--framed ) .wbmad-icon {
+		&:not( .mw-button--framed ) .mw-icon {
 			opacity: 0.51;
 		}
 	}
