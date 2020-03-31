@@ -56,7 +56,7 @@ module.exports = {
 	},
 
 	computed: {
-		builtInClasses() {
+		builtInClasses: function () {
 			return {
 				'wbmad-button--framed': this.framed,
 				'wbmad-button--icon': this.icon,
@@ -65,7 +65,7 @@ module.exports = {
 				'wbmad-button--primary': this.primary
 			};
 		},
-		invert() {
+		invert: function () {
 			return ( this.primary || this.disabled && this.framed );
 		}
 	}

@@ -2,6 +2,9 @@
 	"extends": [
 		"../../.eslintrc.json"
 	],
+	"parserOptions": {
+		"ecmaVersion": 6
+	},
 	"globals": {
 		"global": true,
 		"require": true
@@ -12,6 +15,7 @@
 		"one-var": "off"
 	},
 	"env": {
+		"es6": true,
 		"jest": true
 	}
 }

@@ -1,5 +1,6 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
+/* eslint-disable no-implicit-globals */
+// eslint-disable-next-line no-redeclare
+/* global mw:true, jest:false, global:false */
 
 /**
  * Mock out a global mediawiki object for use in unit tests
@@ -9,6 +10,7 @@
  * The basic Jest mock functions here can be overridden with more specific
  * behavior as needed in individual test files.
  */
+// eslint-disable-next-line no-redeclare
 var mw;
 
 // Mock API (instances created ggwith new mw.Api() )

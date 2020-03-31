@@ -1,7 +1,9 @@
 'use strict';
 
+/* eslint-disable no-implicit-globals */
 var Vue = require( 'vue' ),
 	Vuex = require( 'vuex' ),
+	// eslint-disable-next-line no-redeclare
 	ImageData = require( '../models/ImageData.js' ),
 	SuggestionData = require( '../models/SuggestionData.js' ),
 	api,
@@ -239,7 +241,7 @@ module.exports = new Vuex.Store( {
 						image: image
 					} );
 				} );
-			} ).catch( function ( error ) {
+			} ).catch( function ( /* error */ ) {
 				// @TODO error handling logic
 			} );
 		},
@@ -254,7 +256,7 @@ module.exports = new Vuex.Store( {
 		 * @param {Object} context
 		 * @param {Object} payload
 		 */
-		publishTags: function ( context, payload ) {
+		publishTags: function ( /* context, payload */ ) {
 		},
 
 		/**
