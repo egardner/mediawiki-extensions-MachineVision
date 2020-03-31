@@ -229,6 +229,7 @@
 				"components/ImageCard.vue",
 				"components/base/Button.vue",
 				"components/base/Icon.vue",
+				"components/base/Message.vue",
 				"components/base/Suggestion.vue",
 				"components/base/Tabs.vue",
 				"components/base/Tab.vue",
