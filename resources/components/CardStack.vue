@@ -23,6 +23,7 @@ var mapState = require( 'vuex' ).mapState,
 	Spinner = require( './Spinner.vue' ),
 	ImageCard = require( './ImageCard.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'CardStack',
 

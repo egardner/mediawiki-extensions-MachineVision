@@ -45,6 +45,7 @@
 <script>
 var Button = require( './base/Button.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'ImageCard',
 

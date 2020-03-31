@@ -38,6 +38,31 @@
 						"allowFirstLine": true
 					}
 				} ],
+				"vue/order-in-components": ["error", {
+					"order": [
+						"el",
+						"name",
+						"parent",
+						"functional",
+						["delimiters", "comments"],
+						["components", "directives", "filters"],
+						"extends",
+						"mixins",
+						"inheritAttrs",
+						"model",
+						["props", "propsData"],
+						"asyncData",
+						"data",
+						"computed",
+						"methods",
+						"watch",
+						"fetch",
+						"LIFECYCLE_HOOKS",
+						"head",
+						["template", "render"],
+						"renderError"
+					]
+				} ],
 				"vue/v-on-style": [ "error", "longform" ],
 				"vue/v-bind-style": [ "error", "longform" ],
 				"vue/v-slot-style": [ "error", "longform" ]
