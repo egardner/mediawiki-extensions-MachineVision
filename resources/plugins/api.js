@@ -1,4 +1,3 @@
-/* eslint-disable no-irregular-whitespace */
 'use strict';
 
 /**
@@ -11,7 +10,7 @@
  * More information about Vue plugins is available here:
  * https://vuejs.org/v2/guide/plugins.html
  */
-var apiPlugin = {
+module.exports = {
 	/**
 	 * @param {Object} Vue constructor
 	 * @param {Object} options
@@ -29,5 +28,3 @@ var apiPlugin = {
 		Vue.prototype.$api = Vue.api;
 	}
 };
-
-module.exports = apiPlugin;

@@ -92,9 +92,11 @@ module.exports = {
 			suggestion.confirmed = !suggestion.confirmed;
 		},
 		onPublish: function () {
+			// eslint-disable-next-line no-console
 			console.log( 'On publish' );
 		},
 		onSkip: function () {
+			// eslint-disable-next-line no-console
 			console.log( 'On skip' );
 		}
 	}

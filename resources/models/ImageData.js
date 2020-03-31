@@ -1,6 +1,6 @@
 'use strict';
 
-var ImageData = function WikibaseMachineAssistedDepictsImageData(
+module.exports = function WikibaseMachineAssistedDepictsImageData(
 	title,
 	pageid,
 	descriptionurl,
@@ -15,5 +15,3 @@ var ImageData = function WikibaseMachineAssistedDepictsImageData(
 	this.thumbheight = thumbheight;
 	this.suggestions = suggestions;
 };
-
-module.exports = ImageData;

@@ -21,7 +21,7 @@
 	// eslint-disable-next-line no-new
 	new Vue( {
 		el: '#wbmad-app',
-		store,
+		store: store,
 		render: function ( h ) {
 			return h( App );
 		}
