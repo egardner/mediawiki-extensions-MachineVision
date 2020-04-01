@@ -25,7 +25,7 @@
 			</div>
 
 			<div class="wbmad-action-buttons">
-				<base-button
+				<mw-button
 					class="wbmad-action-buttons__publish"
 					v-bind:primary="true"
 					v-bind:progressive="true"
@@ -33,15 +33,15 @@
 					v-on:click="onPublish"
 				>
 					<span v-i18n-html:machinevision-publish />
-				</base-button>
-				<base-button
+				</mw-button>
+				<mw-button
 					class="wbmad-action-buttons__skip"
 					v-bind:framed="false"
 					v-bind:title="$i18n( 'machinevision-skip-title', title ).parse()"
 					v-on:click="onSkip"
 				>
 					<span v-i18n-html:machinevision-skip />
-				</base-button>
+				</mw-button>
 			</div>
 		</div>
 	</div>
@@ -55,7 +55,7 @@ module.exports = {
 	name: 'ImageCard',
 
 	components: {
-		'base-button': Button,
+		'mw-button': Button,
 		suggestion: Suggestion
 	},
 
