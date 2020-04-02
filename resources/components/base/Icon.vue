@@ -8,6 +8,7 @@
 </template>
 
 <script>
+// @vue/component
 module.exports = {
 	name: 'Icon',
 	props: {

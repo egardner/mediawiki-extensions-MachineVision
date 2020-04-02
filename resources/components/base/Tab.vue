@@ -5,6 +5,7 @@
 </template>
 
 <script>
+// @vue/component
 module.exports = {
 	name: 'Tab',
 	props: {

@@ -49,6 +49,7 @@
 var Button = require( './base/Button.vue' ),
 	Suggestion = require( './base/Suggestion.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'ImageCard',
 

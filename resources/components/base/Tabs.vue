@@ -16,6 +16,7 @@
 </template>
 
 <script>
+// @vue/component
 module.exports = {
 	name: 'Tabs',
 
@@ -38,15 +39,15 @@ module.exports = {
 		}
 	},
 
-	mounted: function () {
-		this.setTabState( this.selectedIndex );
-	},
-
 	watch: {
 		selectedIndex: function ( newIndex ) {
 			this.setTabState( newIndex );
 			this.$emit( 'tab-change', this.tabs[ this.selectedIndex ] );
 		}
+	},
+
+	mounted: function () {
+		this.setTabState( this.selectedIndex );
 	}
 };
 </script>

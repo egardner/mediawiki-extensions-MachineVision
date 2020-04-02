@@ -69,6 +69,7 @@ var mapState = require( 'vuex' ).mapState,
 	Tab = require( './base/Tab.vue' ),
 	CardStack = require( './CardStack.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'MachineVision',
 
