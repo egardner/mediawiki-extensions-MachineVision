@@ -1,6 +1,6 @@
 <template>
-	<div class="tabs">
-		<ul class="tabs__header">
+	<div class="mw-tabs">
+		<ul class="mw-tabs__header">
 			<li v-for="(tab, index) in tabs"
 				v-bind:key="tab.title"
 				v-bind:class="{ 'is-active': index === selectedIndex }"
@@ -9,7 +9,7 @@
 			</li>
 		</ul>
 
-		<div class="tabs__content">
+		<div class="mw-tabs__content">
 			<slot />
 		</div>
 	</div>
