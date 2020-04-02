@@ -7,7 +7,7 @@
 		v-on:keydown.enter="onClick"
 	>
 		<label class="mw-suggestion__label">
-			<slot />
+			{{ text }}
 		</label>
 		<icon
 			icon="check"

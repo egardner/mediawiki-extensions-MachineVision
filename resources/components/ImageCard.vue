@@ -19,9 +19,7 @@
 					v-bind:text="suggestion.text"
 					v-bind:confirmed="suggestion.confirmed"
 					v-on:click="toggleConfirmed( suggestion )"
-				>
-					{{ suggestion.text }}
-				</suggestion>
+				/>
 			</div>
 
 			<div class="wbmad-action-buttons">
