@@ -26,10 +26,10 @@ module.exports = {
 	},
 
 	computed: {
-		iconClass() {
+		iconClass: function () {
 			return 'oo-ui-icon-' + this.icon;
 		},
-		builtInClasses() {
+		builtInClasses: function () {
 			// Use the existing OOUI classes for icon images for now.
 			var classes = { 'oo-ui-image-invert': this.invert };
 			classes[ this.iconClass ] = true;
