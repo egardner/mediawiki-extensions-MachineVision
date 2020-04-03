@@ -27,11 +27,13 @@ module.exports = {
 	},
 
 	computed: {
+		iconClass: function () {
+			return 'oo-ui-icon-' + this.icon;
+		},
 		builtInClasses: function () {
 			// Use the existing OOUI classes for icon images for now.
-			var iconClass = 'oo-ui-icon-' + this.icon,
-				classes = { 'oo-ui-image-invert': this.invert };
-			classes[ iconClass ] = true;
+			var classes = { 'oo-ui-image-invert': this.invert };
+			classes[ this.iconClass ] = true;
 			return classes;
 		}
 	}
