@@ -11,7 +11,7 @@
 		</div>
 
 		<!-- Tabs container -->
-		<div v-if="showTabs">
+		<template v-if="showTabs">
 			<h2
 				v-i18n-html:machinevision-machineaidedtagging-tabs-heading
 				class="wbmad-suggested-tags-page-tabs-heading"
@@ -26,12 +26,16 @@
 					<card-stack queue="user" />
 				</tab>
 			</tabs>
-		</div>
+		</template>
 
 		<!-- Login message container -->
-		<div v-else>
-			Sorry, you can't see the tabs.
-		</div>
+		<template v-else-if="!user.isAuthenticated">
+			<p v-html="loginMessage" />
+		</template>
+
+		<template v-else>
+			<p v-i18n-html:machinevision-autoconfirmed-message />
+		</template>
 	</div>
 </template>
 
@@ -79,13 +83,19 @@ module.exports = {
 		'card-stack': CardStack
 	},
 
-	computed: $.extend( {}, mapState( [
+	computed: $.extend( {
+		showTabs: function () {
+			return this.user.isAuthenticated && this.user.isAutoconfirmed;
+		},
+		loginMessage: function () {
+			return mw.config.get( 'wgMVSuggestedTagsLoginMessage' );
+		}
+	}, mapState( [
 		'tabs',
 		'pending',
 		'success',
-		'error'
-	] ), mapGetters( [
-		'showTabs'
+		'error',
+		'user'
 	] ) ),
 
 	methods: $.extend( {}, mapActions( [
@@ -100,4 +110,40 @@ module.exports = {
 </script>
 
 <style lang="less">
+@import 'mediawiki.mixins';
+@import '../style-variables.less';
+
+.wbmad-suggested-tags-page {
+	max-width: @wbmad-max-width;
+
+	// Necessary to center fixed toast messages within page element on desktop.
+	@media screen and ( min-width: @width-breakpoint-tablet ) {
+		.flex-display();
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.wbmad-suggested-tags-page-tabs-heading,
+	.wbmad-suggested-tags-page-tabs,
+	.wbmad-suggested-tags-page-license-info {
+		width: 100%;
+	}
+
+	.wbmad-suggested-tags-page-tabs-heading {
+		border: 0;
+		font-family: @font-family-sans;
+		font-weight: 600;
+		margin-top: 20px;
+	}
+
+	.wbmad-suggested-tags-page-license-info {
+		.box-sizing( border-box );
+		background-color: @base90;
+		padding: 16px;
+
+		p {
+			margin: 0;
+		}
+	}
+}
 </style>

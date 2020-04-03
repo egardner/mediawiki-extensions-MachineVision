@@ -77,22 +77,14 @@ module.exports = new Vuex.Store( {
 
 		user: {
 			isAuthenticated: !!mw.config.get( 'wgUserName' ),
-			isAutoConfirmed: userGroups.indexOf( 'autoconfirmed' ) !== -1
+			isAutoconfirmed: userGroups.indexOf( 'autoconfirmed' ) !== -1
 		}
 	},
 
 	/**
 	 * Getters are like computed properties for Vuex state
 	 */
-	getters: {
-		/**
-		 * @param {Object} state
-		 * @return {bool}
-		 */
-		showTabs: function ( state ) {
-			return state.user.isAuthenticated && state.user.isAutoConfirmed;
-		}
-	},
+	getters: {},
 
 	/**
 	 * State can only be modified by mutations, which must be synchronous.
