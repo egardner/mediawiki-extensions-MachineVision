@@ -6,8 +6,8 @@
 		v-bind:role="type === 'error' ? 'alert' : false "
 	>
 		<icon
-			v-bind:icon="iconMap[ type ]"
-			v-bind:class="'oo-ui-image-' + type"
+			v-bind:icon="icon"
+			v-bind:class="iconClass"
 		/>
 		<div class="mw-message__content">
 			<slot />
@@ -16,7 +16,13 @@
 </template>
 
 <script>
-var Icon = require( './Icon.vue' );
+var Icon = require( './Icon.vue' ),
+	ICON_MAP = {
+		notice: 'infoFilled',
+		error: 'error',
+		warning: 'alert',
+		success: 'check'
+	};
 
 module.exports = {
 	name: 'Message',
@@ -31,30 +37,24 @@ module.exports = {
 			default: 'notice'
 		},
 		inline: {
-			type: Boolean,
-			default: false
+			type: Boolean
 		}
 	},
 
-	data: function () {
-		return {
-			iconMap: {
-				notice: 'infoFilled',
-				error: 'error',
-				warning: 'alert',
-				success: 'check'
-			}
-		};
-	},
-
 	computed: {
-		typeClass() {
+		typeClass: function () {
 			return 'mw-message--' + this.type;
 		},
-		builtInClasses() {
+		builtInClasses: function () {
 			var classes = { 'mw-message--block': !this.inline };
 			classes[ this.typeClass ] = true;
 			return classes;
+		},
+		icon: function () {
+			return ICON_MAP[ this.type ]
+		},
+		iconClass: function () {
+			return 'oo-ui-image-' + this.type
 		}
 	}
 };
