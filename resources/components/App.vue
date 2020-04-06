@@ -30,6 +30,7 @@
 
 		<!-- Login message container -->
 		<template v-else-if="!user.isAuthenticated">
+			<!-- eslint-disable-next-line vue/no-v-html -->
 			<p v-html="loginMessage" />
 		</template>
 
@@ -67,7 +68,6 @@
  */
 
 var mapState = require( 'vuex' ).mapState,
-	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	Tabs = require( './base/Tabs.vue' ),
 	Tab = require( './base/Tab.vue' ),
