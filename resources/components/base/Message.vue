@@ -51,10 +51,10 @@ module.exports = {
 			return classes;
 		},
 		icon: function () {
-			return ICON_MAP[ this.type ]
+			return ICON_MAP[ this.type ];
 		},
 		iconClass: function () {
-			return 'oo-ui-image-' + this.type
+			return 'oo-ui-image-' + this.type;
 		}
 	}
 };

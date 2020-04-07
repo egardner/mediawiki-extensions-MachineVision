@@ -56,35 +56,74 @@ function processInitialData( data ) {
 }
 
 /**
+ * Helper function to ensure the user doesn't try to access an invalid tab.
+ *
+ * @param {Object} state
+ * @param {string} tab
+ */
+function ensureTabExists( state, tab ) {
+	var tabs = Object.keys( state.images );
+
+	if ( tabs.indexOf( tab ) === -1 ) {
+		throw new Error( 'invalid tab' );
+	}
+}
+
+/**
  * Vuex Store: shared application state lives here
  */
 module.exports = new Vuex.Store( {
 	state: {
-		tabs: [
-			'popular',
-			'user'
-		],
-
 		currentTab: 'popular',
 
-		images: processInitialData( initialData ),
+		images: {
+			popular: processInitialData( initialData ),
+			user: []
+		},
 
-		pending: false,
+		pending: {
+			popular: false,
+			user: false
+		},
 
 		error: false,
 
-		success: false,
+		success: false
 
-		user: {
-			isAuthenticated: !!mw.config.get( 'wgUserName' ),
-			isAutoconfirmed: userGroups.indexOf( 'autoconfirmed' ) !== -1
-		}
 	},
 
 	/**
 	 * Getters are like computed properties for Vuex state
 	 */
-	getters: {},
+	getters: {
+		/**
+		 * @param {Object} state
+		 * @return {Array} tabs
+		 */
+		tabs: function ( state ) {
+			return Object.keys( state.images );
+		},
+
+		/**
+		 * Whether or not the user is logged in. Derived from non-Vuex global
+		 * state.
+		 *
+		 * @return {bool}
+		 */
+		isAuthenticated: function () {
+			return !!mw.config.get( 'wgUserName' );
+		},
+
+		/**
+		 * Whether or not the user is autoconfirmed. Derived from non-Vuex
+		 * global state.
+		 *
+		 * @return {bool}
+		 */
+		isAutoconfirmed: function () {
+			return userGroups.indexOf( 'autoconfirmed' ) !== -1;
+		}
+	},
 
 	/**
 	 * State can only be modified by mutations, which must be synchronous.
@@ -99,10 +138,7 @@ module.exports = new Vuex.Store( {
 		 * @param {string} tab
 		 */
 		setTab: function ( state, tab ) {
-			if ( state.tabs.indexOf( tab ) === -1 ) {
-				throw new Error( 'invalid tab' );
-			}
-
+			ensureTabExists( state, tab );
 			state.currentTab = tab;
 		},
 
@@ -110,10 +146,18 @@ module.exports = new Vuex.Store( {
 		 * Sets the pending state
 		 *
 		 * @param {Object} state
-		 * @param {bool} pending
+		 * @param {Object} payload
+		 * @param {bool} payload.pending
+		 * @param {string} [payload.queue]
 		 */
-		setPending: function ( state, pending ) {
-			state.pending = !!pending;
+		setPending: function ( state, payload ) {
+			if ( payload.queue ) {
+				ensureTabExists( state, payload.queue );
+				state.pending[ payload.queue ] = !!payload.pending;
+			} else {
+				state.pending[ state.currentTab ] = !!payload.pending;
+			}
+
 		},
 
 		/**
@@ -122,9 +166,16 @@ module.exports = new Vuex.Store( {
 		 * @param {Object} state
 		 * @param {Object} payload
 		 * @param {Object} payload.image
+		 * @param {string} [payload.queue] Target queue to add image to; defaults to current
 		 */
 		addImage: function ( state, payload ) {
-			state.images.push( payload.image );
+			if ( payload.queue ) {
+				ensureTabExists( state, payload.queue );
+				state.images[ payload.queue ].push( payload.image );
+			} else {
+				state.images[ state.currentTab ].push( payload.image );
+			}
+
 		},
 
 		/**
@@ -133,7 +184,7 @@ module.exports = new Vuex.Store( {
 		 * @param {Object} state
 		 */
 		removeImage: function ( state ) {
-			state.images.shift();
+			state.images[ state.currentTab ].shift();
 		},
 
 		/**
@@ -142,7 +193,7 @@ module.exports = new Vuex.Store( {
 		 * @param {Object} state
 		 */
 		clearImages: function ( state ) {
-			state.images = [];
+			state.images[ state.currentTab ] = [];
 			state.pending = true;
 		}
 	},
@@ -158,14 +209,7 @@ module.exports = new Vuex.Store( {
 		 * @param {string} tab
 		 */
 		updateCurrentTab: function ( context, tab ) {
-			// Set the new tab & clear existing data
 			context.commit( 'setTab', tab );
-			context.commit( 'clearImages' );
-
-			// Request new data, remove pending when complete
-			context.dispatch( 'getImages' ).then( function () {
-				context.commit( 'setPending', false );
-			} );
 		},
 
 		/**
@@ -176,27 +220,37 @@ module.exports = new Vuex.Store( {
 		 * This action should return a promise so we can chain it.
 		 *
 		 * @param {Object} context
+		 * @param {Object} options
+		 * @param {string} [options.queue]
 		 * @return {$.Deferred} Promise
 		 */
-		getImages: function ( context ) {
-			var query = {
-				action: 'query',
-				format: 'json',
-				formatversion: 2,
-				generator: 'unreviewedimagelabels',
-				guillimit: 10,
-				prop: 'imageinfo|imagelabels',
-				iiprop: 'url',
-				iiurlwidth: 800,
-				ilstate: 'unreviewed',
-				meta: 'unreviewedimagecount',
-				uselang: mw.config.get( 'wgUserLanguage' )
-			};
+		getImages: function ( context, options ) {
+			var queue = options.queue || context.state.currentTab,
+				query = {
+					action: 'query',
+					format: 'json',
+					formatversion: 2,
+					generator: 'unreviewedimagelabels',
+					guillimit: 10,
+					prop: 'imageinfo|imagelabels',
+					iiprop: 'url',
+					iiurlwidth: 800,
+					ilstate: 'unreviewed',
+					meta: 'unreviewedimagecount',
+					uselang: mw.config.get( 'wgUserLanguage' )
+				};
 
-			if ( context.state.currentTab === 'user' ) {
+			ensureTabExists( context.state, queue );
+
+			if ( queue === 'user' ) {
 				query.guiluploader = mw.user.getId();
 				query.ilstate = 'unreviewed|withheld';
 			}
+
+			context.commit( 'setPending', {
+				queue: queue,
+				pending: true
+			} );
 
 			// Request images from the API
 			return api.get( query ).then( function ( res ) {
@@ -230,8 +284,14 @@ module.exports = new Vuex.Store( {
 				// Commit the ImageData objects to the state in the appropriate queue
 				images.map( function ( image ) {
 					context.commit( 'addImage', {
-						image: image
+						image: image,
+						queue: queue
 					} );
+				} );
+
+				context.commit( 'setPending', {
+					queue: queue,
+					pending: false
 				} );
 			} ).catch( function ( /* error */ ) {
 				// @TODO error handling logic
