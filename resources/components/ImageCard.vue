@@ -46,7 +46,8 @@
 </template>
 
 <script>
-var Button = require( './base/Button.vue' ),
+var mapActions = require( 'vuex' ).mapActions,
+	Button = require( './base/Button.vue' ),
 	Suggestion = require( './base/Suggestion.vue' );
 
 // @vue/component
@@ -75,18 +76,30 @@ module.exports = {
 	},
 
 	computed: {
+		/**
+		 * @return {string}
+		 */
 		title: function () {
 			return this.image.title;
 		},
 
+		/**
+		 * @return {string}
+		 */
 		thumbUrl: function () {
 			return this.image.thumburl;
 		},
 
+		/**
+		 * @return {string}
+		 */
 		descriptionUrl: function () {
 			return this.image.descriptionurl;
 		},
 
+		/**
+		 * @return {Array} Array of suggestion objects
+		 */
 		confirmedSuggestions: function () {
 			return this.suggestions.filter( function ( suggestion ) {
 				return suggestion.confirmed;
@@ -94,17 +107,42 @@ module.exports = {
 		}
 	},
 
-	methods: {
+	methods: $.extend( {}, mapActions( [
+		'getImages',
+		'skipImage'
+	] ), {
+		/**
+		 * Mutate the suggestion state in-place
+		 *
+		 * @param {Object} suggestion
+		 */
 		toggleConfirmed: function ( suggestion ) {
 			suggestion.confirmed = !suggestion.confirmed;
 		},
+
+		/**
+		 * @TODO implement me
+		 */
 		onPublish: function () {
-			// eslint-disable-next-line no-console
-			console.log( 'On publish' );
+			this.skipImage();
 		},
+
+		/**
+		 * @TODO implement me
+		 */
 		onSkip: function () {
-			// eslint-disable-next-line no-console
-			console.log( 'On skip' );
+			this.skipImage();
+		}
+	} ),
+
+	watch: {
+		/**
+		 * Watch the image props. If props change because the queue has shifted,
+		 * force-reset the suggestions state to the suggestions associated with
+		 * the new image.
+		 */
+		image: function () {
+			this.suggestions = this.image.suggestions;
 		}
 	}
 };

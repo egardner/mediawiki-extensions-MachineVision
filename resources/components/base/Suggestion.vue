@@ -45,7 +45,7 @@ module.exports = {
 	},
 
 	computed: {
-		classObject() {
+		classObject: function () {
 			return {
 				'mw-suggestion--confirmed': this.confirmed
 			};

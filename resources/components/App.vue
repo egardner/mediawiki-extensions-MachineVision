@@ -18,18 +18,16 @@
 			/>
 
 			<tabs v-on:tab-change="onTabChange">
-				<tab title="Popular">
-					<card-stack queue="popular" />
-				</tab>
-
-				<tab title="User">
-					<card-stack queue="user" />
+				<tab v-for="( tab, index ) in tabs"
+					v-bind:key="'tab-' + index"
+					v-bind:title="tab">
+					<card-stack v-bind:queue="tab" />
 				</tab>
 			</tabs>
 		</template>
 
 		<!-- Login message container -->
-		<template v-else-if="!user.isAuthenticated">
+		<template v-else-if="!isAuthenticated">
 			<!-- eslint-disable-next-line vue/no-v-html -->
 			<p v-html="loginMessage" />
 		</template>
@@ -68,6 +66,7 @@
  */
 
 var mapState = require( 'vuex' ).mapState,
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	Tabs = require( './base/Tabs.vue' ),
 	Tab = require( './base/Tab.vue' ),
@@ -83,29 +82,58 @@ module.exports = {
 		'card-stack': CardStack
 	},
 
-	computed: $.extend( {
+	computed: $.extend( {}, mapState( [
+		'success',
+		'error'
+	] ), mapGetters( [
+		'tabs',
+		'isAuthenticated',
+		'isAutoconfirmed'
+	] ), {
+		/**
+		 * Whether or not to display the full UI
+		 *
+		 * @return {bool}
+		 */
 		showTabs: function () {
-			return this.user.isAuthenticated && this.user.isAutoconfirmed;
+			return this.isAuthenticated && this.isAutoconfirmed;
 		},
+
+		/**
+		 * @TODO fix this message to not require server-side wikitext parsing
+		 * so that we can rely on the i18n plugin instead of depending on
+		 * mw.config here
+		 *
+		 * @return {string}
+		 */
 		loginMessage: function () {
 			return mw.config.get( 'wgMVSuggestedTagsLoginMessage' );
 		}
-	}, mapState( [
-		'tabs',
-		'pending',
-		'success',
-		'error',
-		'user'
-	] ) ),
+	} ),
 
 	methods: $.extend( {}, mapActions( [
 		'updateCurrentTab',
 		'getImages'
 	] ), {
+		/**
+		 * Watch the tab change events emitted by the <Tabs> component
+		 * to ensure that Vuex state is kept in sync
+		 *
+		 * @param {string} tab name
+		 */
 		onTabChange: function ( tab ) {
 			this.updateCurrentTab( tab.title.toLowerCase() );
 		}
-	} )
+	} ),
+
+	mounted: function () {
+		// popular images are pre-loaded on the server side;
+		// immediately fetch user images in the mounted hook so that they'll be
+		// ready for the user if they switch tabs
+		this.getImages( {
+			queue: 'user'
+		} );
+	}
 };
 </script>
 
