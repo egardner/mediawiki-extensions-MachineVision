@@ -12,16 +12,20 @@
 
 		<!-- Tabs container -->
 		<template v-if="showTabs">
-			<h2
-				v-i18n-html:machinevision-machineaidedtagging-tabs-heading
-				class="wbmad-suggested-tags-page-tabs-heading"
-			/>
+			<h2 v-i18n-html:machinevision-machineaidedtagging-tabs-heading
+				class="wbmad-suggested-tags-page-tabs-heading" />
 
 			<tabs v-on:tab-change="onTabChange">
-				<tab v-for="( tab, index ) in tabs"
-					v-bind:key="'tab-' + index"
-					v-bind:title="tab">
-					<card-stack v-bind:queue="tab" />
+				<!-- Popular tab -->
+				<tab v-bind:id="'tab-popular'"
+					v-bind:title="popularTabTitle">
+					<card-stack v-bind:queue="'popular'" />
+				</tab>
+
+				<!-- User tab -->
+				<tab v-bind:id="'tab-user'"
+					v-bind:title="userTabTitle">
+					<card-stack v-bind:queue="'user'" />
 				</tab>
 			</tabs>
 		</template>
@@ -86,7 +90,6 @@ module.exports = {
 		'success',
 		'error'
 	] ), mapGetters( [
-		'tabs',
 		'isAuthenticated',
 		'isAutoconfirmed'
 	] ), {
@@ -108,6 +111,14 @@ module.exports = {
 		 */
 		loginMessage: function () {
 			return mw.config.get( 'wgMVSuggestedTagsLoginMessage' );
+		},
+
+		popularTabTitle: function () {
+			return this.$i18n( 'machinevision-machineaidedtagging-popular-tab' ).text();
+		},
+
+		userTabTitle: function () {
+			return this.$i18n( 'machinevision-machineaidedtagging-user-tab' ).text();
 		}
 	} ),
 
@@ -119,10 +130,10 @@ module.exports = {
 		 * Watch the tab change events emitted by the <Tabs> component
 		 * to ensure that Vuex state is kept in sync
 		 *
-		 * @param {string} tab name
+		 * @param {VueComponent} tab
 		 */
 		onTabChange: function ( tab ) {
-			this.updateCurrentTab( tab.title.toLowerCase() );
+			this.updateCurrentTab( tab.$children[ 0 ].queue );
 		}
 	} ),
 
@@ -143,13 +154,6 @@ module.exports = {
 
 .wbmad-suggested-tags-page {
 	max-width: @wbmad-max-width;
-
-	// Necessary to center fixed toast messages within page element on desktop.
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
-		.flex-display();
-		flex-wrap: wrap;
-		justify-content: center;
-	}
 
 	.wbmad-suggested-tags-page-tabs-heading,
 	.wbmad-suggested-tags-page-tabs,
