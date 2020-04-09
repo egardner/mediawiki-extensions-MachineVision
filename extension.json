@@ -305,6 +305,10 @@
 			],
 			"dependencies": [
 				"vue"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
 			]
 		}
 	},
