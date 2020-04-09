@@ -134,7 +134,7 @@ module.exports = {
 		userTabTitle: function () {
 			return this.$i18n( 'machinevision-machineaidedtagging-user-tab' ).text();
 		},
-    
+
 		publishSuccess: function () {
 			return this.publishStatus === 'success';
 		},
