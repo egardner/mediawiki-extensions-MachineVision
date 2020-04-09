@@ -1,14 +1,12 @@
 <template>
 	<div class="wbmad-suggested-tags-page">
-		<!-- Error message box: convert to component -->
-		<div v-if="error" class="wbmad-toast wbmad-publish-error-toast">
+		<toast-notification v-if="error" type="error">
 			<p v-i18n-html:machinevision-publish-error-message />
-		</div>
+		</toast-notification>
 
-		<!-- Success message box: convert to component -->
-		<div v-if="success" class="wbmad-toast wbmad-success-toast">
+		<toast-notification v-if="success" type="success">
 			<p v-i18n-html:machinevision-success-message />
-		</div>
+		</toast-notification>
 
 		<!-- Tabs container -->
 		<template v-if="showTabs">
@@ -24,6 +22,9 @@
 					<card-stack v-bind:queue="tab" />
 				</tab>
 			</tabs>
+
+			<div v-i18n-html:machinevision-machineaidedtagging-license-information
+				class="wbmad-suggested-tags-page-license-info" />
 		</template>
 
 		<!-- Login message container -->
@@ -70,6 +71,7 @@ var mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
 	Tabs = require( './base/Tabs.vue' ),
 	Tab = require( './base/Tab.vue' ),
+	ToastNotification = require( './base/ToastNotification.vue' ),
 	CardStack = require( './CardStack.vue' );
 
 // @vue/component
@@ -79,6 +81,7 @@ module.exports = {
 	components: {
 		tabs: Tabs,
 		tab: Tab,
+		'toast-notification': ToastNotification,
 		'card-stack': CardStack
 	},
 
@@ -143,19 +146,6 @@ module.exports = {
 
 .wbmad-suggested-tags-page {
 	max-width: @wbmad-max-width;
-
-	// Necessary to center fixed toast messages within page element on desktop.
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
-		.flex-display();
-		flex-wrap: wrap;
-		justify-content: center;
-	}
-
-	.wbmad-suggested-tags-page-tabs-heading,
-	.wbmad-suggested-tags-page-tabs,
-	.wbmad-suggested-tags-page-license-info {
-		width: 100%;
-	}
 
 	.wbmad-suggested-tags-page-tabs-heading {
 		border: 0;
