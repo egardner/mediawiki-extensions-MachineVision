@@ -72,6 +72,10 @@ module.exports = {
 		 */
 		afterLeave: function () {
 			this.showWrapper = false;
+
+			// Emit an event that can be used by the parent to act (e.g. change
+			// state) once the toast has been removed.
+			this.$emit( 'leave', this.$vnode.key );
 		}
 	}
 };

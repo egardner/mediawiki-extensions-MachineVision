@@ -1,10 +1,22 @@
 <template>
 	<div class="wbmad-suggested-tags-page">
-		<toast-notification v-if="error" type="error">
+		<toast-notification
+			v-if="publishError"
+			v-bind:key="'publishError-' + Date.now()"
+			type="error"
+			duration="8"
+			v-on:leave="onToastLeave"
+		>
 			<p v-i18n-html:machinevision-publish-error-message />
 		</toast-notification>
 
-		<toast-notification v-if="success" type="success">
+		<toast-notification
+			v-if="publishSuccess"
+			v-bind:key="'publishSuccess-' + Date.now()"
+			type="success"
+			duration="4"
+			v-on:leave="onToastLeave"
+		>
 			<p v-i18n-html:machinevision-success-message />
 		</toast-notification>
 
@@ -86,8 +98,7 @@ module.exports = {
 	},
 
 	computed: $.extend( {}, mapState( [
-		'success',
-		'error'
+		'publishState'
 	] ), mapGetters( [
 		'tabs',
 		'isAuthenticated',
@@ -111,12 +122,21 @@ module.exports = {
 		 */
 		loginMessage: function () {
 			return mw.config.get( 'wgMVSuggestedTagsLoginMessage' );
+		},
+
+		publishSuccess: function () {
+			return this.publishState === 'success';
+		},
+
+		publishError: function () {
+			return this.publishState === 'error';
 		}
 	} ),
 
 	methods: $.extend( {}, mapActions( [
 		'updateCurrentTab',
-		'getImages'
+		'getImages',
+		'updatePublishState'
 	] ), {
 		/**
 		 * Watch the tab change events emitted by the <Tabs> component
@@ -126,6 +146,10 @@ module.exports = {
 		 */
 		onTabChange: function ( tab ) {
 			this.updateCurrentTab( tab.title.toLowerCase() );
+		},
+
+		onToastLeave: function () {
+			this.updatePublishState( null );
 		}
 	} ),
 

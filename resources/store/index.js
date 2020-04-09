@@ -86,9 +86,7 @@ module.exports = new Vuex.Store( {
 			user: false
 		},
 
-		error: false,
-
-		success: false
+		publishState: null
 
 	},
 
@@ -195,6 +193,10 @@ module.exports = new Vuex.Store( {
 		clearImages: function ( state ) {
 			state.images[ state.currentTab ] = [];
 			state.pending = true;
+		},
+
+		setPublishState: function ( state, publishState ) {
+			state.publishState = publishState;
 		}
 	},
 
@@ -306,9 +308,17 @@ module.exports = new Vuex.Store( {
 		 * we are running low on data
 		 *
 		 * @param {Object} context
-		 * @param {Object} payload
 		 */
-		publishTags: function ( /* context, payload */ ) {
+		publishTags: function ( context ) {
+			// TODO: Handle publish.
+
+			context.dispatch( 'skipImage' );
+
+			// Clear out any existing publish notifications.
+			context.dispatch( 'updatePublishState', null );
+			context.dispatch( 'updatePublishState', 'success' );
+
+			// TODO: handle error.
 		},
 
 		/**
@@ -321,6 +331,17 @@ module.exports = new Vuex.Store( {
 		 */
 		skipImage: function ( context ) {
 			context.commit( 'removeImage' );
+
+		},
+
+		/**
+		 * Set the publish state to show or clear notifications.
+		 *
+		 * @param {Object} context
+		 * @param {string} publishState
+		 */
+		updatePublishState: function ( context, publishState ) {
+			context.commit( 'setPublishState', publishState );
 		}
 	}
 } );
