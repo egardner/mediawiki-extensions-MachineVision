@@ -108,7 +108,7 @@ module.exports = {
 	},
 
 	methods: $.extend( {}, mapActions( [
-		'getImages',
+		'publishTags',
 		'skipImage'
 	] ), {
 		/**
@@ -124,7 +124,7 @@ module.exports = {
 		 * @TODO implement me
 		 */
 		onPublish: function () {
-			this.skipImage();
+			this.publishTags();
 		},
 
 		/**
