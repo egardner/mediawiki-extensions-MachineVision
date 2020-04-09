@@ -233,6 +233,7 @@
 				"components/base/Suggestion.vue",
 				"components/base/Tabs.vue",
 				"components/base/Tab.vue",
+				"components/base/ToastNotification.vue",
 				"plugins/api.js",
 				"store/index.js",
 				"models/ImageData.js",
