@@ -86,7 +86,7 @@ module.exports = new Vuex.Store( {
 			user: false
 		},
 
-		publishState: null
+		publishStatus: null
 
 	},
 
@@ -195,8 +195,14 @@ module.exports = new Vuex.Store( {
 			state.pending = true;
 		},
 
-		setPublishState: function ( state, publishState ) {
-			state.publishState = publishState;
+		/**
+		 * Set the publish status (to success, error, or null).
+		 *
+		 * @param {Object} state
+		 * @param {string|null} publishStatus
+		 */
+		setPublishStatus: function ( state, publishStatus ) {
+			state.publishStatus = publishStatus;
 		}
 	},
 
@@ -315,8 +321,8 @@ module.exports = new Vuex.Store( {
 			context.dispatch( 'skipImage' );
 
 			// Clear out any existing publish notifications.
-			context.dispatch( 'updatePublishState', null );
-			context.dispatch( 'updatePublishState', 'success' );
+			context.dispatch( 'updatePublishStatus', null );
+			context.dispatch( 'updatePublishStatus', 'success' );
 
 			// TODO: handle error.
 		},
@@ -335,13 +341,13 @@ module.exports = new Vuex.Store( {
 		},
 
 		/**
-		 * Set the publish state to show or clear notifications.
+		 * Set the publish status to show or clear notifications.
 		 *
 		 * @param {Object} context
-		 * @param {string} publishState
+		 * @param {string} publishStatus
 		 */
-		updatePublishState: function ( context, publishState ) {
-			context.commit( 'setPublishState', publishState );
+		updatepublishStatus: function ( context, publishStatus ) {
+			context.commit( 'setPublishStatus', publishStatus );
 		}
 	}
 } );

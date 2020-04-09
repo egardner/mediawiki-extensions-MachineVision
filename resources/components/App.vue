@@ -98,7 +98,7 @@ module.exports = {
 	},
 
 	computed: $.extend( {}, mapState( [
-		'publishState'
+		'publishStatus'
 	] ), mapGetters( [
 		'tabs',
 		'isAuthenticated',
@@ -125,18 +125,18 @@ module.exports = {
 		},
 
 		publishSuccess: function () {
-			return this.publishState === 'success';
+			return this.publishStatus === 'success';
 		},
 
 		publishError: function () {
-			return this.publishState === 'error';
+			return this.publishStatus === 'error';
 		}
 	} ),
 
 	methods: $.extend( {}, mapActions( [
 		'updateCurrentTab',
 		'getImages',
-		'updatePublishState'
+		'updatePublishStatus'
 	] ), {
 		/**
 		 * Watch the tab change events emitted by the <Tabs> component
@@ -149,7 +149,7 @@ module.exports = {
 		},
 
 		onToastLeave: function () {
-			this.updatePublishState( null );
+			this.updatePublishStatus( null );
 		}
 	} ),
 
