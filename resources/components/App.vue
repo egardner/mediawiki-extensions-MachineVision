@@ -189,6 +189,10 @@ module.exports = {
 		margin-top: 20px;
 	}
 
+	.mw-tabs__content {
+		padding: 24px 4px 32px;
+	}
+
 	.wbmad-suggested-tags-page-license-info {
 		.box-sizing( border-box );
 		background-color: @base90;

@@ -86,7 +86,7 @@ module.exports = {
 			color: @base30;
 			cursor: pointer;
 			font-weight: bold;
-			margin: 6px 6px -1px 0;
+			margin: 6px 6px 0 0;
 			padding: 6px 13px;
 			transition: color 100ms, box-shadow 100ms;
 
