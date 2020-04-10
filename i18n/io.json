@@ -5,5 +5,8 @@
 		]
 	},
 	"machinevision-publish": "Publikigar",
-	"machinevision-skip": "Saltar"
+	"machinevision-skip": "Saltar",
+	"machinevision-categories-label": "Kategorii:",
+	"machinevision-add-custom-tag-dialog-add-action": "Adjuntar",
+	"machinevision-add-custom-tag-dialog-cancel-action": "Anular"
 }

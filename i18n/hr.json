@@ -17,10 +17,6 @@
 	"machinevision-autoconfirmed-message": "Precizne oznake omogućavaju svim suradnicima Zajedničkog poslužitelja lakše pronalaženje slika, stoga molimo da postanete [[mw:Manual:Autoconfirmed_users|automatski potvrđeni suradnik]] jer samo takvi suradnici mogu rabiti ovaj alat.",
 	"machinevision-publish": "Objavi",
 	"machinevision-publish-title": "Objaviti oznake?",
-	"machinevision-more": "{{PLURAL:$1|Sljedeća $1 slika|Sljedeće $1 slike|Sljedećih $1 slika}}",
-	"machinevision-more-title": "Prikazati {{PLURAL:$1|sljedeću sliku|sljedeće $1 slike|sljedećih $1 slika}}?",
-	"machinevision-reset": "Poništi",
-	"machinevision-reset-title": "Poništiti oznake?",
 	"machinevision-skip": "Preskoči",
 	"machinevision-skip-title": "Preskočiti prijedloge za \"$1\"?",
 	"machinevision-personal-uploads-count": "Imate $1 {{PLURAL:$1|osobnu datoteku|osobne datoteke|osobnih datoteka}} za pregled.",
@@ -46,6 +42,7 @@
 	"machinevision-no-uploads-cta-heading": "Nemate slika za pregled",
 	"machinevision-no-uploads-cta-text": "Molimo Vas, postavite nove slike kako bi ih naš alat mogao analizirati i predložiti odgovarajuće oznake. Ako ste već postavili slike a ovdje ih ne vidite, možda su još uvijek u pregledu i možete ih provjeriti kasnije. Učinite popularne slike drugih suradnika lakšim za pronalaženje tako što ćete im dodati oznake.",
 	"machinevision-javascript-required": "Ova značajka nije podržana u Vašem pregledniku.",
+	"machinevision-categories-label": "Kategorije:",
 	"right-imagelabel-review": "Pregledajte prijedloge slikovnih etiketa",
 	"action-imagelabel-review": "pregledajte prijedloge slikovnih etiketa",
 	"right-imagelabel-test": "Slika za isprobavanje prijedloga etiketa",
@@ -59,5 +56,8 @@
 	"echo-machinevision-suggestions-ready-notification-body": "Pozdrav! Slikama koje ste nedavno postavili na Zajednički poslužitelj predložene su oznake i spremne su za pregled. Točne oznake pomažu u lakšem pronalaženju {{GENDER:$1|Vaših}} slika, stoga slijedite poveznicu za pregled {{GENDER:$1|Vaših}} predloženih oznaka. Samo one oznake koje su potvrdili suradnici biti će dodane kao dio podataka na Zajedničkom poslužitelju. Za više informacija o ovom alatu, molimo posjetite stranicu projekta.",
 	"echo-machinevision-suggestions-ready-notification-primary-link": "Primarna poveznica za obavijest o spremnim oznakama",
 	"echo-category-title-machinevision": "Predložene oznake za pregled",
-	"echo-pref-tooltip-machinevision-suggestions-ready": "Obavijesti me kada su moje slike obrađene te su predložene oznake spremne za moj pregled."
+	"echo-pref-tooltip-machinevision-suggestions-ready": "Obavijesti me kada su moje slike obrađene te su predložene oznake spremne za moj pregled.",
+	"group-machinevision-tester": "Ispitivači strojnoga vida",
+	"group-machinevision-tester-member": "{{GENDER:$1|ispitivač strojnoga vida|ispitivačica strojnoga vida}}",
+	"grouppage-machinevision-tester": "{{ns:project}}:Ispitivači strojnoga vida"
 }
