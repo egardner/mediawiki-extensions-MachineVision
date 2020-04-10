@@ -3,6 +3,9 @@
 /* eslint-disable no-implicit-globals */
 var Vue = require( 'vue' ),
 	Vuex = require( 'vuex' ),
+	mvConfig = require( 'ext.MachineVision.config' ),
+	datamodel = require( 'wikibase.datamodel' ),
+	serialization = require( 'wikibase.serialization' ),
 	// eslint-disable-next-line no-redeclare
 	ImageData = require( '../models/ImageData.js' ),
 	SuggestionData = require( '../models/SuggestionData.js' ),
@@ -13,7 +16,9 @@ var Vue = require( 'vue' ),
 Vue.use( Vuex );
 
 // Set up API client
-api = new mw.Api();
+api = wikibase.api.getLocationAgnosticMwApi(
+	mw.config.get( 'wbmiRepoApiUrl', mw.config.get( 'wbRepoApiUrl' ) )
+);
 
 /**
  * @type {Array}
@@ -100,6 +105,43 @@ module.exports = new Vuex.Store( {
 		 */
 		tabs: function ( state ) {
 			return Object.keys( state.images );
+		},
+
+		/**
+		 * @param {Object} state
+		 * @return {Object} image
+		 */
+		currentImage: function ( state ) {
+			return state.images[ state.currentTab ][ 0 ];
+		},
+
+		/**
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {string|null} title
+		 */
+		currentImageTitle: function ( state, getters ) {
+			if ( getters.currentImage ) {
+				return getters.currentImage.title.split( ':' ).pop();
+			} else {
+				return null;
+			}
+		},
+
+		/**
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {string|null} title
+		 */
+		currentImageMediaInfoId: function ( state, getters ) {
+			var pageId;
+
+			if ( getters.currentImage ) {
+				pageId = getters.currentImage.pageid;
+				return 'M' + pageId;
+			} else {
+				return null;
+			}
 		},
 
 		/**
@@ -314,17 +356,84 @@ module.exports = new Vuex.Store( {
 		 * we are running low on data
 		 *
 		 * @param {Object} context
+		 * @param {Array} tags
 		 */
-		publishTags: function ( context ) {
-			// TODO: Handle publish.
+		publishTags: function ( context, tags ) {
+			var reviewBatch = tags.map( function ( tag ) {
+					return {
+						label: tag.wikidataId,
+						review: tag.confirmed ? 'accept' : 'reject'
+					};
+				} ),
+				confirmedTags = tags.filter( function ( tag ) {
+					return tag.confirmed;
+				} ),
+				setClaims = context.dispatch( 'setDepictsStatements', confirmedTags ),
+				reviewImageLabels = api.postWithToken( 'csrf', {
+					action: 'reviewimagelabels',
+					filename: context.getters.currentImageTitle,
+					batch: JSON.stringify( reviewBatch )
+				} );
 
-			context.dispatch( 'skipImage' );
+			// TODO: this is where we should request more images if we are
+			// running low in a given queue
 
-			// Clear out any existing publish notifications.
-			context.dispatch( 'updatePublishStatus', null );
-			context.dispatch( 'updatePublishStatus', 'success' );
+			// TODO: this is where we should be logging some data
 
-			// TODO: handle error.
+			// Set claims, review labels, update publish status, and skip to next image
+			$.when( setClaims, reviewImageLabels ).done( function () {
+				context.dispatch( 'updatePublishStatus', 'success' );
+			} ).fail( function () {
+				context.dispatch( 'updatePublishStatus', 'error' );
+			} ).always( function () {
+				context.dispatch( 'skipImage' );
+			} );
+		},
+
+		/**
+		 * Set a depicts statement on the current image for each confirmed tag
+		 *
+		 * @param {Object} context
+		 * @param {Array} confirmedTags
+		 * @return {$.Deferred} jQuery Promise
+		 */
+		setDepictsStatements: function ( context, confirmedTags ) {
+			var depictsPropertyId = mvConfig.depictsPropertyId,
+				guidGenerator = new wikibase.utilities.ClaimGuidGenerator(
+					context.getters.currentImageMediaInfoId
+				),
+				serializer = new serialization.StatementSerializer(),
+				promise = $.Deferred().resolve().promise(),
+				statements;
+
+			// Create a depicts statement for the current image from each confirmed tag
+			// Note: for local testing, you can hard-code tag.wikidataId to
+			// something like 'Q1'
+			statements = confirmedTags.map( function ( tag ) {
+				return new datamodel.Statement(
+					new datamodel.Claim(
+						new datamodel.PropertyValueSnak(
+							depictsPropertyId,
+							new datamodel.EntityId( tag.wikidataId )
+						),
+						null, // qualifiers
+						guidGenerator.newGuid()
+					)
+				);
+			} );
+
+			// send wbsetclaim calls one at a time to prevent edit conflicts
+			statements.forEach( function ( statement ) {
+				promise = promise.then( function () {
+					return api.postWithToken( 'csrf', {
+						action: 'wbsetclaim',
+						claim: JSON.stringify( serializer.serialize( statement ) ),
+						tags: 'computer-aided-tagging'
+					} );
+				} );
+			} );
+
+			return promise;
 		},
 
 		/**
@@ -346,7 +455,7 @@ module.exports = new Vuex.Store( {
 		 * @param {Object} context
 		 * @param {string} publishStatus
 		 */
-		updatepublishStatus: function ( context, publishStatus ) {
+		updatePublishStatus: function ( context, publishStatus ) {
 			context.commit( 'setPublishStatus', publishStatus );
 		}
 	}
