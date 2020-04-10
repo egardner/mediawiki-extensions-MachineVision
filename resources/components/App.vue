@@ -14,7 +14,7 @@
 			v-if="publishSuccess"
 			v-bind:key="'publishSuccess-' + Date.now()"
 			type="success"
-			duration="4"
+			v-bind:duration="4"
 			v-on:leave="onToastLeave"
 		>
 			<p v-i18n-html:machinevision-success-message />
