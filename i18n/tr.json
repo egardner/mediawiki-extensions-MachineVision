@@ -1,9 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Suvarioglu",
+			"BaRaN6161 TURK",
 			"Grkn gll",
-			"BaRaN6161 TURK"
+			"Suvarioglu"
 		]
 	},
 	"machinevision-desc": "Dahili ve harici makine vizyonu servis sağlayıcıları ile arayüz oluşturur ve sonuçları saklar ve sunar.",
@@ -18,10 +18,8 @@
 	"machinevision-autoconfirmed-message": "Doğru etiketler, tüm Commons kullanıcılarının resimleri bulmasını kolaylaştırır, bu nedenle yalnızca otomatik olarak onaylanan kullanıcılar bu aracı kullanabildiğinden lütfen [[mw:Manual:Autoconfirmed_users|otomatik onaylanan]] olun.",
 	"machinevision-publish": "Yayınla",
 	"machinevision-publish-title": "Etiketler yayınlansın mı?",
-	"machinevision-more": "Sonraki $1 {{PLURAL:$1|resim|resim}}",
-	"machinevision-more-title": "Sonraki {{PLURAL:$1|resim|$1 resim}} gösterilsin mi?",
-	"machinevision-reset": "Sıfırla",
-	"machinevision-reset-title": "Etiketleri sıfırla?",
+	"machinevision-add-custom-tag": "Etiket ekle",
+	"machinevision-add-custom-tag-title": "Bu resme özel bir etiket ekle",
 	"machinevision-skip": "Atla",
 	"machinevision-skip-title": "\"$1\" için öneriler atlansın mı?",
 	"machinevision-personal-uploads-count": "İncelemek için $1 {{PLURAL:$1|yükleme|yükleme}} hesabınız var.",
@@ -47,6 +45,10 @@
 	"machinevision-no-uploads-cta-heading": "İncelenecek resminiz yok",
 	"machinevision-no-uploads-cta-text": "Lütfen aracımızın bunları analiz edebilmesi ve uygun etiketleri önerebilmesi için yeni resimler yükleyin. Görüntüleri zaten yüklediyseniz ve burada görmüyorsanız, bu görüntüler hala inceleniyor olabilir ve daha sonra tekrar kontrol edebilirsiniz. Ayrıca diğer kullanıcıların popüler resimlerini etiketleyerek daha kolay bulunmasını sağlayabilirsiniz.",
 	"machinevision-javascript-required": "Bu özellik web tarayıcınızda desteklenmiyor.",
+	"machinevision-categories-label": "Kategoriler:",
+	"machinevision-add-custom-tag-dialog-title": "Özel etiket",
+	"machinevision-add-custom-tag-dialog-add-action": "Ekle",
+	"machinevision-add-custom-tag-dialog-cancel-action": "İptal",
 	"right-imagelabel-review": "Resim etiketi önerilerini inceleyin",
 	"action-imagelabel-review": "resim etiketi önerilerini inceleyin",
 	"right-imagelabel-test": "Görüntü etiketi önerilerini test et",

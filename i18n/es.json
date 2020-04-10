@@ -1,10 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
+			"Canaan9801",
 			"Fitoschido",
-			"Madamebiblio",
 			"Hasley",
-			"Canaan9801"
+			"Madamebiblio"
 		]
 	},
 	"machinevision-desc": "Interactua con proveedores de servicios externos y internos de visión artificial y guarda y provee resultados.",
@@ -14,7 +14,6 @@
 	"machinevision-machineaidedtagging-user-tab": "Cargas personales",
 	"machinevision-pageinfo-field-suggested-labels": "Etiquetas sugeridas",
 	"machinevision-publish": "Publicar",
-	"machinevision-reset": "Restablecer",
 	"machinevision-skip": "Omitir",
 	"machinevision-personal-uploads-count": "Tienes $1 {{PLURAL:$1|carga|cargas}} personal(es) para revisión.",
 	"machinevision-loading-message": "Cargando imágenes…",
@@ -26,6 +25,7 @@
 	"machinevision-success-message-with-warning": "Se añadieron etiquetas a la imagen con las excepciones siguientes:",
 	"machinevision-onboarding-dialog-close-label": "Cerrar",
 	"machinevision-javascript-required": "Tu navegador no admite esta función.",
+	"machinevision-categories-label": "Categorías:",
 	"right-imagelabel-test": "Sugerencias de etiquetas para imagenes de prueba",
 	"action-imagelabel-test": "sugerencias de etiquetas para imagenes de prueba",
 	"echo-category-title-machinevision": "Etiquetas sugeridas para revisión",

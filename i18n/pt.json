@@ -1,10 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hamilton Abreu",
-			"Mansil alfalb",
 			"Fúlvio",
-			"Mansil"
+			"Hamilton Abreu",
+			"Mansil",
+			"Mansil alfalb"
 		]
 	},
 	"machinevision-machineaidedtagging-tabs-heading": "Imagens para revisão",
@@ -13,9 +13,6 @@
 	"machinevision-pageinfo-field-suggested-labels": "Etiquetas sugeridas",
 	"machinevision-publish": "Publicar",
 	"machinevision-publish-title": "Publicar etiquetas?",
-	"machinevision-more": "{{PLURAL:$1|Imagem seguinte|$1 imagens seguintes}}",
-	"machinevision-more-title": "Mostrar {{PLURAL:$1|a imagem seguinte|as $1 imagens seguintes}}?",
-	"machinevision-reset-title": "Reiniciar etiquetas?",
 	"machinevision-skip": "Saltar",
 	"machinevision-skip-title": "Saltar sugestões para \"$1\"?",
 	"machinevision-personal-uploads-count": "Tem $1 {{PLURAL:$1|carregamento pessoal|carregamentos pessoais}} para revisão.",
