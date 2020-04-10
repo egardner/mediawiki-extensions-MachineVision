@@ -1,9 +1,5 @@
 <template>
 	<div class="wbmad-suggested-tags-cardstack">
-		<h3>
-			Showing image from {{ queue }} feed
-		</h3>
-
 		<wbmad-spinner v-if="isPending" />
 
 		<div v-else>

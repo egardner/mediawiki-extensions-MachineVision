@@ -22,16 +22,20 @@
 
 		<!-- Tabs container -->
 		<template v-if="showTabs">
-			<h2
-				v-i18n-html:machinevision-machineaidedtagging-tabs-heading
-				class="wbmad-suggested-tags-page-tabs-heading"
-			/>
+			<h2 v-i18n-html:machinevision-machineaidedtagging-tabs-heading
+				class="wbmad-suggested-tags-page-tabs-heading" />
 
 			<tabs v-on:tab-change="onTabChange">
-				<tab v-for="( tab, index ) in tabs"
-					v-bind:key="'tab-' + index"
-					v-bind:title="tab">
-					<card-stack v-bind:queue="tab" />
+				<!-- Popular tab -->
+				<tab v-bind:id="'tab-popular'"
+					v-bind:title="popularTabTitle">
+					<card-stack v-bind:queue="'popular'" />
+				</tab>
+
+				<!-- User tab -->
+				<tab v-bind:id="'tab-user'"
+					v-bind:title="userTabTitle">
+					<card-stack v-bind:queue="'user'" />
 				</tab>
 			</tabs>
 
@@ -100,7 +104,6 @@ module.exports = {
 	computed: $.extend( {}, mapState( [
 		'publishStatus'
 	] ), mapGetters( [
-		'tabs',
 		'isAuthenticated',
 		'isAutoconfirmed'
 	] ), {
@@ -124,6 +127,14 @@ module.exports = {
 			return mw.config.get( 'wgMVSuggestedTagsLoginMessage' );
 		},
 
+		popularTabTitle: function () {
+			return this.$i18n( 'machinevision-machineaidedtagging-popular-tab' ).text();
+		},
+
+		userTabTitle: function () {
+			return this.$i18n( 'machinevision-machineaidedtagging-user-tab' ).text();
+		},
+
 		publishSuccess: function () {
 			return this.publishStatus === 'success';
 		},
@@ -142,10 +153,10 @@ module.exports = {
 		 * Watch the tab change events emitted by the <Tabs> component
 		 * to ensure that Vuex state is kept in sync
 		 *
-		 * @param {string} tab name
+		 * @param {VueComponent} tab
 		 */
 		onTabChange: function ( tab ) {
-			this.updateCurrentTab( tab.title.toLowerCase() );
+			this.updateCurrentTab( tab.$children[ 0 ].queue );
 		},
 
 		onToastLeave: function () {
