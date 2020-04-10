@@ -266,10 +266,8 @@
 				"machinevision-autoconfirmed-message",
 				"machinevision-publish",
 				"machinevision-publish-title",
-				"machinevision-more",
-				"machinevision-more-title",
-				"machinevision-reset",
-				"machinevision-reset-title",
+				"machinevision-add-custom-tag",
+				"machinevision-add-custom-tag-title",
 				"machinevision-skip",
 				"machinevision-skip-title",
 				"machinevision-personal-uploads-count",
@@ -293,7 +291,13 @@
 				"machinevision-cta-text",
 				"machinevision-cta-cta",
 				"machinevision-no-uploads-cta-heading",
-				"machinevision-no-uploads-cta-text"
+				"machinevision-no-uploads-cta-text",
+				"machinevision-categories-label",
+				"machinevision-add-custom-tag-dialog-title",
+				"machinevision-add-custom-tag-dialog-add-action",
+				"machinevision-add-custom-tag-dialog-cancel-action",
+				"wikibasemediainfo-filepage-statement-no-results",
+				"wikibasemediainfo-statements-item-input-placeholder"
 			],
 			"targets": [
 				"mobile",

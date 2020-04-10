@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function WikibaseMachineAssistedDepictsImageData(
+module.exports = function ImageData(
 	title,
 	pageid,
 	descriptionurl,

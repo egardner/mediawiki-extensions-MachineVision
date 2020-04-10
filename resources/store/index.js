@@ -346,7 +346,7 @@ module.exports = new Vuex.Store( {
 		 * @param {Object} context
 		 * @param {string} publishStatus
 		 */
-		updatepublishStatus: function ( context, publishStatus ) {
+		updatePublishStatus: function ( context, publishStatus ) {
 			context.commit( 'setPublishStatus', publishStatus );
 		}
 	}
