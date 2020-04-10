@@ -152,7 +152,9 @@ EOT;
 			foreach ( $labels as $id => $label ) {
 				$suggestedLabels[] = [
 					'wikidata_id' => $id,
-					'label' => $label,
+					'label' => $label['label'],
+					'description' => $label['description'] ?? null,
+					'alias' => $label['alias'] ?? null,
 				];
 			}
 
@@ -166,6 +168,7 @@ EOT;
 				'suggested_labels' => $suggestedLabels,
 			];
 		}
+
 		return $result;
 	}
 

@@ -105,19 +105,22 @@ class ApiQueryImageLabels extends ApiQueryBase {
 
 			$data[$pageId][$row['wikidata_id']]['wikidata_id'] = $row['wikidata_id'];
 			$data[$pageId][$row['wikidata_id']]['state'] = self::$reviewStateNames[$row['review']];
+			$data[$pageId][$row['wikidata_id']]['confidence'] = $row['confidence'];
 		}
 
 		foreach ( $data as $pageId => $pageData ) {
 			$ids = array_keys( $pageData );
 			$labels = $this->labelResolver->resolve( $this->getContext(), $ids );
+
 			foreach ( $labels as $id => $label ) {
-				$data[$pageId][$id]['label'] = $label;
+				$data[$pageId][$id]['label'] = $label['label'];
+				$data[$pageId][$id]['description'] = $label['description'] ?? null;
+				$data[$pageId][$id]['alias'] = $label['alias'] ?? null;
 			}
 		}
 
 		asort( $data );
 		foreach ( $data as $pageId => $pageData ) {
-			asort( $pageData );
 			$pageData = array_values( $pageData );
 			ApiResult::setIndexedTagName( $pageData, 'label' );
 			$fit = $apiResult->addValue( [ 'query', 'pages', $pageId ], $this->getModuleName(),

@@ -90,7 +90,6 @@ class Repository implements LoggerAwareInterface {
 			'machine_vision_image',
 			[
 				'mvi_sha1' => $sha1,
-				// why does 'RAND()' not work here?
 				'mvi_rand' => $this->getRandomFloat(),
 			],
 			__METHOD__,
@@ -161,24 +160,41 @@ class Repository implements LoggerAwareInterface {
 	 */
 	public function getLabels( $sha1 ) {
 		$res = $this->dbr->select(
-			[ 'machine_vision_image', 'machine_vision_label' ],
-			[ 'mvi_sha1', 'mvl_wikidata_id', 'mvl_review', 'mvl_reviewer_id' ],
+			[
+				'machine_vision_image',
+				'machine_vision_label',
+				'machine_vision_suggestion',
+				'machine_vision_provider'
+			],
+			[ 'mvi_sha1', 'mvl_wikidata_id', 'mvl_review', 'mvl_reviewer_id', 'mvs_confidence', 'mvp_name' ],
 			[ 'mvi_sha1' => $sha1 ],
 			__METHOD__,
-			[ 'ORDER BY' => 'mvl_id' ],
-			[ 'machine_vision_label' => [ 'INNER JOIN', [ 'mvi_id = mvl_mvi_id' ] ] ]
+			[],
+			[
+				'machine_vision_label' => [ 'INNER JOIN', [ 'mvi_id = mvl_mvi_id' ] ],
+				'machine_vision_suggestion' => [ 'INNER JOIN', [ 'mvl_id = mvs_mvl_id' ] ],
+				'machine_vision_provider' => [ 'INNER JOIN', [ 'mvs_provider_id = mvp_id' ] ]
+			]
 		);
 
 		$data = [];
 		foreach ( $res as $row ) {
-			$data[] = [
-				'sha1' => $row->mvi_sha1,
-				'wikidata_id' => $row->mvl_wikidata_id,
-				'review' => (int)$row->mvl_review,
-				'reviewer_id' => (int)$row->mvl_reviewer_id,
-			];
+			$label = $row->mvl_wikidata_id;
+			$provider = $row->mvp_name;
+			$confidence = (float)$row->mvs_confidence;
+			if ( array_key_exists( $label, $data ) ) {
+				$data[$label]['confidence'][$provider] = $confidence;
+			} else {
+				$data[$label] = [
+					'sha1' => $row->mvi_sha1,
+					'wikidata_id' => $label,
+					'review' => (int)$row->mvl_review,
+					'reviewer_id' => (int)$row->mvl_reviewer_id,
+					'confidence' => [ $provider => $confidence ],
+				];
+			}
 		}
-		return $data;
+		return array_values( $data );
 	}
 
 	/**
@@ -274,22 +290,36 @@ class Repository implements LoggerAwareInterface {
 		$rand = $this->getRandomFloat();
 		$fname = __METHOD__;
 
-		if ( $userId ) {
+		$tables = [ 'machine_vision_image', 'machine_vision_label' ];
+		$joins = [ 'machine_vision_label' => [ 'INNER JOIN', [ 'mvi_id = mvl_mvi_id' ] ] ];
+
+		if ( $userId !== null ) {
 			$conds = [
 				'mvl_review' => [ self::REVIEW_UNREVIEWED, self::REVIEW_WITHHELD ],
 				'mvl_uploader_id' => strval( $userId ),
 			];
 		} else {
-			$conds = [ 'mvl_review' => self::REVIEW_UNREVIEWED ];
+			$conds = [
+				'mvl_review' => self::REVIEW_UNREVIEWED,
+				// HACK: Use the mvs_timestamp value to identify label suggestions relating to
+				// images that were labeled as part of the "assessed" images group. These were
+				// labeled in November 2019, and new upload labeling was not enabled until
+				// December 2019 or later.
+				// TODO: Update the DB schema to add a column to identify the labeling "group"
+				'mvs_timestamp < 20191201000000',
+			];
+			$tables[] = 'machine_vision_suggestion';
+			$joins['machine_vision_suggestion'] = [ 'INNER JOIN', [ 'mvs_mvl_id = mvl_id' ] ];
 		}
 
-		$select = function ( $ascending, $limit, $conds ) use ( $fname, $rand, $multiplier ) {
+		$select = function ( $ascending, $limit, $conds ) use ( $fname, $tables, $joins, $rand,
+			$multiplier ) {
 			$whereClause = array_merge( $conds,
 				[ 'mvi_rand ' . ( $ascending ? '> ' : '< ' ) . strval( $rand ) ] );
 
 			return $this->dbr->selectFieldValues(
 				[ 'image', 'machinevision' => $this->dbr->buildSelectSubquery(
-					[ 'machine_vision_image', 'machine_vision_label' ],
+					$tables,
 					'mvi_sha1',
 					$whereClause,
 					$fname,
@@ -297,7 +327,7 @@ class Repository implements LoggerAwareInterface {
 						'ORDER BY' => 'mvi_rand ' . ( $ascending ? 'ASC' : 'DESC' ),
 						'LIMIT' => $limit * $multiplier,
 					],
-					[ 'machine_vision_label' => [ 'INNER JOIN', [ 'mvi_id = mvl_mvi_id' ] ] ]
+					$joins
 				) ],
 				'img_name',
 				'',
