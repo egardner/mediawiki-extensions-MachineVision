@@ -83,15 +83,22 @@ module.exports = {
 		.box-shadow( inset 0 -1px 0 0 @base50 );
 
 		&__item {
+			color: @base30;
 			cursor: pointer;
 			font-weight: bold;
-			padding: 8px;
+			margin: 6px 6px -1px 0;
+			padding: 6px 13px;
 			transition: color 100ms, box-shadow 100ms;
 
 			&:hover,
 			&.is-active {
 				color: @progressive;
 				.box-shadow( inset 0 -2px 0 0 @progressive );
+			}
+
+			&:hover {
+				color: @progressive-hover;
+				.box-shadow( inset 0 -2px 0 0 @progressive-hover );
 			}
 
 			&.is-disabled {
