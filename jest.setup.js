@@ -109,3 +109,4 @@ mw = {
 global.mw = mw;
 
 global.$ = require( 'jquery' );
+global.OO = require( 'oojs' );
