@@ -91,7 +91,9 @@ module.exports = new Vuex.Store( {
 			user: false
 		},
 
-		publishStatus: null
+		publishStatus: null,
+
+		userStats: {}
 
 	},
 
@@ -253,6 +255,10 @@ module.exports = new Vuex.Store( {
 			state.pending = true;
 		},
 
+		setUserStats: function ( state, payload ) {
+			state.userStats = payload;
+		},
+
 		/**
 		 * Toggle the confirmation state of a single suggestion of an image
 		 *
@@ -367,6 +373,9 @@ module.exports = new Vuex.Store( {
 						queue: queue
 					} );
 				} );
+
+				// Save user data.
+				context.commit( 'setUserStats', res.query.unreviewedimagecount.user );
 
 				context.commit( 'setPending', {
 					queue: queue,
