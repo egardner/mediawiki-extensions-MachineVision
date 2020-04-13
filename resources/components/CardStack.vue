@@ -2,15 +2,13 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
-		<template v-else>
-			<template v-if="currentImage">
-				<wbmad-image-card v-bind:image="currentImage" />
-			</template>
+		<template v-else-if="currentImage">
+			<wbmad-image-card v-bind:image="currentImage" />
+		</template>
 
-			<!-- TODO: Handle no images (cases: error; finished tagging user images). -->
-			<template v-else>
-				No images
-			</template>
+		<!-- TODO: Handle no images (cases: error; finished tagging user images). -->
+		<template v-else>
+			No images
 		</template>
 	</div>
 </template>
