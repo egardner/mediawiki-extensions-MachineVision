@@ -1,23 +1,22 @@
 <template>
 	<div class="wbmad-suggested-tags-cardstack">
-		<wbmad-spinner v-if="isPending" />
+		<wbmad-cardstack-placeholder v-if="isPending" />
 
-		<div v-else>
-			<div v-if="currentImage">
-				<wbmad-image-card v-bind:image="currentImage" />
-			</div>
+		<template v-else-if="currentImage">
+			<wbmad-image-card v-bind:image="currentImage" />
+		</template>
 
-			<div v-else>
-				No images
-			</div>
-		</div>
+		<!-- TODO: Handle no images (cases: error; finished tagging user images). -->
+		<template v-else>
+			No images
+		</template>
 	</div>
 </template>
 
 <script>
 var mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
-	Spinner = require( './Spinner.vue' ),
+	CardStackPlaceholder = require( './CardStackPlaceholder.vue' ),
 	ImageCard = require( './ImageCard.vue' );
 
 // @vue/component
@@ -25,7 +24,7 @@ module.exports = {
 	name: 'CardStack',
 
 	components: {
-		'wbmad-spinner': Spinner,
+		'wbmad-cardstack-placeholder': CardStackPlaceholder,
 		'wbmad-image-card': ImageCard
 	},
 
