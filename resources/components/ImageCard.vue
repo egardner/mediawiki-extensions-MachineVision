@@ -80,7 +80,8 @@ module.exports = {
 
 	data: function () {
 		return {
-			hideOutline: true
+			hideOutline: true,
+			suggestions: []
 		};
 	},
 
@@ -110,15 +111,6 @@ module.exports = {
 			return this.confirmedSuggestions.length < 1;
 		},
 
-		suggestions: function () {
-			// Copy suggestions from props into state so we can modify their
-			// "confirmed" properties in place, and filter out any suggestions
-			// with a missing label.
-			return this.image.suggestions.filter( function ( suggestion ) {
-				return suggestion.text;
-			} );
-		},
-
 		/**
 		 * @return {Array} Array of suggestion objects
 		 */
@@ -133,6 +125,19 @@ module.exports = {
 		'publishTags',
 		'skipImage'
 	] ), {
+
+		/**
+		 * Create a true copy of valid suggestions for local use. We need a
+		 * deep copy because we don't want to inadvertently manipulate the
+		 * parent state by changing "confirmed" status.
+		 */
+		cloneSuggestions: function () {
+			var validSuggestions = this.image.suggestions.filter( function ( suggestion ) {
+				return suggestion.text;
+			} );
+
+			this.suggestions = OO.copy( validSuggestions );
+		},
 		/**
 		 * Mutate the suggestion state in-place
 		 *
@@ -164,8 +169,12 @@ module.exports = {
 		 * the new image.
 		 */
 		image: function () {
-			this.suggestions = this.image.suggestions;
+			this.cloneSuggestions();
 		}
+	},
+
+	created: function () {
+		this.cloneSuggestions();
 	}
 };
 </script>
