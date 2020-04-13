@@ -124,7 +124,7 @@ module.exports = {
 		 * @TODO implement me
 		 */
 		onPublish: function () {
-			this.publishTags();
+			this.publishTags( this.suggestions );
 		},
 
 		/**
