@@ -122,8 +122,13 @@ describe( 'CardStack', () => {
 		let imageCard = wrapper.find( ImageCard );
 		let suggestion = wrapper.find( Suggestion );
 
-		expect( wrapper.vm.currentImage.suggestions[ 0 ] ).toMatchObject( imageCard.vm.suggestions[ 0 ] );
+		let suggestionInParent = wrapper.vm.currentImage.suggestions[ 0 ];
+		let suggestionInChild = imageCard.vm.suggestions[ 0 ];
+
+		expect( suggestionInParent.confirmed ).toBe( false );
+		expect( suggestionInChild.confirmed ).toBe( false );
 		suggestion.trigger( 'click' );
-		expect( wrapper.vm.currentImage.suggestions[ 0 ] ).not.toMatchObject( imageCard.vm.suggestions[ 0 ] );
+		expect( suggestionInParent.confirmed ).toBe( false );
+		expect( suggestionInChild.confirmed ).toBe( true );
 	} );
 } );

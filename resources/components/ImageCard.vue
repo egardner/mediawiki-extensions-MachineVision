@@ -62,6 +62,33 @@ var mapActions = require( 'vuex' ).mapActions,
 	Button = require( './base/Button.vue' ),
 	Suggestion = require( './base/Suggestion.vue' );
 
+// Note: we need deep copy functionality here so that we can mutate the state of
+// the suggestions without changing the values held by the parent through
+// reference. Typically a library like lodash would be used for this. OOJS
+// "copy" function doesn't seem to do the trick here unfortunately.
+// This can be removed or moved to a "utils" file eventually.
+function deepCopy( inObject ) {
+	var outObject,
+		value,
+		key;
+
+	if ( typeof inObject !== 'object' || inObject === null ) {
+		return inObject; // Return the value if inObject is not an object
+	}
+
+	// Create an array or object to hold the values
+	outObject = Array.isArray( inObject ) ? [] : {};
+
+	for ( key in inObject ) {
+		value = inObject[ key ];
+
+		// Recursively (deep) copy for nested objects, including arrays
+		outObject[ key ] = deepCopy( value );
+	}
+
+	return outObject;
+}
+
 // @vue/component
 module.exports = {
 	name: 'ImageCard',
@@ -136,7 +163,7 @@ module.exports = {
 				return suggestion.text;
 			} );
 
-			this.suggestions = OO.copy( validSuggestions );
+			this.suggestions = deepCopy( validSuggestions );
 		},
 		/**
 		 * Mutate the suggestion state in-place
