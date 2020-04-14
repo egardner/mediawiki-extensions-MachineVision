@@ -2,7 +2,6 @@ const Vue = require( 'vue' );
 const VueTestUtils = require( '@vue/test-utils' );
 const Vuex = require( 'vuex' );
 const ImageCard = require( '../../resources/components/ImageCard.vue' );
-const Suggestion = require( '../../resources/components/base/Suggestion.vue' );
 const i18n = require( './plugins/i18n' );
 const imageFixtures = require( './fixtures/imageData.json' );
 
