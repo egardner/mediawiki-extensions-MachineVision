@@ -145,6 +145,19 @@ module.exports = new Vuex.Store( {
 		},
 
 		/**
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Array} suggestions
+		 */
+		currentImageSuggestions: function ( state, getters ) {
+			if ( getters.currentImage ) {
+				return getters.currentImage.suggestions;
+			} else {
+				return [];
+			}
+		},
+
+		/**
 		 * Whether or not the user is logged in. Derived from non-Vuex global
 		 * state.
 		 *
@@ -235,6 +248,19 @@ module.exports = new Vuex.Store( {
 		clearImages: function ( state ) {
 			state.images[ state.currentTab ] = [];
 			state.pending = true;
+		},
+
+		/**
+		 * Toggle the confirmation state of a single suggestion of an image
+		 *
+		 * @param {Object} state
+		 * @param {integer} index
+		 */
+		toggleSuggestion: function ( state, index ) {
+			var currentImage = state.images[ state.currentTab ][ 0 ],
+				selected = currentImage.suggestions[ index ];
+
+			selected.confirmed = !selected.confirmed;
 		},
 
 		/**
@@ -349,6 +375,22 @@ module.exports = new Vuex.Store( {
 		},
 
 		/**
+		 * Find a given tag among the current image suggestions and commit the
+		 * toggleSuggestion mutation to flip its state. Do nothing if tag is
+		 * not found.
+		 *
+		 * @param {Object} context
+		 * @param {Object} tag
+		 */
+		toggleTagConfirmation: function ( context, tag ) {
+			var tagIndex = context.getters.currentImageSuggestions.indexOf( tag );
+
+			if ( tagIndex >= 0 ) {
+				context.commit( 'toggleSuggestion', tagIndex );
+			}
+		},
+
+		/**
 		 * @TODO implement this
 		 *
 		 * submits user selections for current image to API and commits the
@@ -356,10 +398,10 @@ module.exports = new Vuex.Store( {
 		 * we are running low on data
 		 *
 		 * @param {Object} context
-		 * @param {Array} tags
 		 */
-		publishTags: function ( context, tags ) {
-			var reviewBatch = tags.map( function ( tag ) {
+		publishTags: function ( context ) {
+			var tags = context.getters.currentImageSuggestions,
+				reviewBatch = tags.map( function ( tag ) {
 					return {
 						label: tag.wikidataId,
 						review: tag.confirmed ? 'accept' : 'reject'

@@ -32,7 +32,8 @@ describe( 'App', () => {
 
 		getters = {
 			isAuthenticated: jest.fn(),
-			isAutoconfirmed: jest.fn()
+			isAutoconfirmed: jest.fn(),
+			currentImage: jest.fn() // needed for tests that use deep mounting
 		};
 
 		actions = {

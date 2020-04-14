@@ -23,11 +23,11 @@
 				<!-- TODO: categories. -->
 
 				<div class="wbmad-image-with-suggestions__tags">
-					<suggestion v-for="( suggestion, index ) in suggestions"
+					<suggestion v-for="( suggestion, index ) in currentImageSuggestions"
 						v-bind:key="index"
 						v-bind:text="suggestion.text"
 						v-bind:confirmed="suggestion.confirmed"
-						v-on:click="toggleConfirmed( suggestion )"
+						v-on:click="toggleTagConfirmation( suggestion )"
 					/>
 				</div>
 				<!-- TODO: Add custom tag button. -->
@@ -59,35 +59,9 @@
 
 <script>
 var mapActions = require( 'vuex' ).mapActions,
+	mapGetters = require( 'vuex' ).mapGetters,
 	Button = require( './base/Button.vue' ),
 	Suggestion = require( './base/Suggestion.vue' );
-
-// Note: we need deep copy functionality here so that we can mutate the state of
-// the suggestions without changing the values held by the parent through
-// reference. Typically a library like lodash would be used for this. OOJS
-// "copy" function doesn't seem to do the trick here unfortunately.
-// This can be removed or moved to a "utils" file eventually.
-function deepCopy( inObject ) {
-	var outObject,
-		value,
-		key;
-
-	if ( typeof inObject !== 'object' || inObject === null ) {
-		return inObject; // Return the value if inObject is not an object
-	}
-
-	// Create an array or object to hold the values
-	outObject = Array.isArray( inObject ) ? [] : {};
-
-	for ( key in inObject ) {
-		value = inObject[ key ];
-
-		// Recursively (deep) copy for nested objects, including arrays
-		outObject[ key ] = deepCopy( value );
-	}
-
-	return outObject;
-}
 
 // @vue/component
 module.exports = {
@@ -98,40 +72,35 @@ module.exports = {
 		suggestion: Suggestion
 	},
 
-	props: {
-		image: {
-			type: Object,
-			required: true
-		}
-	},
-
 	data: function () {
 		return {
-			hideOutline: true,
-			suggestions: []
+			hideOutline: true
 		};
 	},
 
-	computed: {
+	computed: $.extend( {}, mapGetters( [
+		'currentImage',
+		'currentImageSuggestions'
+	] ), {
 		/**
 		 * @return {string}
 		 */
 		title: function () {
-			return this.image.title;
+			return this.currentImage.title;
 		},
 
 		/**
 		 * @return {string}
 		 */
 		thumbUrl: function () {
-			return this.image.thumburl;
+			return this.currentImage.thumburl;
 		},
 
 		/**
 		 * @return {string}
 		 */
 		descriptionUrl: function () {
-			return this.image.descriptionurl;
+			return this.currentImage.descriptionurl;
 		},
 
 		publishDisabled: function () {
@@ -142,67 +111,32 @@ module.exports = {
 		 * @return {Array} Array of suggestion objects
 		 */
 		confirmedSuggestions: function () {
-			return this.suggestions.filter( function ( suggestion ) {
+			return this.currentImageSuggestions.filter( function ( suggestion ) {
 				return suggestion.confirmed;
 			} );
 		}
-	},
+	} ),
 
 	methods: $.extend( {}, mapActions( [
 		'publishTags',
-		'skipImage'
+		'skipImage',
+		'toggleTagConfirmation'
 	] ), {
-
 		/**
-		 * Create a true copy of valid suggestions for local use. We need a
-		 * deep copy because we don't want to inadvertently manipulate the
-		 * parent state by changing "confirmed" status.
-		 */
-		cloneSuggestions: function () {
-			var validSuggestions = this.image.suggestions.filter( function ( suggestion ) {
-				return suggestion.text;
-			} );
-
-			this.suggestions = deepCopy( validSuggestions );
-		},
-		/**
-		 * Mutate the suggestion state in-place
-		 *
-		 * @param {Object} suggestion
-		 */
-		toggleConfirmed: function ( suggestion ) {
-			suggestion.confirmed = !suggestion.confirmed;
-		},
-
-		/**
-		 * @TODO implement me
+		 * Publish the confirmed tags as depicts statements. All relevant state
+		 * lives in Vuex, so all we need to do is trigger things here.
 		 */
 		onPublish: function () {
-			this.publishTags( this.suggestions );
+			this.publishTags();
 		},
 
 		/**
-		 * @TODO implement me
+		 * Skip the image (remove it from the Vuex queue).
 		 */
 		onSkip: function () {
 			this.skipImage();
 		}
-	} ),
-
-	watch: {
-		/**
-		 * Watch the image props. If props change because the queue has shifted,
-		 * force-reset the suggestions state to the suggestions associated with
-		 * the new image.
-		 */
-		image: function () {
-			this.cloneSuggestions();
-		}
-	},
-
-	created: function () {
-		this.cloneSuggestions();
-	}
+	} )
 };
 </script>
 
