@@ -16,6 +16,11 @@
 module.exports = {
 	name: 'Tab',
 	props: {
+		name: {
+			type: String,
+			required: true
+		},
+
 		title: {
 			type: String,
 			required: true
@@ -34,7 +39,7 @@ module.exports = {
 
 	data: function () {
 		return {
-			isActive: true
+			isActive: false
 		};
 	}
 };

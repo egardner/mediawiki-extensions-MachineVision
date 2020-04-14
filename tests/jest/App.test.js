@@ -23,10 +23,13 @@ describe( 'App', () => {
 				popular: [],
 				user: []
 			},
-
 			pending: {
 				popular: false,
 				user: false
+			},
+			userStats: {
+				total: 20,
+				unreviewed: 10
 			}
 		};
 
@@ -95,9 +98,9 @@ describe( 'App', () => {
 			computed
 		} );
 
-		// Emit a "tab-like" object with the appropriate queue
+		// Emit a "tab-like" object with the appropriate tab name.
 		wrapper.find( Tabs ).vm.$emit( 'tab-change', {
-			$children: [ { queue: 'user' } ]
+			name: 'user'
 		} );
 
 		// Expect the updateCurrentTab action to be dispatched

@@ -1,17 +1,17 @@
 <template>
 	<div class="mw-tabs">
 		<div class="mw-tabs__header" role="tablist">
-			<div v-for="(tab, index) in tabs"
+			<div v-for="tab in tabs"
 				v-bind:id="tab.id + '-label'"
 				v-bind:key="tab.title"
-				v-bind:class="determineTabClasses( tab, index )"
-				v-bind:aria-selected="index === selectedIndex"
+				v-bind:class="determineTabLabelClasses( tab )"
+				v-bind:aria-selected="tab.name === currentTabName"
 				v-bind:aria-controls="tab.id"
 				class="mw-tabs__header__item"
 				role="tab"
 				tabindex="0"
-				v-on:click="selectTab( index )"
-				v-on:keyup.enter="selectTab( index )"
+				v-on:click="selectTab( tab.name )"
+				v-on:keyup.enter="selectTab( tab.name )"
 			>
 				{{ tab.title }}
 			</div>
@@ -28,45 +28,101 @@
 module.exports = {
 	name: 'Tabs',
 
+	props: {
+		active: {
+			type: String,
+			default: null
+		}
+	},
+
 	data: function () {
 		return {
-			selectedIndex: 0,
-			tabs: this.$children
+			tabs: {},
+			currentTabName: null
 		};
 	},
 
 	methods: {
-		selectTab: function ( index ) {
-			if ( this.tabs[ index ].disabled === true ) {
-				return false;
+		/**
+		 * Change the current tab.
+		 * @param {string} tabName
+		 */
+		selectTab: function ( tabName ) {
+			if ( this.tabs[ tabName ].disabled === true ) {
+				return;
 			}
 
-			this.selectedIndex = index;
+			this.currentTabName = tabName;
 		},
 
-		setTabState: function ( active ) {
-			this.tabs.forEach( function ( tab, index ) {
-				tab.isActive = ( index === active );
-			} );
+		/**
+		 * Set active attribute on each tab.
+		 * @param {string} currentTabName
+		 */
+		setTabState: function ( currentTabName ) {
+			var tabName;
+			for ( tabName in this.tabs ) {
+				this.tabs[ tabName ].isActive = ( tabName === currentTabName );
+			}
 		},
 
-		determineTabClasses: function ( tab, index ) {
+		/**
+		 * Set tab label classes.
+		 * @param {VueComponent} tab
+		 * @return {Object}
+		 */
+		determineTabLabelClasses: function ( tab ) {
 			return {
-				'is-active': index === this.selectedIndex,
+				'is-active': tab.name === this.currentTabName,
 				'is-disabled': tab.disabled
 			};
+		},
+
+		/**
+		 * Create an object with tabs keyed by their names, then set the
+		 * isActive attribute for each tab.
+		 */
+		initializeTabs: function () {
+			var tabs = this.$children,
+				i;
+
+			this.tabs = {};
+			for ( i = 0; i < 2; i++ ) {
+				this.tabs[ tabs[ i ].name ] = tabs[ i ];
+			}
+
+			// If no active tab was passed in as a prop, default to first one.
+			this.currentTabName = this.active ? this.active : Object.keys( this.tabs )[ 0 ];
+			this.setTabState( this.currentTabName );
 		}
 	},
 
 	watch: {
-		selectedIndex: function ( newIndex ) {
-			this.setTabState( newIndex );
-			this.$emit( 'tab-change', this.tabs[ this.selectedIndex ] );
+		/**
+		 * When the tab stored in state changes, select that tab.
+		 * @param {string} newTabName
+		 */
+		active: function ( newTabName ) {
+			this.selectTab( newTabName );
+		},
+
+		/**
+		 * When the current tab changes, set active states and emit an event.
+		 * @param {string} newTabName
+		 */
+		currentTabName: function () {
+			this.setTabState( this.currentTabName );
+
+			// Don't emit an event if the currentTabName changed as a result of
+			// the active prop changing.
+			if ( this.currentTabName !== this.active ) {
+				this.$emit( 'tab-change', this.tabs[ this.currentTabName ] );
+			}
 		}
 	},
 
 	mounted: function () {
-		this.setTabState( this.selectedIndex );
+		this.initializeTabs();
 	}
 };
 </script>

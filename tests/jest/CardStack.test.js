@@ -27,6 +27,10 @@ describe( 'CardStack', () => {
 			pending: {
 				popular: false,
 				user: false
+			},
+			userStats: {
+				total: 20,
+				unreviewed: 10
 			}
 		};
 

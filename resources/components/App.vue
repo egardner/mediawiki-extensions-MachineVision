@@ -25,15 +25,17 @@
 			<h2 v-i18n-html:machinevision-machineaidedtagging-tabs-heading
 				class="wbmad-suggested-tags-page-tabs-heading" />
 
-			<tabs v-on:tab-change="onTabChange">
+			<tabs v-bind:active="currentTab" v-on:tab-change="onTabChange">
 				<!-- Popular tab -->
 				<tab v-bind:id="'tab-popular'"
+					name="popular"
 					v-bind:title="popularTabTitle">
 					<card-stack v-bind:queue="'popular'" />
 				</tab>
 
 				<!-- User tab -->
 				<tab v-bind:id="'tab-user'"
+					name="user"
 					v-bind:title="userTabTitle">
 					<card-stack v-bind:queue="'user'" />
 				</tab>
@@ -102,6 +104,7 @@ module.exports = {
 	},
 
 	computed: $.extend( {}, mapState( [
+		'currentTab',
 		'publishStatus'
 	] ), mapGetters( [
 		'isAuthenticated',
@@ -156,7 +159,7 @@ module.exports = {
 		 * @param {VueComponent} tab
 		 */
 		onTabChange: function ( tab ) {
-			this.updateCurrentTab( tab.$children[ 0 ].queue );
+			this.updateCurrentTab( tab.name );
 		},
 
 		onToastLeave: function () {
@@ -165,6 +168,7 @@ module.exports = {
 	} ),
 
 	mounted: function () {
+		// TODO: Check URL fragment for tab name.
 		// popular images are pre-loaded on the server side;
 		// immediately fetch user images in the mounted hook so that they'll be
 		// ready for the user if they switch tabs
