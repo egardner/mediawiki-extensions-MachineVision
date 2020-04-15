@@ -74,6 +74,12 @@ module.exports = {
 		color: @base0;
 	}
 
+	&:focus {
+		border-color: @accent10;
+		box-shadow: inset 0 0 0 1px @accent10;
+		outline: 0;
+	}
+
 	.mw-suggestion__label {
 		.transition-transform( 0.2s );
 		cursor: pointer;
@@ -107,9 +113,5 @@ module.exports = {
 			width: 1em;
 		}
 	}
-}
-
-.mw-hide-outline .mw-suggestion {
-	outline: 0;
 }
 </style>
