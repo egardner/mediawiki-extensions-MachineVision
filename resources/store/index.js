@@ -197,6 +197,7 @@ module.exports = new Vuex.Store( {
 		 */
 		setTab: function ( state, tabName ) {
 			ensureTabExists( state, tabName );
+			window.history.replaceState( null, null, '#' + tabName );
 			state.currentTab = tabName;
 		},
 
@@ -429,6 +430,8 @@ module.exports = new Vuex.Store( {
 					batch: JSON.stringify( reviewBatch )
 				} );
 
+			// TODO: Show pending state.
+
 			// TODO: this is where we should request more images if we are
 			// running low in a given queue
 
@@ -440,6 +443,7 @@ module.exports = new Vuex.Store( {
 			} ).fail( function () {
 				context.dispatch( 'updatePublishStatus', 'error' );
 			} ).always( function () {
+				// TODO: remove pending state.
 				context.dispatch( 'skipImage' );
 			} );
 		},
