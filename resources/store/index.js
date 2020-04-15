@@ -151,7 +151,10 @@ module.exports = new Vuex.Store( {
 		 */
 		currentImageSuggestions: function ( state, getters ) {
 			if ( getters.currentImage ) {
-				return getters.currentImage.suggestions;
+				// Filter out suggestions with no label.
+				return getters.currentImage.suggestions.filter( function ( suggestion ) {
+					return suggestion.text;
+				} );
 			} else {
 				return [];
 			}
