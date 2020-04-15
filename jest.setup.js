@@ -110,3 +110,9 @@ global.mw = mw;
 
 global.$ = require( 'jquery' );
 global.OO = require( 'oojs' );
+
+global.wikibase = {
+	api: {
+		getLocationAgnosticMwApi: jest.fn()
+	}
+};
