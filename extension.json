@@ -237,8 +237,13 @@
 				"components/base/ToastNotification.vue",
 				"plugins/api.js",
 				"store/index.js",
-				"models/ImageData.js",
-				"models/SuggestionData.js"
+				"store/state.js",
+				"store/mutations.js",
+				"store/getters.js",
+				"store/actions.js",
+				"store/utils.js",
+				"models/Image.js",
+				"models/Suggestion.js"
 			],
 			"styles": [],
 			"dependencies": [
