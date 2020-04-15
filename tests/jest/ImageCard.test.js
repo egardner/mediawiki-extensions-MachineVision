@@ -1,4 +1,3 @@
-const Vue = require( 'vue' );
 const VueTestUtils = require( '@vue/test-utils' );
 const Vuex = require( 'vuex' );
 const ImageCard = require( '../../resources/components/ImageCard.vue' );
@@ -10,86 +9,96 @@ localVue.use( i18n );
 localVue.use( Vuex );
 
 describe( 'ImageCard', () => {
-	let actions,
+	let state,
+		getters,
+		actions,
 		store;
 
 	beforeEach( () => {
+		state = {
+			images: {
+				popular: imageFixtures,
+				user: []
+			}
+		};
+
+		getters = {
+			currentImage: jest.fn(),
+			currentImageSuggestions: jest.fn()
+		};
+
 		actions = {
 			publishTags: jest.fn(),
 			skipImage: jest.fn()
 		};
 
 		store = new Vuex.Store( {
-			state: {},
+			state,
+			getters,
 			actions
 		} );
 	} );
 
-	it( 'makes a deep copy of suggestions data received from props', () => {
-		const wrapper = VueTestUtils.mount( ImageCard, {
-			propsData: {
-				image: imageFixtures[ 0 ]
-			},
-			store,
-			localVue
-		} );
-
-		let propsSuggestion = imageFixtures[ 0 ].suggestions[ 0 ];
-		let localSuggestion = wrapper.vm.suggestions[ 0 ];
-
-		expect( localSuggestion ).toEqual( propsSuggestion );
-		expect( localSuggestion ).not.toBe( propsSuggestion );
-	} );
-
 	it( 'publish button is disabled when no suggestions are confirmed', () => {
-		const wrapper = VueTestUtils.mount( ImageCard, {
-			propsData: {
-				image: imageFixtures[ 0 ]
-			},
-			store,
-			localVue
-		} );
+		getters.currentImage.mockReturnValue( imageFixtures[ 0 ] );
+		getters.currentImageSuggestions.mockReturnValue( imageFixtures[ 0 ].suggestions );
 
+		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
 		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
 
 		expect( publishButton.attributes( 'disabled' ) ).toBe( 'disabled' );
 		expect( actions.publishTags ).not.toHaveBeenCalled();
+
 		publishButton.trigger( 'click' );
 		expect( actions.publishTags ).not.toHaveBeenCalled();
 	} );
 
-	it( 'dispatches the publish action when the publish button is clicked', done => {
-		const wrapper = VueTestUtils.mount( ImageCard, {
-			propsData: {
-				image: imageFixtures[ 0 ]
-			},
-			store,
-			localVue
-		} );
+	it( 'publish button is enabled when at least one suggestion is confirmed', () => {
+		let unconfirmedSuggestion = imageFixtures[ 0 ].suggestions[ 0 ];
+		let confirmedSuggestion = imageFixtures[ 0 ].suggestions[ 1 ];
+		confirmedSuggestion.confirmed = true;
 
+		getters.currentImage.mockReturnValue( imageFixtures[ 0 ] );
+		getters.currentImageSuggestions.mockReturnValue( [
+			unconfirmedSuggestion,
+			confirmedSuggestion
+		] );
+
+		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
 		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
-		wrapper.vm.toggleConfirmed( wrapper.vm.suggestions[ 0 ] ); // confirm a suggestion to enable publish button
 
-		Vue.nextTick( () => {
-			expect( actions.publishTags ).not.toHaveBeenCalled();
-			publishButton.trigger( 'click' );
-			expect( actions.publishTags ).toHaveBeenCalled();
-			done();
-		} );
+		expect( publishButton.attributes( 'disabled' ) ).not.toBe( 'disabled' );
+	} );
+
+	it( 'dispatches the publish action when the publish button is clicked', () => {
+		let unconfirmedSuggestion = imageFixtures[ 0 ].suggestions[ 0 ];
+		let confirmedSuggestion = imageFixtures[ 0 ].suggestions[ 1 ];
+		confirmedSuggestion.confirmed = true;
+
+		getters.currentImage.mockReturnValue( imageFixtures[ 0 ] );
+		getters.currentImageSuggestions.mockReturnValue( [
+			unconfirmedSuggestion,
+			confirmedSuggestion
+		] );
+
+		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
+		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
+
+		expect( actions.publishTags ).not.toHaveBeenCalled();
+
+		publishButton.trigger( 'click' );
+		expect( actions.publishTags ).toHaveBeenCalled();
 	} );
 
 	it( 'dispatches the skipImage action when the skip button is clicked', () => {
-		const wrapper = VueTestUtils.mount( ImageCard, {
-			propsData: {
-				image: imageFixtures[ 0 ]
-			},
-			store,
-			localVue
-		} );
+		getters.currentImage.mockReturnValue( imageFixtures[ 0 ] );
+		getters.currentImageSuggestions.mockReturnValue( imageFixtures[ 0 ].suggestions );
 
+		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
 		const skipButton = wrapper.find( '.wbmad-action-buttons__skip' );
 
 		expect( actions.skipImage ).not.toHaveBeenCalled();
+
 		skipButton.trigger( 'click' );
 		expect( actions.skipImage ).toHaveBeenCalled();
 	} );

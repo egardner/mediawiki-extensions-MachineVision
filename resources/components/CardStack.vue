@@ -2,8 +2,8 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
-		<template v-else-if="currentImage">
-			<wbmad-image-card v-bind:image="currentImage" />
+		<template v-else-if="shouldDisplayImage">
+			<wbmad-image-card />
 		</template>
 
 		<!-- TODO: Handle no images (cases: error; finished tagging user images). -->
@@ -15,6 +15,7 @@
 
 <script>
 var mapState = require( 'vuex' ).mapState,
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CardStackPlaceholder = require( './CardStackPlaceholder.vue' ),
 	ImageCard = require( './ImageCard.vue' );
@@ -39,6 +40,8 @@ module.exports = {
 		'currentTab',
 		'pending',
 		'images'
+	] ), mapGetters( [
+		'currentImage'
 	] ), {
 		/**
 		 * @return {Array}
@@ -48,18 +51,22 @@ module.exports = {
 		},
 
 		/**
-		 * @return {Object|undefined}
-		 */
-		currentImage: function () {
-			return this.imagesInQueue[ 0 ];
-		},
-
-		/**
 		 * Pending state is queue-specific
 		 * @return {bool}
 		 */
 		isPending: function () {
 			return this.pending[ this.queue ];
+		},
+
+		/**
+		 * Whether to render the ImageCard.
+		 * We need a dedicated computed property for this because
+		 * ResourceLoader can't handle "&&" in the template.
+		 *
+		 * @return {boolean}
+		 */
+		shouldDisplayImage: function () {
+			return this.currentImage && this.imagesInQueue;
 		}
 	} ),
 

@@ -3,7 +3,6 @@ const VueTestUtils = require( '@vue/test-utils' );
 const Vuex = require( 'vuex' );
 const CardStack = require( '../../resources/components/CardStack.vue' );
 const ImageCard = require( '../../resources/components/ImageCard.vue' );
-const Suggestion = require( '../../resources/components/base/Suggestion.vue' );
 const i18n = require( './plugins/i18n' );
 const imageData = require( './fixtures/imageData.json' );
 
@@ -14,6 +13,7 @@ localVue.use( Vuex );
 describe( 'CardStack', () => {
 	let state,
 		mutations,
+		getters,
 		actions,
 		store;
 
@@ -36,6 +36,10 @@ describe( 'CardStack', () => {
 			}
 		};
 
+		getters = {
+			currentImage: jest.fn()
+		};
+
 		actions = {
 			getImages: jest.fn()
 		};
@@ -43,21 +47,9 @@ describe( 'CardStack', () => {
 		store = new Vuex.Store( {
 			state,
 			mutations,
+			getters,
 			actions
 		} );
-	} );
-
-	it( 'passes the first image in the appropriate Vuex queue to ImageCard as props', () => {
-		const wrapper = VueTestUtils.mount( CardStack, {
-			propsData: {
-				queue: 'popular'
-			},
-			store,
-			localVue
-		} );
-
-		let imageCard = wrapper.find( ImageCard );
-		expect( imageCard.vm.image ).toMatchObject( wrapper.vm.currentImage );
 	} );
 
 	it( 'does not render the ImageCard component when there are no images in the queue', () => {
@@ -72,8 +64,10 @@ describe( 'CardStack', () => {
 		expect( wrapper.contains( ImageCard ) ).toBe( false );
 	} );
 
-	it( 'Clicking a suggestion inside ImageCard does not change the data inside Cardstack', () => {
-		const wrapper = VueTestUtils.mount( CardStack, {
+	it( 'renders the ImageCard component when there are images in the queue', () => {
+		getters.currentImage.mockReturnValue( imageData[ 0 ] );
+
+		const wrapper = VueTestUtils.shallowMount( CardStack, {
 			propsData: {
 				queue: 'popular'
 			},
@@ -81,17 +75,7 @@ describe( 'CardStack', () => {
 			localVue
 		} );
 
-		let imageCard = wrapper.find( ImageCard );
-		let suggestion = wrapper.find( Suggestion );
-
-		let suggestionInParent = wrapper.vm.currentImage.suggestions[ 0 ];
-		let suggestionInChild = imageCard.vm.suggestions[ 0 ];
-
-		expect( suggestionInParent.confirmed ).toBe( false );
-		expect( suggestionInChild.confirmed ).toBe( false );
-		suggestion.trigger( 'click' );
-		expect( suggestionInParent.confirmed ).toBe( false );
-		expect( suggestionInChild.confirmed ).toBe( true );
+		expect( wrapper.contains( ImageCard ) ).toBe( true );
 	} );
 
 	it( 'dispatches the getImages action when the count of the image queue reaches zero', done => {
