@@ -3,18 +3,14 @@
 /* eslint-disable no-implicit-globals */
 var Vue = require( 'vue' ),
 	Vuex = require( 'vuex' ),
-	mvConfig = require( 'ext.MachineVision.config' ),
-	datamodel = require( 'wikibase.datamodel' ),
-	serialization = require( 'wikibase.serialization' ),
-	// eslint-disable-next-line no-redeclare
-	ImageData = require( '../models/ImageData.js' ),
-	SuggestionData = require( '../models/SuggestionData.js' ),
-	api,
-	initialData,
-	userGroups;
+	state = require( './state.js' ),
+	getters = require( './getters.js' ),
+	mutations = require( './mutations.js' ),
+	actions = require( './actions.js' );
 
 Vue.use( Vuex );
 
+<<<<<<< HEAD
 // Set up API client
 api = wikibase.api.getLocationAgnosticMwApi(
 	mw.config.get( 'wbmiRepoApiUrl', mw.config.get( 'wbRepoApiUrl' ) )
@@ -74,10 +70,13 @@ function ensureTabExists( state, tabName ) {
 	}
 }
 
+=======
+>>>>>>> Split up store into separate files for state, mutations, actions, etc.
 /**
  * Vuex Store: shared application state lives here
  */
 module.exports = new Vuex.Store( {
+<<<<<<< HEAD
 	state: {
 		currentTab: 'popular',
 
@@ -96,98 +95,21 @@ module.exports = new Vuex.Store( {
 		userStats: {}
 
 	},
+=======
+	state: state,
+>>>>>>> Split up store into separate files for state, mutations, actions, etc.
 
 	/**
 	 * Getters are like computed properties for Vuex state
 	 */
-	getters: {
-		/**
-		 * @param {Object} state
-		 * @return {Array} tabs
-		 */
-		tabs: function ( state ) {
-			return Object.keys( state.images );
-		},
-
-		/**
-		 * @param {Object} state
-		 * @return {Object} image
-		 */
-		currentImage: function ( state ) {
-			return state.images[ state.currentTab ][ 0 ];
-		},
-
-		/**
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {string|null} title
-		 */
-		currentImageTitle: function ( state, getters ) {
-			if ( getters.currentImage ) {
-				return getters.currentImage.title.split( ':' ).pop();
-			} else {
-				return null;
-			}
-		},
-
-		/**
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {string|null} title
-		 */
-		currentImageMediaInfoId: function ( state, getters ) {
-			var pageId;
-
-			if ( getters.currentImage ) {
-				pageId = getters.currentImage.pageid;
-				return 'M' + pageId;
-			} else {
-				return null;
-			}
-		},
-
-		/**
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Array} suggestions
-		 */
-		currentImageSuggestions: function ( state, getters ) {
-			if ( getters.currentImage ) {
-				// Filter out suggestions with no label.
-				return getters.currentImage.suggestions.filter( function ( suggestion ) {
-					return suggestion.text;
-				} );
-			} else {
-				return [];
-			}
-		},
-
-		/**
-		 * Whether or not the user is logged in. Derived from non-Vuex global
-		 * state.
-		 *
-		 * @return {bool}
-		 */
-		isAuthenticated: function () {
-			return !!mw.config.get( 'wgUserName' );
-		},
-
-		/**
-		 * Whether or not the user is autoconfirmed. Derived from non-Vuex
-		 * global state.
-		 *
-		 * @return {bool}
-		 */
-		isAutoconfirmed: function () {
-			return userGroups.indexOf( 'autoconfirmed' ) !== -1;
-		}
-	},
+	getters: getters,
 
 	/**
 	 * State can only be modified by mutations, which must be synchronous.
 	 * Each mutation is called with the state as its first argument; additional
 	 * arguments are allowed.
 	 */
+<<<<<<< HEAD
 	mutations: {
 		/**
 		 * Set the current tab; name must be one of the predefined items in state.tabs.
@@ -282,12 +204,16 @@ module.exports = new Vuex.Store( {
 			state.publishStatus = publishStatus;
 		}
 	},
+=======
+	mutations: mutations,
+>>>>>>> Split up store into separate files for state, mutations, actions, etc.
 
 	/**
 	 * Actions are functions that may be dispatched by components or inside of
 	 * other actions. They are called with a context argument and an optional
 	 * payload argument. Actions may be asynchronous but do not have to be.
 	 */
+<<<<<<< HEAD
 	actions: {
 		/**
 		 * @param {Object} context
@@ -513,4 +439,7 @@ module.exports = new Vuex.Store( {
 			context.commit( 'setPublishStatus', publishStatus );
 		}
 	}
+=======
+	actions: actions
+>>>>>>> Split up store into separate files for state, mutations, actions, etc.
 } );

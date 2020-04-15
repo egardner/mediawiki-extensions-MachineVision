@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function ImageData(
+module.exports = function MachineVisionImage(
 	title,
 	pageid,
 	descriptionurl,
