@@ -27,15 +27,13 @@
 
 			<tabs v-bind:active="currentTab" v-on:tab-change="onTabChange">
 				<!-- Popular tab -->
-				<tab v-bind:id="'tab-popular'"
-					name="popular"
+				<tab name="popular"
 					v-bind:title="popularTabTitle">
 					<card-stack v-bind:queue="'popular'" />
 				</tab>
 
 				<!-- User tab -->
-				<tab v-bind:id="'tab-user'"
-					name="user"
+				<tab name="user"
 					v-bind:title="userTabTitle">
 					<card-stack v-bind:queue="'user'" />
 				</tab>
