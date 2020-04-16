@@ -1,9 +1,5 @@
 <template>
-	<div
-		class="wbmad-image-with-suggestions"
-		v-bind:class="{ 'mw-hide-outline': hideOutline }"
-		v-on:keydown.tab="hideOutline = false"
-	>
+	<div class="wbmad-image-with-suggestions">
 		<div class="wbmad-image-with-suggestions__container">
 			<div class="wbmad-image-with-suggestions__image">
 				<div class="wbmad-image-with-suggestions__image-wrapper">
@@ -70,12 +66,6 @@ module.exports = {
 	components: {
 		'mw-button': Button,
 		suggestion: Suggestion
-	},
-
-	data: function () {
-		return {
-			hideOutline: true
-		};
 	},
 
 	computed: $.extend( {}, mapGetters( [

@@ -4,7 +4,8 @@
 		tabindex="0"
 		v-bind:class="classObject"
 		v-on:click="$emit( 'click' )"
-		v-on:keydown.enter="onClick"
+		v-on:keyup.enter="$emit( 'click' )"
+		v-on:keyup.space="$emit( 'click' )"
 	>
 		<label class="mw-suggestion__label">
 			{{ text }}
@@ -74,6 +75,12 @@ module.exports = {
 		color: @base0;
 	}
 
+	&:focus {
+		border-color: @accent10;
+		box-shadow: inset 0 0 0 1px @accent10;
+		outline: 0;
+	}
+
 	.mw-suggestion__label {
 		.transition-transform( 0.2s );
 		cursor: pointer;
@@ -107,9 +114,5 @@ module.exports = {
 			width: 1em;
 		}
 	}
-}
-
-.mw-hide-outline .mw-suggestion {
-	outline: 0;
 }
 </style>
