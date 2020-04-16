@@ -1,7 +1,6 @@
 'use strict';
 
 /* eslint-disable no-implicit-globals */
-
 const actions = require( '../../resources/store/actions.js' ),
 	imageFixtures = require( './fixtures/imageData.json' );
 
@@ -26,10 +25,13 @@ describe( 'getters', () => {
 	describe( 'updateCurrentTab', () => {
 		it( 'it calls the setTab mutation', () => {
 			actions.updateCurrentTab( context, 'user' );
-			expect( context.commit.calls[ 0 ][ 0 ] ).toBe( 'setTab' );
+			expect( context.commit.mock.calls[ 0 ][ 0 ] ).toBe( 'setTab' );
 		} );
 
-		test.todo( 'setTab mutation is called with the correct tab argument' );
+		it( 'setTab mutation is called with the correct tab argument', () => {
+			actions.updateCurrentTab( context, 'user' );
+			expect( context.commit.mock.calls[ 0 ][ 1 ] ).toBe( 'user' );
+		} );
 	} );
 
 	describe( 'getImages', () => {
