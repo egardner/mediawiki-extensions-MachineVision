@@ -33,7 +33,7 @@ module.exports = {
 	 * @return {$.Deferred} Promise
 	 */
 	getImages: function ( context, options ) {
-		var queue = options.queue || context.state.currentTab,
+		var queue = options && options.queue ? options.queue : context.state.currentTab,
 			query = {
 				action: 'query',
 				format: 'json',

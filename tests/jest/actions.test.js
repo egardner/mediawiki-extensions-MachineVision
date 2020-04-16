@@ -2,7 +2,9 @@
 
 /* eslint-disable no-implicit-globals */
 const actions = require( '../../resources/store/actions.js' ),
-	imageFixtures = require( './fixtures/imageData.json' );
+	imageFixtures = require( './fixtures/imageData.json' ),
+	apiResponse = require( './fixtures/apiResponse.json' ),
+	mockApi = global.wikibase.api.getLocationAgnosticMwApi();
 
 describe( 'getters', () => {
 	// eslint-disable-next-line no-unused-vars
@@ -10,6 +12,7 @@ describe( 'getters', () => {
 		context;
 
 	beforeEach( () => {
+		jest.clearAllMocks();
 		// Create a fresh copy of imageFixtures so any mutations made to the
 		// data is reset for each test
 		fixtures = [ ...imageFixtures ];
@@ -17,6 +20,13 @@ describe( 'getters', () => {
 		// Context objects are jest mock functions whose calls can be
 		// investigated in tests
 		context = {
+			state: {
+				currentTab: 'popular',
+				images: {
+					popular: [],
+					user: []
+				}
+			},
 			commit: jest.fn(),
 			getters: jest.fn(),
 			dispatch: jest.fn()
@@ -36,13 +46,78 @@ describe( 'getters', () => {
 	} );
 
 	describe( 'getImages', () => {
-		test.todo( 'makes a GET request to the API with the correct parameters' );
-		test.todo( 'defaults to fetching popular images if no "queue" option is provided' );
-		test.todo( 'fetches user images if a "user" queue option is provided' );
-		test.todo( 'sets the appropriate queue into the pending state when a request is made' );
-		test.todo( 'MvImage objects returned by the API contain arrays of MvSuggestions objects' );
-		test.todo( 'Commits an addImage mutation for each image in the response' );
-		test.todo( 'Removes the pending state on the appropriate queue when request completes' );
+		it( 'makes a GET request to the API with the correct parameters', () => {
+			actions.getImages( context );
+			expect( mockApi.get ).toHaveBeenCalled();
+			expect( mockApi.get ).toHaveBeenCalledWith(
+				expect.objectContaining( {
+					action: 'query',
+					format: 'json',
+					formatversion: 2,
+					generator: 'unreviewedimagelabels',
+					guillimit: 10,
+					prop: 'imageinfo|imagelabels',
+					iiprop: 'url',
+					iiurlwidth: 800,
+					ilstate: 'unreviewed',
+					meta: 'unreviewedimagecount'
+				} )
+			);
+		} );
+
+		it( 'defaults to fetching images for the current tab queue if no "queue" option is provided', () => {
+			context.state.currentTab = 'popular';
+			actions.getImages( context );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+				queue: 'popular',
+				pending: true
+			} );
+
+			context.state.currentTab = 'user';
+			actions.getImages( context );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+				queue: 'user',
+				pending: true
+			} );
+		} );
+
+		it( 'fetches user images if a "user" queue option is provided', () => {
+			context.state.currentTab = 'popular';
+			actions.getImages( context, { queue: 'user' } );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+				queue: 'user',
+				pending: true
+			} );
+		} );
+
+		it( 'Commits an addImage mutation for each image in the response', done => {
+			var apiImages = apiResponse.query.pages;
+			mockApi.get.mockResolvedValue( apiResponse );
+
+			actions.getImages( context ).then( () => {
+				var mutations = context.commit.mock.calls,
+					addImageMutations = mutations.filter( mutation => {
+						return mutation[ 0 ] === 'addImage';
+					} );
+
+				expect( addImageMutations.length ).toBe( apiImages.length );
+				done();
+			} );
+		} );
+
+		it( 'Removes the pending state on the appropriate queue when request completes', done => {
+			context.state.currentTab = 'popular';
+			mockApi.get.mockResolvedValue( apiResponse );
+
+			actions.getImages( context ).then( () => {
+				expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+					queue: 'popular',
+					pending: false
+				} );
+				done();
+			} );
+		} );
+
 		test.todo( 'Handles errors successfully' );
 	} );
 
