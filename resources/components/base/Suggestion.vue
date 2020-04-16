@@ -4,7 +4,8 @@
 		tabindex="0"
 		v-bind:class="classObject"
 		v-on:click="$emit( 'click' )"
-		v-on:keydown.enter="onClick"
+		v-on:keyup.enter="$emit( 'click' )"
+		v-on:keyup.space="$emit( 'click' )"
 	>
 		<label class="mw-suggestion__label">
 			{{ text }}
