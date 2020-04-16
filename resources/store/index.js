@@ -64,12 +64,12 @@ function processInitialData( data ) {
  * Helper function to ensure the user doesn't try to access an invalid tab.
  *
  * @param {Object} state
- * @param {string} tab
+ * @param {string} tabName
  */
-function ensureTabExists( state, tab ) {
+function ensureTabExists( state, tabName ) {
 	var tabs = Object.keys( state.images );
 
-	if ( tabs.indexOf( tab ) === -1 ) {
+	if ( tabs.indexOf( tabName ) === -1 ) {
 		throw new Error( 'invalid tab' );
 	}
 }
@@ -91,7 +91,9 @@ module.exports = new Vuex.Store( {
 			user: false
 		},
 
-		publishStatus: null
+		publishStatus: null,
+
+		userStats: {}
 
 	},
 
@@ -191,11 +193,11 @@ module.exports = new Vuex.Store( {
 		 * Set the current tab; name must be one of the predefined items in state.tabs.
 		 *
 		 * @param {Object} state
-		 * @param {string} tab
+		 * @param {string} tabName
 		 */
-		setTab: function ( state, tab ) {
-			ensureTabExists( state, tab );
-			state.currentTab = tab;
+		setTab: function ( state, tabName ) {
+			ensureTabExists( state, tabName );
+			state.currentTab = tabName;
 		},
 
 		/**
@@ -253,6 +255,10 @@ module.exports = new Vuex.Store( {
 			state.pending = true;
 		},
 
+		setUserStats: function ( state, payload ) {
+			state.userStats = payload;
+		},
+
 		/**
 		 * Toggle the confirmation state of a single suggestion of an image
 		 *
@@ -285,10 +291,10 @@ module.exports = new Vuex.Store( {
 	actions: {
 		/**
 		 * @param {Object} context
-		 * @param {string} tab
+		 * @param {string} tabName
 		 */
-		updateCurrentTab: function ( context, tab ) {
-			context.commit( 'setTab', tab );
+		updateCurrentTab: function ( context, tabName ) {
+			context.commit( 'setTab', tabName );
 		},
 
 		/**
@@ -367,6 +373,9 @@ module.exports = new Vuex.Store( {
 						queue: queue
 					} );
 				} );
+
+				// Save user data.
+				context.commit( 'setUserStats', res.query.unreviewedimagecount.user );
 
 				context.commit( 'setPending', {
 					queue: queue,

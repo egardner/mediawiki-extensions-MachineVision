@@ -2,14 +2,29 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
-		<template v-else-if="shouldDisplayImage">
-			<wbmad-image-card />
-		</template>
+		<wbmad-image-card v-else-if="shouldDisplayImage" />
 
-		<!-- TODO: Handle no images (cases: error; finished tagging user images). -->
-		<template v-else>
-			No images
-		</template>
+		<wbmad-user-message v-else-if="showUserCta"
+			class="wbmad-user-cta"
+			v-bind:heading="$i18n( 'machinevision-cta-heading' )"
+			v-bind:text="$i18n( 'machinevision-cta-text' )"
+			v-bind:cta="$i18n( 'machinevision-cta-cta' )"
+			v-on:cta-click="goToPopularTab"
+		/>
+
+		<wbmad-user-message v-else-if="showUserCtaNoLabeledUploads"
+			class="wbmad-user-cta--no-uploads"
+			v-bind:heading="$i18n( 'machinevision-no-uploads-cta-heading' )"
+			v-bind:text="$i18n( 'machinevision-no-uploads-cta-text' )"
+			v-bind:cta="$i18n( 'machinevision-cta-cta' )"
+			v-on:cta-click="goToPopularTab"
+		/>
+
+		<wbmad-user-message v-else
+			class="wbmad-user-cta--generic-no-images"
+			v-bind:heading="$i18n( 'machinevision-generic-no-images-heading' )"
+			v-bind:text="$i18n( 'machinevision-generic-no-images-text' )"
+		/>
 	</div>
 </template>
 
@@ -18,7 +33,8 @@ var mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CardStackPlaceholder = require( './CardStackPlaceholder.vue' ),
-	ImageCard = require( './ImageCard.vue' );
+	ImageCard = require( './ImageCard.vue' ),
+	UserImage = require( './UserMessage.vue' );
 
 // @vue/component
 module.exports = {
@@ -26,7 +42,8 @@ module.exports = {
 
 	components: {
 		'wbmad-cardstack-placeholder': CardStackPlaceholder,
-		'wbmad-image-card': ImageCard
+		'wbmad-image-card': ImageCard,
+		'wbmad-user-message': UserImage
 	},
 
 	props: {
@@ -39,7 +56,8 @@ module.exports = {
 	computed: $.extend( {}, mapState( [
 		'currentTab',
 		'pending',
-		'images'
+		'images',
+		'userStats'
 	] ), mapGetters( [
 		'currentImage'
 	] ), {
@@ -67,12 +85,51 @@ module.exports = {
 		 */
 		shouldDisplayImage: function () {
 			return this.currentImage && this.imagesInQueue;
+		},
+
+		/**
+		 * @return {boolean}
+		 */
+		isUserTab: function () {
+			return this.queue === 'user';
+		},
+
+		/**
+		 * Whether or not the user has labeled uploads, which will determine the
+		 * message shown to them when they finish tagging personal uploads.
+		 * @return {boolean}
+		 */
+		userHasLabeledUploads: function () {
+			return this.userStats.total > 0;
+		},
+
+		/**
+		 * Whether or not to show a message and CTA based on the user tagging
+		 * all of their images.
+		 * @return {boolean}
+		 */
+		showUserCta: function () {
+			return this.isUserTab && this.userHasLabeledUploads;
+		},
+
+		/**
+		 * Whether or not to show a message and CTA based on the user having no
+		 * personal uploads, encouraging them to upload some images.
+		 * @return {boolean}
+		 */
+		showUserCtaNoLabeledUploads: function () {
+			return this.isUserTab && !this.userHasLabeledUploads;
 		}
 	} ),
 
 	methods: $.extend( {}, mapActions( [
-		'getImages'
-	] ) ),
+		'getImages',
+		'updateCurrentTab'
+	] ), {
+		goToPopularTab: function () {
+			this.updateCurrentTab( 'popular' );
+		}
+	} ),
 
 	watch: {
 		/**
@@ -91,3 +148,18 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.wbmad-user-cta {
+	.wbmad-user-message-icon {
+		background-image: url( ../icons/empty-state-icon.svg );
+	}
+}
+
+.wbmad-user-cta--no-uploads,
+.wbmad-user-cta--generic-no-images {
+	.wbmad-user-message-icon {
+		background-image: url( ../icons/empty-state-icon-no-uploads.svg );
+	}
+}
+</style>

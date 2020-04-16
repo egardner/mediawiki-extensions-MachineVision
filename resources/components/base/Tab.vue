@@ -16,6 +16,11 @@
 module.exports = {
 	name: 'Tab',
 	props: {
+		name: {
+			type: String,
+			required: true
+		},
+
 		title: {
 			type: String,
 			required: true
@@ -24,18 +29,19 @@ module.exports = {
 		disabled: {
 			type: Boolean,
 			required: false
-		},
-
-		id: {
-			type: String,
-			required: true
 		}
 	},
 
 	data: function () {
 		return {
-			isActive: true
+			isActive: false
 		};
+	},
+
+	computed: {
+		id: function () {
+			return 'mw-tab-' + this.name;
+		}
 	}
 };
 </script>
