@@ -11,7 +11,8 @@
  * behavior as needed in individual test files.
  */
 // eslint-disable-next-line no-redeclare
-var mw;
+var mw,
+	mockWbApi;
 
 // Mock API (instances created ggwith new mw.Api() )
 function Api() {}
@@ -84,7 +85,8 @@ mw = {
 			get: jest.fn()
 		},
 		isAnon: jest.fn(),
-		generateRandomSessionId: function () { return Math.random().toString(); }
+		generateRandomSessionId: function () { return Math.random().toString(); },
+		getId: function () { return Math.round( Math.random() * 1000 ); }
 	},
 	trackSubscribe: jest.fn(),
 	track: jest.fn(),
@@ -111,8 +113,16 @@ global.mw = mw;
 global.$ = require( 'jquery' );
 global.OO = require( 'oojs' );
 
+mockWbApi = {
+	get: jest.fn().mockResolvedValue( {} ),
+	post: jest.fn().mockResolvedValue( {} ),
+	postWithToken: jest.fn().mockResolvedValue( {} )
+};
+
 global.wikibase = {
 	api: {
-		getLocationAgnosticMwApi: jest.fn()
+		getLocationAgnosticMwApi: function () {
+			return mockWbApi;
+		}
 	}
 };
