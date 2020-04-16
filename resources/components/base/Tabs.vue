@@ -83,13 +83,12 @@ module.exports = {
 		 * isActive attribute for each tab.
 		 */
 		initializeTabs: function () {
-			var tabs = this.$children,
-				i;
-
+			var tabs = this.$children;
 			this.tabs = {};
-			for ( i = 0; i < 2; i++ ) {
-				this.tabs[ tabs[ i ].name ] = tabs[ i ];
-			}
+
+			tabs.forEach( function ( tab ) {
+				this.tabs[ tab.name ] = tab;
+			}.bind( this ) );
 
 			// If no active tab was passed in as a prop, default to first one.
 			this.currentTabName = this.active ? this.active : Object.keys( this.tabs )[ 0 ];
