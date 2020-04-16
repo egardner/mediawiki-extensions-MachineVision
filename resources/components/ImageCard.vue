@@ -1,6 +1,8 @@
 <template>
 	<div class="wbmad-image-with-suggestions">
-		<div class="wbmad-image-with-suggestions__container">
+		<wbmad-spinner v-if="publishPending" />
+		<div class="wbmad-image-with-suggestions__container"
+			v-bind:class="containerClasses">
 			<div class="wbmad-image-with-suggestions__image">
 				<div class="wbmad-image-with-suggestions__image-wrapper">
 					<a v-bind:href="descriptionUrl" target="_blank">
@@ -42,6 +44,7 @@
 					<mw-button
 						class="wbmad-action-buttons__skip"
 						v-bind:framed="false"
+						v-bind:disabled="skipDisabled"
 						v-bind:title="$i18n( 'machinevision-skip-title', title ).parse()"
 						v-on:click="onSkip"
 					>
@@ -56,6 +59,8 @@
 <script>
 var mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
+	mapState = require( 'vuex' ).mapState,
+	Spinner = require( './Spinner.vue' ),
 	Button = require( './base/Button.vue' ),
 	Suggestion = require( './base/Suggestion.vue' );
 
@@ -65,12 +70,15 @@ module.exports = {
 
 	components: {
 		'mw-button': Button,
+		'wbmad-spinner': Spinner,
 		suggestion: Suggestion
 	},
 
 	computed: $.extend( {}, mapGetters( [
 		'currentImage',
 		'currentImageSuggestions'
+	] ), mapState( [
+		'publishStatus'
 	] ), {
 		/**
 		 * @return {string}
@@ -93,8 +101,20 @@ module.exports = {
 			return this.currentImage.descriptionurl;
 		},
 
+		/**
+		 * Whether or not the publish button should be disabled.
+		 * @return {boolean}
+		 */
 		publishDisabled: function () {
-			return this.confirmedSuggestions.length < 1;
+			return this.confirmedSuggestions.length < 1 || this.publishPending;
+		},
+
+		/**
+		 * Whether or not to disable the skip button.
+		 * @return {boolean}
+		 */
+		skipDisabled: function () {
+			return this.publishPending;
 		},
 
 		/**
@@ -104,6 +124,22 @@ module.exports = {
 			return this.currentImageSuggestions.filter( function ( suggestion ) {
 				return suggestion.confirmed;
 			} );
+		},
+
+		/**
+		 * @return {boolean}
+		 */
+		publishPending: function () {
+			return this.publishStatus === 'pending';
+		},
+
+		/**
+		 * @return {Object}
+		 */
+		containerClasses: function () {
+			return {
+				'wbmad-spinner-active': this.publishPending
+			};
 		}
 	} ),
 
@@ -204,6 +240,15 @@ module.exports = {
 		.flex-wrap( wrap );
 		margin: 18px 0;
 	}
+
+	.wbmad-spinner {
+		height: 100%;
+		padding: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		z-index: 1;
+	}
 }
 
 .wbmad-action-buttons {
@@ -223,5 +268,4 @@ module.exports = {
 		margin-left: auto;
 	}
 }
-
 </style>
