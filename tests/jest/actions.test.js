@@ -5,6 +5,7 @@ const actions = require( '../../resources/store/actions.js' ),
 	imageFixtures = require( './fixtures/imageData.json' );
 
 describe( 'getters', () => {
+	// eslint-disable-next-line no-unused-vars
 	let fixtures,
 		context;
 
