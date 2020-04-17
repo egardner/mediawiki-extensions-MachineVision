@@ -28,7 +28,7 @@ describe( 'getters', () => {
 				}
 			},
 			commit: jest.fn(),
-			getters: jest.fn(),
+			getters: {},
 			dispatch: jest.fn()
 		};
 	} );
@@ -122,8 +122,18 @@ describe( 'getters', () => {
 	} );
 
 	describe( 'toggleTagConfirmation', () => {
-		test.todo( 'Finds a tag matching the payload among the current image suggestions' );
-		test.todo( 'Commits a toggleSuggestion mutation with the tag index as an argument' );
+		it( 'Commits a toggleSuggestion mutation with the tag index as an argument', () => {
+			var suggestions = [ ...imageFixtures[ 0 ].suggestions ],
+				tagIndex = 1,
+				tag = suggestions[ tagIndex ];
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			actions.toggleTagConfirmation( context, tag );
+			expect( context.commit ).toHaveBeenCalledWith( 'toggleSuggestion', tagIndex );
+		} );
 	} );
 
 	describe( 'publishTags', () => {
@@ -139,10 +149,19 @@ describe( 'getters', () => {
 	} );
 
 	describe( 'skipImage', () => {
-		test.todo( 'commits the removeImage mutation' );
+		it( 'commits the removeImage mutation', () => {
+			actions.skipImage( context );
+			expect( context.commit ).toHaveBeenCalledWith( 'removeImage' );
+		} );
 	} );
 
 	describe( 'updatePublishStatus', () => {
-		test.todo( 'commits the setPublishStatus mutation with the payload as an argument' );
+		it( 'commits the setPublishStatus mutation with the payload as an argument', () => {
+			actions.updatePublishStatus( context, true );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPublishStatus', true );
+
+			actions.updatePublishStatus( context, false );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPublishStatus', false );
+		} );
 	} );
 } );
