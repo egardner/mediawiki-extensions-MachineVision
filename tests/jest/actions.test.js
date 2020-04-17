@@ -123,7 +123,7 @@ describe( 'getters', () => {
 
 	describe( 'toggleTagConfirmation', () => {
 		it( 'Commits a toggleSuggestion mutation with the tag index as an argument', () => {
-			var suggestions = [ ...imageFixtures[ 0 ].suggestions ],
+			var suggestions = fixtures[ 0 ].suggestions,
 				tagIndex = 1,
 				tag = suggestions[ tagIndex ];
 
@@ -137,15 +137,75 @@ describe( 'getters', () => {
 	} );
 
 	describe( 'publishTags', () => {
-		test.todo( 'dispatches the setDepictsStatements action with a payload of all currently confirmed tags' );
-		test.todo( 'makes a reviewimagelabels POST request with a reviewbatch including both confirmed and unconfirmed tags' );
+		it( 'dispatches the setDepictsStatements action with a payload of all currently confirmed tags', () => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				confirmed;
+
+			suggestions[ 0 ].confirmed = true;
+
+			confirmed = suggestions.filter( function ( suggestion ) {
+				return suggestion.confirmed;
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			actions.publishTags( context );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'setDepictsStatements', confirmed );
+		} );
+
+		it( 'makes a reviewimagelabels POST request with a reviewbatch including both confirmed and unconfirmed tags', () => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				reviewBatch,
+				json;
+
+			suggestions[ 0 ].confirmed = true;
+			reviewBatch = suggestions.map( suggestion => {
+				return {
+					label: suggestion.wikidataId,
+					review: suggestion.confirmed ? 'accept' : 'reject'
+				};
+			} );
+
+			json = JSON.stringify( reviewBatch );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			actions.publishTags( context );
+			expect( mockApi.postWithToken ).toHaveBeenCalledWith( 'csrf', {
+				action: 'reviewimagelabels',
+				filename: 'Test',
+				batch: json
+			} );
+		} );
+
+		// For these tests, mockApi needs to return jQuery deferred objects
+		// rather than vanilla promises
 		test.todo( 'dispatches an updatePublishStatus action with "success" as payload if requests are successful' );
 		test.todo( 'dispatches an updatePublishStatus action with "failure" as payload if requests fail' );
 		test.todo( 'dispatches a skipImage action regardless of success or failure' );
 	} );
 
 	describe( 'setDepictsStatements', () => {
-		test.todo( 'makes a wbsetclaim POST request for each confirmed tag provided in the payload' );
+		it( 'makes a wbsetclaim POST request for each confirmed tag provided in the payload', done => {
+			var tags = fixtures[ 0 ].suggestions;
+
+			actions.setDepictsStatements( context, tags ).then( () => {
+				expect( mockApi.postWithToken ).toHaveBeenCalledTimes( tags.length );
+				done();
+			} );
+		} );
 	} );
 
 	describe( 'skipImage', () => {
