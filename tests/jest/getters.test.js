@@ -1,6 +1,5 @@
 'use strict';
 
-/* eslint-disable no-implicit-globals */
 const getters = require( '../../resources/store/getters.js' ),
 	imageFixtures = require( './fixtures/imageData.json' );
 
@@ -42,18 +41,53 @@ describe( 'getters', () => {
 		} );
 	} );
 
-	// Still trying to figure out the best way to test getters that rely on other getters...
-
 	describe( 'currentImageTitle', () => {
-		test.todo( 'returns the title of the current image' );
+		it( 'returns the title of the current image without the "File:" prefix', () => {
+			var mockGetters = {
+				currentImage: {
+					title: 'File:Test.jpg'
+				}
+			};
+
+			expect( getters.currentImageTitle( {}, mockGetters ) ).toBe( 'Test.jpg' );
+		} );
 	} );
 
 	describe( 'currentImageMediaInfoId', () => {
-		test.todo( 'returns the MediaInfoId of the current image' );
+		it( 'returns the MediaInfoId of the current image by prefixing pageId with "M"', () => {
+			var mockGetters = {
+				currentImage: {
+					pageid: 123
+				}
+			};
+
+			expect( getters.currentImageMediaInfoId( {}, mockGetters ) ).toBe( 'M123' );
+		} );
 	} );
 
 	describe( 'currentImageSuggestions', () => {
-		test.todo( 'returns the suggestions array of the current image' );
-		test.todo( 'filters out any suggestions that do not contain text' );
+		it( 'returns the suggestions array of the current image', () => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				mockGetters = {
+					currentImage: {
+						suggestions: fixtures[ 0 ].suggestions
+					}
+				};
+
+			expect( getters.currentImageSuggestions( {}, mockGetters ) ).toEqual( suggestions );
+		} );
+
+		it( 'filters out any suggestions that do not contain text', () => {
+			var goodSuggestions = fixtures[ 0 ].suggestions,
+				badSuggestion = { wikidataId: 'Q123', confirmed: false, foo: 'bar' },
+				allSuggestions = [ ...goodSuggestions, badSuggestion ],
+				mockGetters = {
+					currentImage: {
+						suggestions: allSuggestions
+					}
+				};
+
+			expect( getters.currentImageSuggestions( {}, mockGetters ) ).toEqual( goodSuggestions );
+		} );
 	} );
 } );

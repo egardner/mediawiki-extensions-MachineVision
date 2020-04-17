@@ -1,13 +1,11 @@
 'use strict';
 
-/* eslint-disable no-implicit-globals */
 const actions = require( '../../resources/store/actions.js' ),
 	imageFixtures = require( './fixtures/imageData.json' ),
 	apiResponse = require( './fixtures/apiResponse.json' ),
 	mockApi = global.wikibase.api.getLocationAgnosticMwApi();
 
 describe( 'getters', () => {
-	// eslint-disable-next-line no-unused-vars
 	let fixtures,
 		context;
 
