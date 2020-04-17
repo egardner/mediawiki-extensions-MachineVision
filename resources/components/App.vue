@@ -185,8 +185,8 @@ module.exports = {
 		// Otherwise, default to "popular" add a fragement to the URL.
 		var urlFragment = url.fragment,
 			hash = ( urlFragment && this.tabs.indexOf( urlFragment ) !== -1 ) ?
-			urlFragment :
-			this.tabs[ 0 ];
+				urlFragment :
+				this.tabs[ 0 ];
 		window.history.replaceState( null, null, '#' + hash );
 		this.updateCurrentTab( hash );
 
