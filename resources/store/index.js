@@ -197,7 +197,6 @@ module.exports = new Vuex.Store( {
 		 */
 		setTab: function ( state, tabName ) {
 			ensureTabExists( state, tabName );
-			window.history.replaceState( null, null, '#' + tabName );
 			state.currentTab = tabName;
 		},
 

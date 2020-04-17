@@ -127,6 +127,7 @@ module.exports = {
 		'updateCurrentTab'
 	] ), {
 		goToPopularTab: function () {
+			window.history.replaceState( null, null, '#popular' );
 			this.updateCurrentTab( 'popular' );
 		}
 	} ),

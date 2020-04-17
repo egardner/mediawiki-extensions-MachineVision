@@ -102,12 +102,6 @@ module.exports = {
 		'card-stack': CardStack
 	},
 
-	data: function () {
-		return {
-			hash: url.fragment
-		};
-	},
-
 	computed: $.extend( {}, mapState( [
 		'currentTab',
 		'publishStatus'
@@ -165,6 +159,7 @@ module.exports = {
 		 * @param {VueComponent} tab
 		 */
 		onTabChange: function ( tab ) {
+			window.history.replaceState( null, null, '#' + tab.name );
 			this.updateCurrentTab( tab.name );
 		},
 
@@ -185,20 +180,14 @@ module.exports = {
 		}
 	} ),
 
-	watch: {
-		hash: function ( newHash ) {
-			if ( this.tabs.indexOf( newHash ) !== -1 ) {
-				this.updateCurrentTab( this.hash );
-			}
-		}
-	},
-
 	mounted: function () {
 		// If there's a URL fragment and it's one of the tabs, select that tab.
 		// Otherwise, default to "popular" add a fragement to the URL.
-		var hash = ( this.hash && this.tabs.indexOf( this.hash ) !== -1 ) ?
-			this.hash :
+		var urlFragment = url.fragment,
+			hash = ( urlFragment && this.tabs.indexOf( urlFragment ) !== -1 ) ?
+			urlFragment :
 			this.tabs[ 0 ];
+		window.history.replaceState( null, null, '#' + hash );
 		this.updateCurrentTab( hash );
 
 		// Listen for hash changes.
