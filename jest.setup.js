@@ -124,5 +124,12 @@ global.wikibase = {
 		getLocationAgnosticMwApi: function () {
 			return mockWbApi;
 		}
+	},
+	utilities: {
+		ClaimGuidGenerator: function () {
+			return {
+				newGuid: jest.fn()
+			};
+		}
 	}
 };
