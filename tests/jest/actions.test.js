@@ -29,6 +29,11 @@ describe( 'getters', () => {
 			getters: {},
 			dispatch: jest.fn()
 		};
+
+		// Reset the mock API before each test
+		mockApi.get = jest.fn().mockResolvedValue( {} );
+		mockApi.post = jest.fn().mockResolvedValue( {} );
+		mockApi.postWithToken = jest.fn().mockResolvedValue( {} );
 	} );
 
 	describe( 'updateCurrentTab', () => {
@@ -190,9 +195,114 @@ describe( 'getters', () => {
 
 		// For these tests, mockApi needs to return jQuery deferred objects
 		// rather than vanilla promises
-		test.todo( 'dispatches an updatePublishStatus action with "success" as payload if requests are successful' );
-		test.todo( 'dispatches an updatePublishStatus action with "failure" as payload if requests fail' );
-		test.todo( 'dispatches a skipImage action regardless of success or failure' );
+
+		it( 'updates publish status to "success" if requests are successful', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishStatus', 'success' );
+				done();
+			} );
+
+			deferred.resolve( {} );
+		} );
+
+		it( 'updates publish status to error if requests fail', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishStatus', 'error' );
+				done();
+			} );
+
+			deferred.reject( {} );
+		} );
+
+		it( 'dispatches a skipImage action on success', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'skipImage' );
+				done();
+			} );
+
+			deferred.resolve( {} );
+		} );
+
+		it( 'dispatches a skipImage action on failure', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'skipImage' );
+				done();
+			} );
+
+			deferred.reject( {} );
+		} );
 	} );
 
 	describe( 'setDepictsStatements', () => {
