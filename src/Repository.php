@@ -22,13 +22,15 @@ class Repository implements LoggerAwareInterface {
 	const REVIEW_UNREVIEWED = 0;
 	const REVIEW_ACCEPTED = 1;
 	const REVIEW_REJECTED = -1;
-	const REVIEW_WITHHELD = -2;
+	const REVIEW_WITHHELD_POPULAR = -2;
+	const REVIEW_WITHHELD_ALL = -3;
 
 	private static $reviewStates = [
 		self::REVIEW_UNREVIEWED,
 		self::REVIEW_ACCEPTED,
 		self::REVIEW_REJECTED,
-		self::REVIEW_WITHHELD,
+		self::REVIEW_WITHHELD_POPULAR,
+		self::REVIEW_WITHHELD_ALL,
 	];
 
 	/** @var NameTableStore */
@@ -40,25 +42,19 @@ class Repository implements LoggerAwareInterface {
 	/** @var IDatabase */
 	private $dbw;
 
-	/** @var array */
-	private $blacklist;
-
 	/**
 	 * @param NameTableStore $nameTableStore NameTableStore for provider names
 	 * @param IDatabase $dbr Database connection for reading.
 	 * @param IDatabase $dbw Database connection for writing.
-	 * @param array $blacklist array of blacklisted wikidata Q ids
 	 */
 	public function __construct(
 		NameTableStore $nameTableStore,
 		IDatabase $dbr,
-		IDatabase $dbw,
-		$blacklist
+		IDatabase $dbw
 	) {
 		$this->nameTableStore = $nameTableStore;
 		$this->dbr = $dbr;
 		$this->dbw = $dbw;
-		$this->blacklist = $blacklist;
 
 		$this->logger = LoggerFactory::getInstance( 'machinevision' );
 	}
@@ -208,7 +204,7 @@ class Repository implements LoggerAwareInterface {
 	 */
 	public function setLabelState( $sha1, $label, $state, $reviewerId, $ts ) {
 		$validStates = array_diff( self::$reviewStates,
-			[ self::REVIEW_UNREVIEWED, self::REVIEW_WITHHELD ] );
+			[ self::REVIEW_UNREVIEWED, self::REVIEW_WITHHELD_POPULAR ] );
 		if ( !in_array( $state, $validStates, true ) ) {
 			$validStates = implode( ', ', $validStates );
 			throw new InvalidArgumentException( "Invalid state $state (must be one of $validStates)" );
@@ -258,14 +254,14 @@ class Repository implements LoggerAwareInterface {
 	}
 
 	/**
-	 * Set all unreviewed label suggestions for an image to REVIEW_WITHHELD.
+	 * Set all unreviewed label suggestions for an image to REVIEW_WITHHELD_POPULAR.
 	 * @param string $sha1 image SHA1 digest
 	 */
-	public function withholdUnreviewedLabelsForFile( $sha1 ) {
+	public function withholdImageFromPopular( $sha1 ) {
 		$mviId = $this->getMviIdForSha1( $sha1 );
 		$this->dbw->update(
 			'machine_vision_label',
-			[ 'mvl_review' => self::REVIEW_WITHHELD ],
+			[ 'mvl_review' => self::REVIEW_WITHHELD_POPULAR ],
 			[
 				'mvl_mvi_id' => $mviId,
 				'mvl_review' => self::REVIEW_UNREVIEWED,
@@ -295,7 +291,7 @@ class Repository implements LoggerAwareInterface {
 
 		if ( $userId !== null ) {
 			$conds = [
-				'mvl_review' => [ self::REVIEW_UNREVIEWED, self::REVIEW_WITHHELD ],
+				'mvl_review' => [ self::REVIEW_UNREVIEWED, self::REVIEW_WITHHELD_POPULAR ],
 				'mvl_uploader_id' => strval( $userId ),
 			];
 		} else {
@@ -364,7 +360,7 @@ class Repository implements LoggerAwareInterface {
 		foreach ( $res as $row ) {
 			$total[$row->mvl_mvi_id] = true;
 			if ( (int)$row->mvl_review === self::REVIEW_UNREVIEWED ||
-				(int)$row->mvl_review === self::REVIEW_WITHHELD ) {
+				(int)$row->mvl_review === self::REVIEW_WITHHELD_POPULAR ) {
 				$unreviewed[$row->mvl_mvi_id] = true;
 			}
 		}
@@ -375,28 +371,16 @@ class Repository implements LoggerAwareInterface {
 	}
 
 	/**
-	 * Return filtered array removing blaklisted Q ids
-	 *
-	 * @param array $wikidataIds array of Q ids to filter
-	 * @return array Filtered array removing blacklisted Q ids
-	 */
-	protected function filterIdBlacklist( $wikidataIds ) {
-		return array_diff( $wikidataIds, $this->blacklist );
-	}
-
-	/**
 	 * Get the mapped Wikidata ID(s) given a Freebase ID.
 	 * @param string $freebaseId
 	 * @return string[]|false Array containing all matching Wikidata IDs, or false if none are found
 	 */
 	public function getMappedWikidataIds( $freebaseId ) {
-		return $this->filterIdBlacklist(
-			$this->dbr->selectFieldValues(
-				'machine_vision_freebase_mapping',
-				'mvfm_wikidata_id',
-				[ 'mvfm_freebase_id' => $freebaseId ],
-				__METHOD__
-			)
+		return $this->dbr->selectFieldValues(
+			'machine_vision_freebase_mapping',
+			'mvfm_wikidata_id',
+			[ 'mvfm_freebase_id' => $freebaseId ],
+			__METHOD__
 		);
 	}
 
