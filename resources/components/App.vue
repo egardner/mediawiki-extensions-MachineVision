@@ -88,7 +88,8 @@ var mapState = require( 'vuex' ).mapState,
 	Tabs = require( './base/Tabs.vue' ),
 	Tab = require( './base/Tab.vue' ),
 	ToastNotification = require( './base/ToastNotification.vue' ),
-	CardStack = require( './CardStack.vue' );
+	CardStack = require( './CardStack.vue' ),
+	url = new mw.Uri();
 
 // @vue/component
 module.exports = {
@@ -106,7 +107,8 @@ module.exports = {
 		'publishStatus'
 	] ), mapGetters( [
 		'isAuthenticated',
-		'isAutoconfirmed'
+		'isAutoconfirmed',
+		'tabs'
 	] ), {
 		/**
 		 * Whether or not to display the full UI
@@ -157,16 +159,40 @@ module.exports = {
 		 * @param {VueComponent} tab
 		 */
 		onTabChange: function ( tab ) {
+			window.history.replaceState( null, null, '#' + tab.name );
 			this.updateCurrentTab( tab.name );
 		},
 
 		onToastLeave: function () {
 			this.updatePublishStatus( null );
+		},
+
+		/**
+		 * @param {HashChangeEvent} e
+		 */
+		onHashChange: function ( e ) {
+			var newHash = new URL( e.newURL ).hash,
+				newTabName = newHash.substring( 1 );
+
+			if ( this.tabs.indexOf( newTabName ) !== -1 ) {
+				this.updateCurrentTab( newTabName );
+			}
 		}
 	} ),
 
 	mounted: function () {
-		// TODO: Check URL fragment for tab name.
+		// If there's a URL fragment and it's one of the tabs, select that tab.
+		// Otherwise, default to "popular" add a fragement to the URL.
+		var urlFragment = url.fragment,
+			hash = ( urlFragment && this.tabs.indexOf( urlFragment ) !== -1 ) ?
+				urlFragment :
+				this.tabs[ 0 ];
+		window.history.replaceState( null, null, '#' + hash );
+		this.updateCurrentTab( hash );
+
+		// Listen for hash changes.
+		window.addEventListener( 'hashchange', this.onHashChange );
+
 		// popular images are pre-loaded on the server side;
 		// immediately fetch user images in the mounted hook so that they'll be
 		// ready for the user if they switch tabs

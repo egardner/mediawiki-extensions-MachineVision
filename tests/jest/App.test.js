@@ -36,7 +36,10 @@ describe( 'App', () => {
 		getters = {
 			isAuthenticated: jest.fn(),
 			isAutoconfirmed: jest.fn(),
-			currentImage: jest.fn() // needed for tests that use deep mounting
+			currentImage: jest.fn(), // needed for tests that use deep mounting
+			tabs: function ( state ) {
+				return Object.keys( state.images );
+			}
 		};
 
 		actions = {
@@ -104,10 +107,11 @@ describe( 'App', () => {
 		} );
 
 		// Expect the updateCurrentTab action to be dispatched
-		expect( actions.updateCurrentTab.mock.calls.length ).toBe( 1 );
+		// (The first time it was called was on mount)
+		expect( actions.updateCurrentTab.mock.calls.length ).toBe( 2 );
 
 		// Expect the call to updateCurrentTab to contain the correct payload
-		expect( actions.updateCurrentTab.mock.calls[ 0 ][ 1 ] ).toBe( 'user' );
+		expect( actions.updateCurrentTab.mock.calls[ 1 ][ 1 ] ).toBe( 'user' );
 	} );
 
 	it( 'dispatches a getImages action for user images when mounted', () => {
