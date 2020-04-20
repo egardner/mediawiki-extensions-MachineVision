@@ -6,7 +6,7 @@ var userGroups = mw.config.get( 'wgUserGroups' ) || [];
 module.exports = {
 	/**
 	 * @param {Object} state
-	 * @return {Array} tabs
+	 * @return {Array} tabs Tab names
 	 */
 	tabs: function ( state ) {
 		return Object.keys( state.images );

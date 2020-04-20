@@ -7,9 +7,9 @@ var MvImage = require( '../models/Image.js' ),
 		mw.config.get( 'wbmiRepoApiUrl', mw.config.get( 'wbRepoApiUrl' ) )
 	),
 	datamodel = require( 'wikibase.datamodel' ),
-	ensureTabExists = require( './utils.js' ).ensureTabExists,
+	serialization = require( 'wikibase.serialization' ),
 	mvConfig = require( 'ext.MachineVision.config' ),
-	serialization = require( 'wikibase.serialization' );
+	ensureTabExists = require( './utils.js' ).ensureTabExists;
 
 module.exports = {
 	/**
@@ -213,10 +213,8 @@ module.exports = {
 	},
 
 	/**
-	 * @TODO implement this
-	 *
 	 * Discard the current image without publishing suggestions.
-	 * Should also request more image data if necessary.
+	 * TODO: Should also request more image data if necessary.
 	 *
 	 * @param {Object} context
 	 */
