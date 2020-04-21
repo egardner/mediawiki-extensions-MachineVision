@@ -236,6 +236,7 @@
 				"components/base/Tabs.vue",
 				"components/base/Tab.vue",
 				"components/base/ToastNotification.vue",
+				"components/transitions/FadeIn.vue",
 				"plugins/api.js",
 				"store/index.js",
 				"store/state.js",

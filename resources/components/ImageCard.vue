@@ -135,13 +135,7 @@ module.exports = {
 @import '../style-variables.less';
 
 .wbmad-image-with-suggestions {
-	.fade-in( 0.5s );
-	display: none;
 	position: relative;
-
-	&:first-child {
-		display: block;
-	}
 
 	&__container {
 		.box-shadow(0 1px 4px rgba( 0, 0, 0, 0.25 ));
@@ -177,10 +171,6 @@ module.exports = {
 
 			@media screen and ( min-width: @width-breakpoint-tablet ) {
 				max-height: 600px;
-			}
-
-			&.wbmad-lazy {
-				background-color: @base80;
 			}
 		}
 	}

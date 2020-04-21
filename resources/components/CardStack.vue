@@ -2,7 +2,11 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
-		<wbmad-image-card v-else-if="shouldDisplayImage" />
+		<template v-else-if="shouldDisplayImage">
+			<wbmad-fade-in mode="out-in">
+				<wbmad-image-card v-bind:key="currentImageId" />
+			</wbmad-fade-in>
+		</template>
 
 		<wbmad-user-message v-else-if="showUserCta"
 			class="wbmad-user-cta"
@@ -34,7 +38,8 @@ var mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
 	CardStackPlaceholder = require( './CardStackPlaceholder.vue' ),
 	ImageCard = require( './ImageCard.vue' ),
-	UserImage = require( './UserMessage.vue' );
+	UserImage = require( './UserMessage.vue' ),
+	FadeIn = require( './transitions/FadeIn.vue' );
 
 // @vue/component
 module.exports = {
@@ -43,7 +48,8 @@ module.exports = {
 	components: {
 		'wbmad-cardstack-placeholder': CardStackPlaceholder,
 		'wbmad-image-card': ImageCard,
-		'wbmad-user-message': UserImage
+		'wbmad-user-message': UserImage,
+		'wbmad-fade-in': FadeIn
 	},
 
 	props: {
@@ -84,7 +90,7 @@ module.exports = {
 		 * @return {boolean}
 		 */
 		shouldDisplayImage: function () {
-			return this.currentImage && this.imagesInQueue;
+			return this.currentTab === this.queue && this.currentImage && this.imagesInQueue;
 		},
 
 		/**
@@ -119,6 +125,15 @@ module.exports = {
 		 */
 		showUserCtaNoLabeledUploads: function () {
 			return this.isUserTab && !this.userHasLabeledUploads;
+		},
+
+		/**
+		 * We need a unique ID for each image card so the component isn't
+		 * reused. Otherwise, transitions won't work.
+		 * @return {number}
+		 */
+		currentImageId: function () {
+			return this.currentImage.pageid;
 		}
 	} ),
 
