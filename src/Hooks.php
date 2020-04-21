@@ -10,11 +10,13 @@ use DatabaseUpdater;
 use DeferredUpdates;
 use DomainException;
 use EchoEvent;
+use EchoNotificationMapper;
 use Exception;
 use File;
 use IContextSource;
 use LocalFile;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
 use MWException;
 use Revision;
 use Status;
@@ -121,24 +123,24 @@ class Hooks {
 					return;
 				}
 				$repo = $extensionServices->getRepository();
-				$repo->withholdUnreviewedLabelsForFile( $file->getSha1() );
+				$repo->withholdImageFromPopular( $file->getSha1() );
 			}
 		} );
 	}
 
 	/**
-	 * Handler for ArticleRollbackComplete hook.
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ArticleRollbackComplete
+	 * Handler for RollbackComplete hook.
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/RollbackComplete
 	 *
 	 * @param WikiPage $wikiPage The article that was edited
 	 * @param User $agent The user who did the rollback
-	 * @param Revision $newRev The revision the page was reverted back to
-	 * @param Revision $oldRev The revision of the top edit that was reverted
+	 * @param RevisionRecord $newRev The revision the page was reverted back to
+	 * @param RevisionRecord $oldRev The revision of the top edit that was reverted
 	 */
 	public static function onArticleRollbackComplete( WikiPage $wikiPage,
 							  User $agent,
-							  Revision $newRev,
-							  Revision $oldRev ) {
+							  RevisionRecord $newRev,
+							  RevisionRecord $oldRev ) {
 		self::tagComputerAidedTaggingRevert( $oldRev );
 	}
 
@@ -295,7 +297,7 @@ class Hooks {
 	}
 
 	/**
-	 * @param int|Revision $rev
+	 * @param int|RevisionRecord $rev
 	 */
 	private static function tagComputerAidedTaggingRevert( $rev ) {
 		if ( gettype( $rev ) === 'integer' ) {
@@ -329,13 +331,36 @@ class Hooks {
 			'group' => 'positive',
 			'section' => 'alert',
 			'presentation-model' => Notifications\SuggestionsReadyPresentationModel::class,
-			'user-locators' => [ 'EchoUserLocator::locateEventAgent' ],
-			'canNotifyAgent' => true,
-			'bundle' => [
-				'web' => true,
-				'email' => true,
-				'expandable' => false
-			]
+			'user-locators' => [ function ( EchoEvent $event ) {
+				// we don't want to spam users with notifications that essentially
+				// do the same thing: direct them to the Special:SuggestedTags page
+				// (while events could be bundled, they'd still unbundle once read,
+				// and pollute their read notifications)
+				// let's minimize the amount of notifications by only sending one
+				// of this kind until it has been read
+
+				$agent = $event->getAgent();
+				if ( !$agent || $agent->isAnon() ) {
+					// not a valid user
+					return [];
+				}
+
+				$notificationMapper = new EchoNotificationMapper();
+				$notifications = $notificationMapper->fetchUnreadByUser(
+					$agent,
+					1,
+					null,
+					[ $event->getType() ]
+				);
+				if ( count( $notifications ) > 0 ) {
+					// already has an unread notification of this kind
+					return [];
+				}
+
+				// has not yet been informed about these changes: send notification!
+				return [ $agent->getId() => $agent ];
+			} ],
+			'canNotifyAgent' => true
 		];
 
 		$icons['suggestions-ready']['path'] = 'MachineVision/resources/icons/suggestions-ready-icon.svg';

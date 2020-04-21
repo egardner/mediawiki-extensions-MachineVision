@@ -30,7 +30,10 @@ class GoogleCloudVisionClient implements LoggerAwareInterface {
 		'VERY_LIKELY' => 5,
 	];
 
-	/** @var GoogleOAuthClient */
+	/**
+	 * Client for interacting with the Google auth API.
+	 * @var GoogleOAuthClient
+	 */
 	private $oAuthClient;
 
 	/** @var HttpRequestFactory */
@@ -39,17 +42,45 @@ class GoogleCloudVisionClient implements LoggerAwareInterface {
 	/** @var RepoGroup */
 	private $repoGroup;
 
-	/** @var Repository */
+	/**
+	 * Label suggestion repository object.
+	 * @var Repository
+	 */
 	private $repository;
 
-	/** @var bool */
+	/**
+	 * Whether to post the full file contents rather than the file's public URL. Intended for
+	 * development and testing only.
+	 * @var bool
+	 */
 	private $sendFileContents;
 
-	/** @var array */
+	/**
+	 * Array of SafeSearch limits at which an image should be excluded from the "popular" view
+	 * in Special:SuggestedTags.
+	 * @var array
+	 */
 	private $safeSearchLimits;
 
-	/** @var string|bool */
+	/**
+	 * Outgoing HTTP proxy.
+	 * @var string|bool
+	 */
 	private $proxy;
+
+	/**
+	 * Array of Wikidata IDs indicating that the image should be withheld from appearing in
+	 * Special:SuggestedTags.
+	 * @var array
+	 */
+	private $withholdImageList;
+
+	/**
+	 * Array of Wikidata IDs that should not be used as label suggestions but do not block the
+	 * image from appearing in Special:SuggestedTags.
+	 * @var array
+	 */
+	private $wikidataIdBlocklist;
 
 	/**
 	 * GoogleCloudVisionClient constructor.
@@ -60,6 +91,8 @@ class GoogleCloudVisionClient implements LoggerAwareInterface {
 	 * @param bool $sendFileContents
 	 * @param array $safeSearchLimits
 	 * @param string|bool $proxy
+	 * @param array $withholdImageList
+	 * @param array $wikidataIdBlocklist
 	 */
 	public function __construct(
 		GoogleOAuthClient $oAuthClient,
@@ -68,7 +101,9 @@ class GoogleCloudVisionClient implements LoggerAwareInterface {
 		Repository $repository,
 		bool $sendFileContents,
 		array $safeSearchLimits,
-		$proxy
+		$proxy,
+		array $withholdImageList,
+		array $wikidataIdBlocklist
 	) {
 		$this->oAuthClient = $oAuthClient;
 		$this->httpRequestFactory = $httpRequestFactory;
@@ -77,6 +112,8 @@ class GoogleCloudVisionClient implements LoggerAwareInterface {
 		$this->sendFileContents = $sendFileContents;
 		$this->safeSearchLimits = $safeSearchLimits;
 		$this->proxy = $proxy;
+		$this->withholdImageList = $withholdImageList;
+		$this->wikidataIdBlocklist = $wikidataIdBlocklist;
 
 		$this->setLogger( LoggerFactory::getInstance( 'machinevision' ) );
 	}
@@ -142,21 +179,19 @@ class GoogleCloudVisionClient implements LoggerAwareInterface {
 		$violence = self::SAFE_SEARCH_LIKELIHOODS[$safeSearchAnnotation['violence']];
 		$racy = self::SAFE_SEARCH_LIKELIHOODS[$safeSearchAnnotation['racy']];
 
-		$initialState = Repository::REVIEW_UNREVIEWED;
+		$initialState = self::getInitialLabelState( $this->withholdImageList, $suggestions,
+			$this->safeSearchLimits, $adult, $spoof, $medical, $violence, $racy );
 
-		if (
-			( array_key_exists( 'adult', $this->safeSearchLimits ) &&
-				$adult >= $this->safeSearchLimits['adult'] ) ||
-			( array_key_exists( 'spoof', $this->safeSearchLimits ) &&
-				$spoof >= $this->safeSearchLimits['spoof'] ) ||
-			( array_key_exists( 'medical', $this->safeSearchLimits ) &&
-				$medical >= $this->safeSearchLimits['medical'] ) ||
-			( array_key_exists( 'violence', $this->safeSearchLimits ) &&
-				$violence >= $this->safeSearchLimits['violence'] ) ||
-			( array_key_exists( 'racy', $this->safeSearchLimits ) &&
-				$racy >= $this->safeSearchLimits['racy'] )
-		) {
-			$initialState = Repository::REVIEW_WITHHELD;
+		$filteredSuggestions = $this->filterIdBlocklist( $suggestions );
+		if ( count( $filteredSuggestions ) < 1 ) {
+			$this->logger->info(
+				'No labels remain after blocklist filtering',
+				[
+					'caller' => __METHOD__,
+					'content' => $annotationRequest->getContent()
+				]
+			);
+			return;
 		}
 
 		// If previous versions of this file exist, grab the oldest one so we
@@ -168,7 +203,7 @@ class GoogleCloudVisionClient implements LoggerAwareInterface {
 			$file->getSha1(),
 			$provider,
 			$fileForUser->getUser( 'id' ),
-			$suggestions,
+			$filteredSuggestions,
 			$initialState
 		);
 
@@ -239,9 +274,86 @@ class GoogleCloudVisionClient implements LoggerAwareInterface {
 
 		EchoEvent::create( [
 			'type' => 'machinevision-suggestions-ready',
-			'title' => $file->getTitle(),
+			'title' => \SpecialPage::getTitleFor( 'SuggestedTags' ),
 			'agent' => $file->getUser( 'object' )
 		] );
+	}
+
+	/**
+	 * @param array $withholdImageList list of Wikidata IDs indicating the image should be withheld
+	 * @param array $labelSuggestions array of LabelSuggestion objects
+	 * @param array $safeSearchLimits
+	 * @param int $adult
+	 * @param int $spoof
+	 * @param int $medical
+	 * @param int $violence
+	 * @param int $racy
+	 * @return int
+	 */
+	private static function getInitialLabelState(
+		array $withholdImageList,
+		array $labelSuggestions,
+		array $safeSearchLimits,
+		int $adult,
+		int $spoof,
+		int $medical,
+		int $violence,
+		int $racy
+	): int {
+		if ( self::hasWithholdAllTag( $withholdImageList, $labelSuggestions ) ) {
+			return Repository::REVIEW_WITHHELD_ALL;
+		} elseif ( self::imageFailsSafeSearch( $safeSearchLimits, $adult, $spoof, $medical,
+			$violence, $racy ) ) {
+			return Repository::REVIEW_WITHHELD_POPULAR;
+		} else {
+			return Repository::REVIEW_UNREVIEWED;
+		}
+	}
+
+	/**
+	 * @param array $withholdImageList list of Wikidata IDs indicating the image should be withheld
+	 * @param array $labelSuggestions array of LabelSuggestion objects
+	 * @return bool
+	 */
+	private static function hasWithholdAllTag( array $withholdImageList, array $labelSuggestions ):
+		bool {
+		$wikidataIds = array_map( function ( LabelSuggestion $suggestion ) {
+			return $suggestion->getWikidataId();
+		}, $labelSuggestions );
+		return (bool)array_intersect( $withholdImageList, $wikidataIds );
+	}
+
+	/**
+	 * @param array $safeSearchLimits
+	 * @param int $adult
+	 * @param int $spoof
+	 * @param int $medical
+	 * @param int $violence
+	 * @param int $racy
+	 * @return bool
+	 */
+	private static function imageFailsSafeSearch( array $safeSearchLimits, int $adult, int $spoof,
+		int $medical, int $violence, int $racy ): bool {
+		return ( array_key_exists( 'adult', $safeSearchLimits ) &&
+			$adult >= $safeSearchLimits['adult'] ) ||
+		( array_key_exists( 'spoof', $safeSearchLimits ) &&
+			$spoof >= $safeSearchLimits['spoof'] ) ||
+		( array_key_exists( 'medical', $safeSearchLimits ) &&
+			$medical >= $safeSearchLimits['medical'] ) ||
+		( array_key_exists( 'violence', $safeSearchLimits ) &&
+			$violence >= $safeSearchLimits['violence'] ) ||
+		( array_key_exists( 'racy', $safeSearchLimits ) && $racy >= $safeSearchLimits['racy'] );
+	}
+
+	/**
+	 * Return filtered array removing blocklisted Q ids
+	 * @param array $suggestions array of LabelSuggestions filter
+	 * @return array Filtered array removing blocklisted Q ids
+	 */
+	protected function filterIdBlocklist( array $suggestions ) {
+		return array_filter( $suggestions, function ( $suggestion ) {
+			return !in_array( $suggestion->getWikidataId(), $this->wikidataIdBlocklist, true );
+		} );
 	}
 
 }
