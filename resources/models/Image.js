@@ -6,7 +6,8 @@ module.exports = function MvImage(
 	descriptionurl,
 	thumburl,
 	thumbheight,
-	suggestions
+	suggestions,
+	categories
 ) {
 	this.title = title;
 	this.pageid = pageid;
@@ -14,4 +15,5 @@ module.exports = function MvImage(
 	this.thumburl = thumburl;
 	this.thumbheight = thumbheight;
 	this.suggestions = suggestions;
+	this.categories = categories;
 };

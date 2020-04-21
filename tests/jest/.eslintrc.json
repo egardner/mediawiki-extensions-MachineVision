@@ -1,4 +1,5 @@
 {
+	"root": true,
 	"extends": [
 		"../../.eslintrc.json"
 	],
@@ -6,8 +7,7 @@
 		"ecmaVersion": 6
 	},
 	"globals": {
-		"global": true,
-		"require": true
+		"OO": "readonly"
 	},
 	"rules": {
 		"no-implicit-globals": "off",

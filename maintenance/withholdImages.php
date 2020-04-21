@@ -3,10 +3,12 @@
 namespace MediaWiki\Extension\MachineVision\Maintenance;
 
 use Maintenance;
+use MediaWiki\Extension\MachineVision\Repository;
 use MediaWiki\Extension\MachineVision\Services;
 use MediaWiki\MediaWikiServices;
 use MWException;
-use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\DBConnRef;
+use Wikimedia\Rdbms\LBFactory;
 
 // Security: Disable all stream wrappers and reenable individually as needed
 foreach ( stream_get_wrappers() as $wrapper ) {
@@ -27,21 +29,24 @@ if ( $basePath ) {
 }
 require_once "$basePath/maintenance/Maintenance.php";
 
-// Maintenance script for removing all blacklisted suggestions from the MachineVision tables
-// Should be run after the blacklist is updated
-class RemoveBlacklistedSuggestions extends Maintenance {
+class WithholdImages extends Maintenance {
 
-	/** @var IDatabase */
+	/** @var DBConnRef */
 	private $dbw;
-	/** @var IDatabase */
+
+	/** @var DBConnRef */
 	private $dbr;
+
+	/** @var LBFactory */
+	private $loadBalancerFactory;
+
 	/** @var array */
-	private $blacklist;
+	private $withholdList;
 
 	public function __construct() {
 		parent::__construct();
 		$this->requireExtension( 'MachineVision' );
-		$this->addDescription( 'Remove blacklisted suggestions from MachineVision tables' );
+		$this->addDescription( 'Withhold images from Special:SuggestedTags based on config' );
 		$this->setBatchSize( 10000 );
 	}
 
@@ -50,57 +55,71 @@ class RemoveBlacklistedSuggestions extends Maintenance {
 		$extensionServices = new Services( $services );
 
 		$extensionConfig = $extensionServices->getExtensionConfig();
-		$loadBalancerFactory = $services->getDBLoadBalancerFactory();
+		$this->loadBalancerFactory = $services->getDBLoadBalancerFactory();
 
 		$cluster = $extensionConfig->get( 'MachineVisionCluster' );
 		$database = $extensionConfig->get( 'MachineVisionDatabase' );
 
 		$loadBalancer = $cluster
-			? $loadBalancerFactory->getExternalLB( $cluster )
-			: $loadBalancerFactory->getMainLB( $database );
+			? $this->loadBalancerFactory->getExternalLB( $cluster )
+			: $this->loadBalancerFactory->getMainLB( $database );
 
 		$this->dbw = $loadBalancer->getLazyConnectionRef( DB_MASTER, [], $database );
 		$this->dbr = $loadBalancer->getLazyConnectionRef( DB_REPLICA, [], $database );
 
-		$this->blacklist = $extensionConfig->get( 'MachineVisionWikidataIdBlacklist' );
+		$this->withholdList = $extensionConfig->get( 'MachineVisionWithholdImageList' );
 	}
 
 	/** @inheritDoc */
 	public function execute() {
 		$this->init();
-		if ( count( $this->blacklist ) == 0 ) {
-			$this->output( "Blacklist is empty.\n" );
+		if ( count( $this->withholdList ) == 0 ) {
+			$this->output( "No images to withhold in wgMachineVisionWithholdImageList.\n" );
 			return;
 		}
-		$continue = true;
-		while ( $continue ) {
-			$idsToDelete =
-				$this->dbr->selectFieldValues( 'machine_vision_label', 'mvl_id',
-					[ 'mvl_wikidata_id' => $this->blacklist ], __METHOD__,
-					[ 'LIMIT' => $this->getBatchSize() ] );
-			if ( count( $idsToDelete ) < 1 ) {
-				$continue = false;
-				break;
+		foreach ( $this->withholdList as $wikidataId ) {
+			$continue = true;
+			while ( $continue ) {
+				$imageIdsToWithhold = array_unique(
+					$this->dbr->selectFieldValues(
+						'machine_vision_label',
+						'mvl_mvi_id',
+						[
+							'mvl_wikidata_id' => $wikidataId,
+							'mvl_review' => [
+								Repository::REVIEW_UNREVIEWED,
+								Repository::REVIEW_WITHHELD_POPULAR
+							],
+						],
+						__METHOD__,
+						[ 'LIMIT' => $this->getBatchSize() ]
+					)
+				);
+				if ( count( $imageIdsToWithhold ) < 1 ) {
+					$continue = false;
+					break;
+				}
+				$this->dbw->update(
+					'machine_vision_label',
+					[ 'mvl_review' => Repository::REVIEW_WITHHELD_ALL ],
+					[
+						'mvl_mvi_id' => $imageIdsToWithhold,
+						'mvl_review' => [
+							Repository::REVIEW_UNREVIEWED,
+							Repository::REVIEW_WITHHELD_POPULAR
+						],
+					],
+					__METHOD__
+				);
+				$this->loadBalancerFactory->waitForReplication();
+				$this->output( '.' );
 			}
-			$this->beginTransaction( $this->dbw, __METHOD__ );
-			$this->dbw->delete(
-				'machine_vision_suggestion',
-				[ 'mvs_mvl_id' => $idsToDelete ],
-				__METHOD__
-			);
-			$this->dbw->delete(
-				'machine_vision_label',
-				[ 'mvl_id' => $idsToDelete ],
-				__METHOD__
-			);
-			$this->commitTransaction( $this->dbw, __METHOD__ );
-			$this->output( '.' );
 		}
 		$this->output( "\nOK\n" );
 	}
 }
 
-$maintClass = RemoveBlacklistedSuggestions::class;
+$maintClass = WithholdImages::class;
 
 $doMaintenancePath = RUN_MAINTENANCE_IF_MAIN;
 if ( !( file_exists( $doMaintenancePath ) &&

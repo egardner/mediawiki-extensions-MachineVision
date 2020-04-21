@@ -55,14 +55,14 @@ return [
 		$cluster = $extensionConfig->get( 'MachineVisionCluster' );
 		$database = $extensionConfig->get( 'MachineVisionDatabase' );
 		$wikidataIdBlacklist = $extensionConfig->get( 'MachineVisionWikidataIdBlacklist' );
+		$withholdImageList = $extensionConfig->get( 'MachineVisionWithholdImageList' );
 		$loadBalancer = $cluster
 			? $loadBalancerFactory->getExternalLB( $cluster )
 			: $loadBalancerFactory->getMainLB( $database );
 		$repository = new Repository(
 			$services->getService( 'MachineVisionNameTableStore' ),
 			$loadBalancer->getLazyConnectionRef( DB_REPLICA, [], $database ),
-			$loadBalancer->getLazyConnectionRef( DB_MASTER, [], $database ),
-			$wikidataIdBlacklist
+			$loadBalancer->getLazyConnectionRef( DB_MASTER, [], $database )
 		);
 
 		$client = new GoogleCloudVisionClient(
@@ -72,7 +72,9 @@ return [
 			$repository,
 			$sendFileContents,
 			$safeSearchLimits,
-			$proxy
+			$proxy,
+			$withholdImageList,
+			$wikidataIdBlacklist
 		);
 		$client->setLogger( LoggerFactory::getInstance( 'machinevision' ) );
 		return $client;
@@ -108,7 +110,6 @@ return [
 
 		$cluster = $extensionConfig->get( 'MachineVisionCluster' );
 		$database = $extensionConfig->get( 'MachineVisionDatabase' );
-		$wikidataIdBlacklist = $extensionConfig->get( 'MachineVisionWikidataIdBlacklist' );
 
 		$loadBalancer = $cluster
 			? $loadBalancerFactory->getExternalLB( $cluster )
@@ -117,8 +118,7 @@ return [
 		return new Repository(
 			$services->getService( 'MachineVisionNameTableStore' ),
 			$loadBalancer->getLazyConnectionRef( DB_REPLICA, [], $database ),
-			$loadBalancer->getLazyConnectionRef( DB_MASTER, [], $database ),
-			$wikidataIdBlacklist
+			$loadBalancer->getLazyConnectionRef( DB_MASTER, [], $database )
 		);
 	},
 
