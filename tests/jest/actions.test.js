@@ -3,6 +3,7 @@
 const actions = require( '../../resources/store/actions.js' ),
 	imageFixtures = require( './fixtures/imageData.json' ),
 	apiResponse = require( './fixtures/apiResponse.json' ),
+	/* eslint-disable-next-line no-undef */
 	mockApi = global.wikibase.api.getLocationAgnosticMwApi();
 
 describe( 'getters', () => {
