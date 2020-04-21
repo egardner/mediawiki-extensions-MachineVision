@@ -193,11 +193,9 @@ module.exports = {
 		// Listen for hash changes.
 		window.addEventListener( 'hashchange', this.onHashChange );
 
-		// popular images are pre-loaded on the server side;
-		// immediately fetch user images in the mounted hook so that they'll be
-		// ready for the user if they switch tabs
+		// Fetch batch of images.
 		this.getImages( {
-			queue: 'user'
+			queue: hash
 		} );
 	}
 };
