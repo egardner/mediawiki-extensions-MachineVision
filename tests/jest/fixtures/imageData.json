@@ -16,6 +16,11 @@
 				"wikidataId": "Q7561",
 				"confirmed": false
 			}
+		],
+		"categories": [
+			"Photographs",
+			"Photographs of people",
+			"Streets"
 		]
 	},
 	{
@@ -45,7 +50,8 @@
 				"wikidataId": "Q79007",
 				"confirmed": false
 			}
-		]
+		],
+		"categories": []
 	},
 	{
 		"title": "File:Fullsizeinput 2d0.jpg",
@@ -104,7 +110,8 @@
 				"wikidataId": "Q838368",
 				"confirmed": false
 			}
-		]
+		],
+		"categories": []
 	},
 	{
 		"title": "File:Fullsizeinput 2cb.jpg",
@@ -123,6 +130,7 @@
 				"wikidataId": "Q41176",
 				"confirmed": false
 			}
-		]
+		],
+		"categories": []
 	}
 ]
