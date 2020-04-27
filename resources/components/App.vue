@@ -183,20 +183,24 @@ module.exports = {
 	mounted: function () {
 		// If there's a URL fragment and it's one of the tabs, select that tab.
 		// Otherwise, default to "popular" add a fragement to the URL.
-		var urlFragment = url.fragment,
+		var i,
+			urlFragment = url.fragment,
 			hash = ( urlFragment && this.tabs.indexOf( urlFragment ) !== -1 ) ?
 				urlFragment :
 				this.tabs[ 0 ];
+
+		// Fetch initial image batches.
+		for ( i = 0; i < this.tabs.length; i++ ) {
+			this.getImages( { queue: this.tabs[ i ] } );
+		}
+
 		window.history.replaceState( null, null, '#' + hash );
 		this.updateCurrentTab( hash );
 
 		// Listen for hash changes.
 		window.addEventListener( 'hashchange', this.onHashChange );
 
-		// Fetch batch of images.
-		this.getImages( {
-			queue: hash
-		} );
+
 	}
 };
 </script>
