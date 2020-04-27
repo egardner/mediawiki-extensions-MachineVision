@@ -114,13 +114,13 @@ describe( 'App', () => {
 		expect( actions.updateCurrentTab.mock.calls[ 1 ][ 1 ] ).toBe( 'user' );
 	} );
 
-	it( 'dispatches a getImages action for user images when mounted', () => {
+	it( 'dispatches a getImages action for each queue when mounted', () => {
 		getters.isAuthenticated.mockReturnValue( true );
 		getters.isAutoconfirmed.mockReturnValue( true );
 
 		// Expect the getImages action to be dispatched when component is mounted
 		expect( actions.getImages.mock.calls.length ).toBe( 0 );
 		VueTestUtils.shallowMount( App, { store, localVue, computed } );
-		expect( actions.getImages.mock.calls.length ).toBe( 1 );
+		expect( actions.getImages.mock.calls.length ).toBe( 2 );
 	} );
 } );

@@ -199,8 +199,6 @@ module.exports = {
 
 		// Listen for hash changes.
 		window.addEventListener( 'hashchange', this.onHashChange );
-
-
 	}
 };
 </script>
