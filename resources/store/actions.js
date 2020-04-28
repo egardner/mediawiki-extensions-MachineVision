@@ -155,6 +155,8 @@ module.exports = {
 				batch: JSON.stringify( reviewBatch )
 			} );
 
+		context.dispatch( 'updatePublishStatus', 'pending' );
+
 		// TODO: this is where we should request more images if we are
 		// running low in a given queue
 
