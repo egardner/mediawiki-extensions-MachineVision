@@ -58,6 +58,20 @@
 						"description": "public thoroughfare in a built environment",
 						"alias": "St."
 					}
+				],
+				"categories": [
+					{
+						"ns": 14,
+						"title": "Category:Photographs"
+					},
+					{
+						"ns": 14,
+						"title": "Category:Photographs of people"
+					},
+					{
+						"ns": 14,
+						"title": "Category:Streets"
+					}
 				]
 			},
 			{
@@ -176,7 +190,8 @@
 						"description": "monochrome form in visual arts",
 						"alias": "black and white"
 					}
-				]
+				],
+				"categories": []
 			},
 			{
 				"pageid": 25,
@@ -214,7 +229,8 @@
 						"description": "structure, typically with a roof and walls, standing more or less permanently in one place",
 						"alias": "edifice"
 					}
-				]
+				],
+				"categories": []
 			}
 		],
 		"unreviewedimagecount": {

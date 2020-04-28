@@ -9,7 +9,8 @@ var MvImage = require( '../models/Image.js' ),
 	datamodel = require( 'wikibase.datamodel' ),
 	serialization = require( 'wikibase.serialization' ),
 	mvConfig = require( 'ext.MachineVision.config' ),
-	ensureTabExists = require( './utils.js' ).ensureTabExists;
+	ensureTabExists = require( './utils.js' ).ensureTabExists,
+	getCategories = require( './utils.js' ).getCategories;
 
 module.exports = {
 	/**
@@ -40,12 +41,14 @@ module.exports = {
 				formatversion: 2,
 				generator: 'unreviewedimagelabels',
 				guillimit: 10,
-				prop: 'imageinfo|imagelabels',
+				prop: 'imageinfo|imagelabels|categories',
 				iiprop: 'url',
 				iiurlwidth: 800,
 				ilstate: 'unreviewed',
 				meta: 'unreviewedimagecount',
-				uselang: mw.config.get( 'wgUserLanguage' )
+				uselang: mw.config.get( 'wgUserLanguage' ),
+				cllimit: 500,
+				clshow: '!hidden'
 			};
 
 		ensureTabExists( context.state, queue );
@@ -85,7 +88,8 @@ module.exports = {
 					item.imageinfo[ 0 ].thumbheight,
 					item.imagelabels.map( function ( labelData ) {
 						return new MvSuggestion( labelData.label, labelData.wikidata_id );
-					} )
+					} ),
+					getCategories( item )
 				);
 			} );
 
