@@ -2,15 +2,19 @@
 	<div
 		class="mw-suggestion"
 		tabindex="0"
-		v-bind:class="classObject"
+		v-bind:class="builtInClasses"
 		v-on:click="$emit( 'click' )"
 		v-on:keyup.enter="$emit( 'click' )"
 		v-on:keyup.space="$emit( 'click' )"
 	>
-		<label class="mw-suggestion__label">
-			{{ text }}
-		</label>
+		<div class="mw-suggestion__content">
+			<slot v-if="hasSlot" />
+			<label v-else class="mw-suggestion__label">
+				{{ text }}
+			</label>
+		</div>
 		<icon
+			class="mw-suggestion__icon"
 			icon="check"
 			v-bind:title="iconText"
 			v-bind:label="iconText"
@@ -21,6 +25,13 @@
 <script>
 var Icon = require( './Icon.vue' );
 
+/**
+ * Toggleable suggestion element.
+ *
+ * Text is required since it's used for the icon title and label. If a slot is
+ * present it will be displayed; otherwise the text will be displayed as a
+ * label.
+ */
 module.exports = {
 	name: 'Suggestion',
 
@@ -46,10 +57,21 @@ module.exports = {
 	},
 
 	computed: {
-		classObject: function () {
+		/**
+		 * Conditional classes.
+		 * @return {Object}
+		 */
+		builtInClasses: function () {
 			return {
 				'mw-suggestion--confirmed': this.confirmed
 			};
+		},
+
+		/**
+		 * @return {boolean}
+		 */
+		hasSlot: function () {
+			return !!this.$slots.default;
 		}
 	}
 };
@@ -60,9 +82,12 @@ module.exports = {
 @import '../../style-variables.less';
 
 .mw-suggestion {
+	.flex-display();
 	.transition( color @transition-duration-base );
+	align-items: center;
 	background-color: @base90;
 	border: @suggestion-border-width solid @base50;
+	box-sizing: border-box;
 	color: @base10;
 	cursor: pointer;
 	margin: 0 4px 4px 0;
@@ -81,12 +106,17 @@ module.exports = {
 		outline: 0;
 	}
 
-	.mw-suggestion__label {
+	label {
+		cursor: pointer;
+	}
+
+	.mw-suggestion__content {
 		.transition-transform( 0.2s );
 		cursor: pointer;
 		display: inline-block;
 	}
 
+	// Base icon overrides.
 	.mw-icon {
 		.transition( opacity 0.2s );
 		min-height: 0;
@@ -104,7 +134,7 @@ module.exports = {
 		color: @base0;
 		position: relative;
 
-		.mw-suggestion__label {
+		.mw-suggestion__content {
 			transform: translateX( -0.5em );
 		}
 

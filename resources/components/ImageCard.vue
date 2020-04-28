@@ -27,13 +27,33 @@
 					>{{ category }}</span>
 				</div>
 
-				<div class="wbmad-image-with-suggestions__tags">
+				<div
+					class="wbmad-image-with-suggestions__tags"
+					v-bind:class="tagsClasses"
+				>
 					<suggestion v-for="( suggestion, index ) in currentImageSuggestions"
 						v-bind:key="index"
 						v-bind:text="suggestion.text"
 						v-bind:confirmed="suggestion.confirmed"
 						v-on:click="toggleTagConfirmation( suggestion )"
-					/>
+					>
+						<template v-if="tagsExpanded">
+							<label class="wbmad-suggestion__label">
+								<span class="wbmad-suggestion__label__text">
+									{{ suggestion.text }}
+								</span>
+								<template v-if="suggestion.alias">
+									<span class="wbmad-suggestion__label__separator">–</span>
+									<span class="wbmad-suggestion__label__alias">
+										{{ suggestion.alias }}
+									</span>
+								</template>
+							</label>
+							<p v-if="suggestion.description" class="wbmad-suggestion__description">
+								{{ suggestion.description }}
+							</p>
+						</template>
+					</suggestion>
 				</div>
 				<!-- TODO: Add custom tag button. -->
 
@@ -127,6 +147,16 @@ module.exports = {
 			return this.currentImageSuggestions.filter( function ( suggestion ) {
 				return suggestion.confirmed;
 			} );
+		},
+
+		tagsExpanded: function () {
+			return true;
+		},
+
+		tagsClasses: function () {
+			return {
+				'wbmad-image-with-suggestions__tags--expanded': this.tagsExpanded
+			};
 		}
 	} ),
 
@@ -221,12 +251,45 @@ module.exports = {
 			color: @base10;
 		}
 	}
+}
 
-	&__tags {
-		.flex-display();
-		.flex-wrap( wrap );
-		margin: 18px 0;
+// Tags wrapper element.
+.wbmad-image-with-suggestions__tags {
+	.flex-display();
+	.flex-wrap( wrap );
+	margin: 18px 0;
+
+	p {
+		margin: 0;
 	}
+
+	// Suggestion styles when "detailed tags" toggle is on.
+	&.wbmad-image-with-suggestions__tags--expanded {
+		justify-content: space-between;
+
+		.mw-suggestion {
+			.flex( 0, 0, 100% );
+			// We want long descriptions to wrap, even if it makes the
+			// suggestion taller.
+			white-space: normal;
+
+			@media screen and ( min-width: @width-breakpoint-tablet ) {
+				// On larger screens we want 2 columns of suggestions.
+				// This flex basis will give us about the margin between suggestions
+				// that we had before.
+				.flex( 0, 0, 49.75% );
+				margin-right: 0;
+			}
+		}
+	}
+}
+
+.wbmad-suggestion__label__text {
+	font-weight: bold;
+}
+
+.wbmad-suggestion__label__separator {
+	margin: 0 0.4em;
 }
 
 .wbmad-category-list {
