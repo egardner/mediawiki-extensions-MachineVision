@@ -84,7 +84,7 @@ module.exports = {
 	},
 
 	/**
-	 * Set the publish status (to success, error, or null).
+	 * Set the publish status (to success, error, pending or null).
 	 *
 	 * @param {Object} state
 	 * @param {string|null} publishStatus
