@@ -317,18 +317,6 @@
 				"mobile",
 				"desktop"
 			]
-		},
-		"vuex": {
-			"packageFiles": [
-				"vendor/vuex.js"
-			],
-			"dependencies": [
-				"vue"
-			],
-			"targets": [
-				"desktop",
-				"mobile"
-			]
 		}
 	},
 	"DefaultUserOptions": {
