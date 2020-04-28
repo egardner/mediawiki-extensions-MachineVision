@@ -124,7 +124,7 @@ module.exports = {
 			return this.currentImage.categories;
 		},
 
-    /**
+		/**
 		 * Whether or not the publish button should be disabled.
 		 * @return {boolean}
 		 */
