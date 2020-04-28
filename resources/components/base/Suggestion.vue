@@ -76,8 +76,8 @@ module.exports = {
 	}
 
 	&:focus {
-		border-color: @accent10;
-		box-shadow: inset 0 0 0 1px @accent10;
+		border-color: @accent30;
+		box-shadow: inset 0 0 0 1px @accent30;
 		outline: 0;
 	}
 
@@ -100,7 +100,7 @@ module.exports = {
 
 	&--confirmed {
 		background-color: @accent90;
-		border-color: @accent10;
+		border-color: @accent30;
 		color: @base0;
 		position: relative;
 
