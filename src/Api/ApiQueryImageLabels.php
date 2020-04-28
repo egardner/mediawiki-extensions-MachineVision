@@ -20,7 +20,9 @@ class ApiQueryImageLabels extends ApiQueryBase {
 		Repository::REVIEW_UNREVIEWED => 'unreviewed',
 		Repository::REVIEW_ACCEPTED => 'accepted',
 		Repository::REVIEW_REJECTED => 'rejected',
-		Repository::REVIEW_WITHHELD => 'withheld',
+		Repository::REVIEW_WITHHELD_POPULAR => 'withheld',
+		Repository::REVIEW_WITHHELD_ALL => 'withheld',
+		Repository::REVIEW_NOT_DISPLAYED => 'not-displayed',
 	];
 
 	/** @var RepoGroup */
@@ -136,7 +138,7 @@ class ApiQueryImageLabels extends ApiQueryBase {
 	protected function getAllowedParams() {
 		return [
 			'state' => [
-				ApiBase::PARAM_TYPE => array_values( self::$reviewStateNames ),
+				ApiBase::PARAM_TYPE => array_unique( array_values( self::$reviewStateNames ) ),
 				ApiBase::PARAM_ISMULTI => true,
 				ApiBase::PARAM_HELP_MSG_PER_VALUE => [],
 			],

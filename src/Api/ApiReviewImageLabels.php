@@ -25,6 +25,7 @@ class ApiReviewImageLabels extends ApiBase implements LoggerAwareInterface {
 	private static $reviewActions = [
 		'accept' => Repository::REVIEW_ACCEPTED,
 		'reject' => Repository::REVIEW_REJECTED,
+		'not-displayed' => Repository::REVIEW_NOT_DISPLAYED
 	];
 
 	/** @var RepoGroup */
@@ -200,7 +201,7 @@ class ApiReviewImageLabels extends ApiBase implements LoggerAwareInterface {
 				wfMessage( 'apierror-reviewimagelabels-invalidlabel', $filename, $label )
 			);
 		}
-		$validOldStates = [ Repository::REVIEW_UNREVIEWED, Repository::REVIEW_WITHHELD ];
+		$validOldStates = [ Repository::REVIEW_UNREVIEWED, Repository::REVIEW_WITHHELD_POPULAR ];
 		if (
 			!in_array( $oldState, $validOldStates, true ) &&
 			// handle double-submits gracefully

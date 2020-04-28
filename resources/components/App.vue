@@ -187,18 +187,16 @@ module.exports = {
 			hash = ( urlFragment && this.tabs.indexOf( urlFragment ) !== -1 ) ?
 				urlFragment :
 				this.tabs[ 0 ];
+
+		this.tabs.forEach( function ( tab ) {
+			this.getImages( { queue: tab } );
+		}.bind( this ) );
+
 		window.history.replaceState( null, null, '#' + hash );
 		this.updateCurrentTab( hash );
 
 		// Listen for hash changes.
 		window.addEventListener( 'hashchange', this.onHashChange );
-
-		// popular images are pre-loaded on the server side;
-		// immediately fetch user images in the mounted hook so that they'll be
-		// ready for the user if they switch tabs
-		this.getImages( {
-			queue: 'user'
-		} );
 	}
 };
 </script>

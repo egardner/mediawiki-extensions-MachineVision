@@ -18,7 +18,16 @@
 					</a>
 				</label>
 
-				<!-- TODO: categories. -->
+				<div v-if="hasCategories" class="wbmad-category-list">
+					<span
+						v-i18n-html:machinevision-categories-label
+						class="wbmad-category-list__label" />
+					<span
+						v-for="( category, index ) in categories"
+						v-bind:key="category + index"
+						class="wbmad-category-list__item"
+					>{{ category }}</span>
+				</div>
 
 				<div class="wbmad-image-with-suggestions__tags">
 					<suggestion v-for="( suggestion, index ) in currentImageSuggestions"
@@ -102,6 +111,20 @@ module.exports = {
 		},
 
 		/**
+		 * @return {boolean}
+		 */
+		hasCategories: function () {
+			return this.categories.length > 0;
+		},
+
+		/**
+		 * @return {Array}
+		 */
+		categories: function () {
+			return this.currentImage.categories;
+		},
+
+    /**
 		 * Whether or not the publish button should be disabled.
 		 * @return {boolean}
 		 */
@@ -248,6 +271,38 @@ module.exports = {
 		top: 0;
 		width: 100%;
 		z-index: 1;
+	}
+}
+
+.wbmad-category-list {
+	.fade-in( 0.2s );
+	margin: 4px 0 0;
+
+	span {
+		color: @base20;
+		font-size: 0.928em;
+	}
+}
+
+.wbmad-category-list__label {
+	margin: 0 0.4em 0 0;
+}
+
+// This isn't _exactly_ ideal, and spacing this pipe-deliminated list would be
+// more exact if we used flexbox. However, we need the text to wrap like a
+// paragraph, so we'll get as close as we can with a border-right and some magic
+// numbers. We'll at least explicitly set the word-spacing to normal to maximize
+// the chance that the spacing looks even.
+.wbmad-category-list__item {
+	border-right: solid 1px @base20;
+	margin: 0 0.4em 0 0;
+	padding-right: 0.4em;
+	word-spacing: normal;
+
+	&:last-child {
+		border-right: 0;
+		margin: 0;
+		padding: 0;
 	}
 }
 

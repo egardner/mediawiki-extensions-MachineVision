@@ -3,6 +3,7 @@
 const actions = require( '../../resources/store/actions.js' ),
 	imageFixtures = require( './fixtures/imageData.json' ),
 	apiResponse = require( './fixtures/apiResponse.json' ),
+	/* eslint-disable-next-line no-undef */
 	mockApi = global.wikibase.api.getLocationAgnosticMwApi();
 
 describe( 'getters', () => {
@@ -59,11 +60,14 @@ describe( 'getters', () => {
 					formatversion: 2,
 					generator: 'unreviewedimagelabels',
 					guillimit: 10,
-					prop: 'imageinfo|imagelabels',
+					prop: 'imageinfo|imagelabels|categories',
 					iiprop: 'url',
 					iiurlwidth: 800,
 					ilstate: 'unreviewed',
-					meta: 'unreviewedimagecount'
+					meta: 'unreviewedimagecount',
+					uselang: mw.config.get( 'wgUserLanguage' ),
+					cllimit: 500,
+					clshow: '!hidden'
 				} )
 			);
 		} );

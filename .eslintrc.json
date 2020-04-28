@@ -6,10 +6,10 @@
 	],
 	"globals": {
 		"mw": false,
-		"OO": false,
+		"OO": "readonly",
 		"require": "readonly",
 		"module": false,
-		"wikibase": false
+		"wikibase": "readonly"
 	},
 	"rules": {
 		"no-jquery/variable-pattern": "off"
