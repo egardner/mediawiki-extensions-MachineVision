@@ -233,6 +233,7 @@
 				"components/Spinner.vue",
 				"components/ImageCard.vue",
 				"components/UserMessage.vue",
+				"components/PersonalUploadsCount.vue",
 				"components/base/Button.vue",
 				"components/base/Icon.vue",
 				"components/base/Message.vue",

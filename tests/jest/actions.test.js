@@ -126,6 +126,19 @@ describe( 'getters', () => {
 		} );
 
 		test.todo( 'Handles errors successfully' );
+
+		it( 'commits a setUnreviewedCount action when request completes', done => {
+			context.state.currentTab = 'popular';
+			mockApi.get.mockResolvedValue( apiResponse );
+
+			actions.getImages( context ).then( () => {
+				expect( context.commit ).toHaveBeenCalledWith(
+					'setUnreviewedCount',
+					apiResponse.query.unreviewedimagecount.user.unreviewed
+				);
+				done();
+			} );
+		} );
 	} );
 
 	describe( 'toggleTagConfirmation', () => {
@@ -306,6 +319,61 @@ describe( 'getters', () => {
 			} );
 
 			deferred.reject( {} );
+		} );
+
+		it( 'commits a decrementUnreviewedCount mutation on success if current tab is user', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			context.state.currentTab = 'user';
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.commit ).toHaveBeenCalledWith( 'decrementUnreviewedCount' );
+				done();
+			} );
+
+			deferred.resolve( {} );
+		} );
+
+		it( 'does not commit a decrementUnreviewedCount mutation on success if current tab is NOT user', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.commit ).not.toHaveBeenCalledWith( 'decrementUnreviewedCount' );
+				done();
+			} );
+
+			deferred.resolve( {} );
 		} );
 	} );
 

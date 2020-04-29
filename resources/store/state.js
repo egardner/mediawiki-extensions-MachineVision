@@ -13,6 +13,8 @@ module.exports = {
 		user: false
 	},
 
+	unreviewedCount: 0,
+
 	/**
 	 * @TODO Currently four possible status states exist:
 	 * - "success"

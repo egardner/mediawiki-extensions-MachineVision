@@ -103,6 +103,10 @@ module.exports = {
 
 			context.commit( 'setUserStats', res.query.unreviewedimagecount.user );
 
+			// Commit the current number of unreviewed personal images into the store
+			context.commit( 'setUnreviewedCount', res.query.unreviewedimagecount.user.unreviewed );
+
+			// Remove the pending state
 			context.commit( 'setPending', {
 				queue: queue,
 				pending: false
@@ -153,7 +157,8 @@ module.exports = {
 				action: 'reviewimagelabels',
 				filename: context.getters.currentImageTitle,
 				batch: JSON.stringify( reviewBatch )
-			} );
+			} ),
+			isUserImage = context.state.currentTab === 'user';
 
 		context.dispatch( 'updatePublishStatus', 'pending' );
 
@@ -165,6 +170,10 @@ module.exports = {
 		// Set claims, review labels, update publish status, and skip to next image
 		$.when( setClaims, reviewImageLabels ).done( function () {
 			context.dispatch( 'updatePublishStatus', 'success' );
+
+			if ( isUserImage ) {
+				context.commit( 'decrementUnreviewedCount' );
+			}
 		} ).fail( function () {
 			context.dispatch( 'updatePublishStatus', 'error' );
 		} ).always( function () {
@@ -226,7 +235,6 @@ module.exports = {
 	 */
 	skipImage: function ( context ) {
 		context.commit( 'removeImage' );
-
 	},
 
 	/**
