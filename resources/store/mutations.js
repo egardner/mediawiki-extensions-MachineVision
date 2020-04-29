@@ -93,7 +93,20 @@ module.exports = {
 		state.publishStatus = publishStatus;
 	},
 
+	/**
+	 * Set user stats (number of images to review and total images labelled).
+	 * @param {Object} state
+	 * @param {Object} payload
+	 */
 	setUserStats: function ( state, payload ) {
 		state.userStats = payload;
+	},
+
+	/**
+	 * Toggle expansion of tag details.
+	 * @param {Object} state
+	 */
+	toggleTagDetails: function ( state ) {
+		state.tagDetailsExpanded = !state.tagDetailsExpanded;
 	}
 };

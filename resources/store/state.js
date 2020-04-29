@@ -15,5 +15,7 @@ module.exports = {
 
 	publishStatus: null,
 
-	userStats: {}
+	userStats: {},
+
+	tagDetailsExpanded: false
 };

@@ -44,6 +44,7 @@ module.exports = {
 			type: String,
 			required: true
 		},
+
 		confirmed: {
 			type: Boolean,
 			default: false
@@ -82,12 +83,12 @@ module.exports = {
 @import '../../style-variables.less';
 
 .mw-suggestion {
+	.box-sizing( border-box );
 	.flex-display();
 	.transition( color @transition-duration-base );
 	align-items: center;
 	background-color: @base90;
 	border: @suggestion-border-width solid @base50;
-	box-sizing: border-box;
 	color: @base10;
 	cursor: pointer;
 	margin: 0 4px 4px 0;

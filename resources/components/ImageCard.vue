@@ -10,52 +10,37 @@
 			</div>
 
 			<div class="wbmad-image-with-suggestions__content">
-				<label class="wbmad-image-with-suggestions__title-label">
-					<a v-bind:href="descriptionUrl" target="_blank">
-						{{ title }}
-					</a>
-				</label>
+				<div class="wbmad-image-with-suggestions__header">
+					<div class="wbmad-image-with-suggestions__header__title">
+						<label class="wbmad-image-with-suggestions__title-label">
+							<a v-bind:href="descriptionUrl" target="_blank">
+								{{ title }}
+							</a>
+						</label>
 
-				<div v-if="hasCategories" class="wbmad-category-list">
-					<span
-						v-i18n-html:machinevision-categories-label
-						class="wbmad-category-list__label" />
-					<span
-						v-for="( category, index ) in categories"
-						v-bind:key="category + index"
-						class="wbmad-category-list__item"
-					>{{ category }}</span>
+						<div v-if="hasCategories" class="wbmad-category-list">
+							<span
+								v-i18n-html:machinevision-categories-label
+								class="wbmad-category-list__label" />
+							<span
+								v-for="( category, index ) in categories"
+								v-bind:key="category + index"
+								class="wbmad-category-list__item"
+							>{{ category }}</span>
+						</div>
+					</div>
+
+					<div class="wbmad-image-with-suggestions__header__toggle">
+						<mw-toggle-switch
+							label="Detailed tags"
+							name="wbmad-toggle-tag-details"
+							v-bind:on="tagDetailsExpanded"
+							v-on:click="toggleTagDetails"
+						/>
+					</div>
 				</div>
 
-				<div
-					class="wbmad-image-with-suggestions__tags"
-					v-bind:class="tagsClasses"
-				>
-					<suggestion v-for="( suggestion, index ) in currentImageSuggestions"
-						v-bind:key="index"
-						v-bind:text="suggestion.text"
-						v-bind:confirmed="suggestion.confirmed"
-						v-on:click="toggleTagConfirmation( suggestion )"
-					>
-						<template v-if="tagsExpanded">
-							<label class="wbmad-suggestion__label">
-								<span class="wbmad-suggestion__label__text">
-									{{ suggestion.text }}
-								</span>
-								<template v-if="suggestion.alias">
-									<span class="wbmad-suggestion__label__separator">–</span>
-									<span class="wbmad-suggestion__label__alias">
-										{{ suggestion.alias }}
-									</span>
-								</template>
-							</label>
-							<p v-if="suggestion.description" class="wbmad-suggestion__description">
-								{{ suggestion.description }}
-							</p>
-						</template>
-					</suggestion>
-				</div>
-				<!-- TODO: Add custom tag button. -->
+				<wbmad-suggestions-group />
 
 				<div class="wbmad-action-buttons">
 					<mw-button
@@ -85,19 +70,24 @@
 <script>
 var mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
+	mapState = require( 'vuex' ).mapState,
+	SuggestionsGroup = require( './SuggestionsGroup.vue' ),
 	Button = require( './base/Button.vue' ),
-	Suggestion = require( './base/Suggestion.vue' );
+	ToggleSwitch = require( './base/ToggleSwitch.vue' );
 
 // @vue/component
 module.exports = {
 	name: 'ImageCard',
 
 	components: {
+		'wbmad-suggestions-group': SuggestionsGroup,
 		'mw-button': Button,
-		suggestion: Suggestion
+		'mw-toggle-switch': ToggleSwitch
 	},
 
-	computed: $.extend( {}, mapGetters( [
+	computed: $.extend( {}, mapState( [
+		'tagDetailsExpanded'
+	] ), mapGetters( [
 		'currentImage',
 		'currentImageSuggestions'
 	] ), {
@@ -147,23 +137,14 @@ module.exports = {
 			return this.currentImageSuggestions.filter( function ( suggestion ) {
 				return suggestion.confirmed;
 			} );
-		},
-
-		tagsExpanded: function () {
-			return true;
-		},
-
-		tagsClasses: function () {
-			return {
-				'wbmad-image-with-suggestions__tags--expanded': this.tagsExpanded
-			};
 		}
 	} ),
 
 	methods: $.extend( {}, mapActions( [
 		'publishTags',
 		'skipImage',
-		'toggleTagConfirmation'
+		'toggleTagConfirmation',
+		'toggleTagDetails'
 	] ), {
 		/**
 		 * Publish the confirmed tags as depicts statements. All relevant state
@@ -253,43 +234,19 @@ module.exports = {
 	}
 }
 
-// Tags wrapper element.
-.wbmad-image-with-suggestions__tags {
+.wbmad-image-with-suggestions__header {
 	.flex-display();
-	.flex-wrap( wrap );
-	margin: 18px 0;
-
-	p {
-		margin: 0;
-	}
-
-	// Suggestion styles when "detailed tags" toggle is on.
-	&.wbmad-image-with-suggestions__tags--expanded {
-		justify-content: space-between;
-
-		.mw-suggestion {
-			.flex( 0, 0, 100% );
-			// We want long descriptions to wrap, even if it makes the
-			// suggestion taller.
-			white-space: normal;
-
-			@media screen and ( min-width: @width-breakpoint-tablet ) {
-				// On larger screens we want 2 columns of suggestions.
-				// This flex basis will give us about the margin between suggestions
-				// that we had before.
-				.flex( 0, 0, 49.75% );
-				margin-right: 0;
-			}
-		}
-	}
+	align-items: center;
+	justify-content: space-between;
 }
 
-.wbmad-suggestion__label__text {
-	font-weight: bold;
-}
+.wbmad-image-with-suggestions__header__toggle {
+	flex-shrink: 0;
+	margin-left: 16px;
 
-.wbmad-suggestion__label__separator {
-	margin: 0 0.4em;
+	.mw-toggle-switch__label {
+		font-size: 0.928em;
+	}
 }
 
 .wbmad-category-list {

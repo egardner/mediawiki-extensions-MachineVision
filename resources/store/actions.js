@@ -240,5 +240,13 @@ module.exports = {
 	 */
 	updatePublishStatus: function ( context, publishStatus ) {
 		context.commit( 'setPublishStatus', publishStatus );
+	},
+
+	/**
+	 * Toggle expansion of tag details.
+	 * @param {Object} context
+	 */
+	toggleTagDetails: function ( context ) {
+		context.commit( 'toggleTagDetails' );
 	}
 };
