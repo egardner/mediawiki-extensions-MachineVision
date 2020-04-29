@@ -1,68 +1,71 @@
 <template>
-	<div class="wbmad-image-with-suggestions">
-		<wbmad-spinner v-if="publishPending" />
-		<div class="wbmad-image-with-suggestions__container"
-			v-bind:class="containerClasses">
-			<div class="wbmad-image-with-suggestions__image">
-				<div class="wbmad-image-with-suggestions__image-wrapper">
-					<a v-bind:href="descriptionUrl" target="_blank">
-						<img v-bind:src="thumbUrl" alt="">
-					</a>
-				</div>
-			</div>
+	<transition name="fade" mode="out-in">
+		<div v-bind:key="title" class="wbmad-image-with-suggestions">
+			<wbmad-spinner v-if="publishPending" />
 
-			<div class="wbmad-image-with-suggestions__content">
-				<label class="wbmad-image-with-suggestions__title-label">
-					<a v-bind:href="descriptionUrl" target="_blank">
-						{{ title }}
-					</a>
-				</label>
-
-				<div v-if="hasCategories" class="wbmad-category-list">
-					<span
-						v-i18n-html:machinevision-categories-label
-						class="wbmad-category-list__label" />
-					<span
-						v-for="( category, index ) in categories"
-						v-bind:key="category + index"
-						class="wbmad-category-list__item"
-					>{{ category }}</span>
+			<div class="wbmad-image-with-suggestions__container"
+				v-bind:class="containerClasses">
+				<div class="wbmad-image-with-suggestions__image">
+					<div class="wbmad-image-with-suggestions__image-wrapper">
+						<a v-bind:href="descriptionUrl" target="_blank">
+							<img v-bind:src="thumbUrl" alt="">
+						</a>
+					</div>
 				</div>
 
-				<div class="wbmad-image-with-suggestions__tags">
-					<suggestion v-for="( suggestion, index ) in currentImageSuggestions"
-						v-bind:key="index"
-						v-bind:text="suggestion.text"
-						v-bind:confirmed="suggestion.confirmed"
-						v-on:click="toggleTagConfirmation( suggestion )"
-					/>
-				</div>
-				<!-- TODO: Add custom tag button. -->
+				<div class="wbmad-image-with-suggestions__content">
+					<label class="wbmad-image-with-suggestions__title-label">
+						<a v-bind:href="descriptionUrl" target="_blank">
+							{{ title }}
+						</a>
+					</label>
 
-				<div class="wbmad-action-buttons">
-					<mw-button
-						class="wbmad-action-buttons__publish"
-						v-bind:primary="true"
-						v-bind:progressive="true"
-						v-bind:disabled="publishDisabled"
-						v-bind:title="$i18n( 'machinevision-publish-title' )"
-						v-on:click="onPublish"
-					>
-						<span v-i18n-html:machinevision-publish />
-					</mw-button>
-					<mw-button
-						class="wbmad-action-buttons__skip"
-						v-bind:framed="false"
-						v-bind:disabled="skipDisabled"
-						v-bind:title="$i18n( 'machinevision-skip-title', title ).parse()"
-						v-on:click="onSkip"
-					>
-						<span v-i18n-html:machinevision-skip />
-					</mw-button>
+					<div v-if="hasCategories" class="wbmad-category-list">
+						<span
+							v-i18n-html:machinevision-categories-label
+							class="wbmad-category-list__label" />
+						<span
+							v-for="( category, index ) in categories"
+							v-bind:key="category + index"
+							class="wbmad-category-list__item"
+						>{{ category }}</span>
+					</div>
+
+					<div class="wbmad-image-with-suggestions__tags">
+						<suggestion v-for="( suggestion, index ) in currentImageSuggestions"
+							v-bind:key="index"
+							v-bind:text="suggestion.text"
+							v-bind:confirmed="suggestion.confirmed"
+							v-on:click="toggleTagConfirmation( suggestion )"
+						/>
+					</div>
+					<!-- TODO: Add custom tag button. -->
+
+					<div class="wbmad-action-buttons">
+						<mw-button
+							class="wbmad-action-buttons__publish"
+							v-bind:primary="true"
+							v-bind:progressive="true"
+							v-bind:disabled="publishDisabled"
+							v-bind:title="$i18n( 'machinevision-publish-title' )"
+							v-on:click="onPublish"
+						>
+							<span v-i18n-html:machinevision-publish />
+						</mw-button>
+						<mw-button
+							class="wbmad-action-buttons__skip"
+							v-bind:framed="false"
+							v-bind:disabled="skipDisabled"
+							v-bind:title="$i18n( 'machinevision-skip-title', title ).parse()"
+							v-on:click="onSkip"
+						>
+							<span v-i18n-html:machinevision-skip />
+						</mw-button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</transition>
 </template>
 
 <script>
@@ -193,7 +196,23 @@ module.exports = {
 @import 'mediawiki.mixins';
 @import '../style-variables.less';
 
+/* stylelint-disable selector-class-pattern */
+// Vue automatically adds and removes these classes based on the "name" property
+// we give to the <transition> wrapper component
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+	opacity: 0;
+}
+/* stylelint-enable selector-class-pattern */
+
 .wbmad-image-with-suggestions {
+	// We are using Vue's <transition> component to transition between images,
+	// but this CSS animation is still used when the component initially mounts
 	.fade-in( 0.5s );
 	display: none;
 	position: relative;
