@@ -219,7 +219,7 @@ module.exports = {
 	}
 
 	.mw-tabs__content {
-		padding: 24px 4px 32px;
+		padding: 24px 4px 16px;
 	}
 
 	.wbmad-suggested-tags-page-license-info {
