@@ -162,6 +162,10 @@ describe( 'getters', () => {
 				get: jest.fn().mockReturnValue( suggestions )
 			} );
 
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
+			} );
+
 			actions.publishTags( context );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'setDepictsStatements', confirmed );
 		} );
@@ -187,6 +191,10 @@ describe( 'getters', () => {
 
 			Object.defineProperty( context.getters, 'currentImageTitle', {
 				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
 			} );
 
 			actions.publishTags( context );
@@ -217,6 +225,10 @@ describe( 'getters', () => {
 				get: jest.fn().mockReturnValue( 'Test' )
 			} );
 
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
+			} );
+
 			actions.publishTags( context );
 
 			promise.always( () => {
@@ -242,6 +254,10 @@ describe( 'getters', () => {
 
 			Object.defineProperty( context.getters, 'currentImageTitle', {
 				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
 			} );
 
 			actions.publishTags( context );
@@ -271,6 +287,10 @@ describe( 'getters', () => {
 				get: jest.fn().mockReturnValue( 'Test' )
 			} );
 
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
+			} );
+
 			actions.publishTags( context );
 
 			promise.always( () => {
@@ -296,6 +316,10 @@ describe( 'getters', () => {
 
 			Object.defineProperty( context.getters, 'currentImageTitle', {
 				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
 			} );
 
 			actions.publishTags( context );
