@@ -92,6 +92,7 @@ var mapState = require( 'vuex' ).mapState,
 	ToastNotification = require( './base/ToastNotification.vue' ),
 	CardStack = require( './CardStack.vue' ),
 	PersonalUploadsCount = require( './PersonalUploadsCount.vue' ),
+	OnboardingDialog = require( '../widgets/OnboardingDialog.js' ),
 	url = new mw.Uri();
 
 // @vue/component
@@ -181,8 +182,22 @@ module.exports = {
 			if ( this.tabs.indexOf( newTabName ) !== -1 ) {
 				this.updateCurrentTab( newTabName );
 			}
+		},
+
+		showOnboardingDialog: function () {
+			this.windowManager.openWindow( this.onboardingDialog );
 		}
 	} ),
+
+	created: function () {
+		this.windowManager = new OO.ui.WindowManager();
+		this.onboardingDialog = new OnboardingDialog( {
+			onboardingPrefKey: 'wbmad-onboarding-dialog-dismissed'
+		} );
+
+		$( document.body ).append( this.windowManager.$element );
+		this.windowManager.addWindows( [ this.onboardingDialog ] );
+	},
 
 	mounted: function () {
 		// If there's a URL fragment and it's one of the tabs, select that tab.
@@ -201,6 +216,8 @@ module.exports = {
 
 		// Listen for hash changes.
 		window.addEventListener( 'hashchange', this.onHashChange );
+
+		this.windowManager.openWindow( this.onboardingDialog );
 	}
 };
 </script>

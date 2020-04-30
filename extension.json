@@ -241,6 +241,7 @@
 				"components/base/Tabs.vue",
 				"components/base/Tab.vue",
 				"components/base/ToastNotification.vue",
+				"widgets/OnboardingDialog.js",
 				"plugins/api.js",
 				"store/index.js",
 				"store/state.js",
