@@ -24,6 +24,7 @@ var Icon = require( './Icon.vue' ),
 		success: 'check'
 	};
 
+// @vue/component
 module.exports = {
 	name: 'Message',
 
@@ -62,45 +63,45 @@ module.exports = {
 
 <style lang="less">
 @import 'mediawiki.mixins';
-@import '../../style-variables.less';
+@import '../../../lib/wikimedia-ui-base.less';
 
 .mw-message {
+	color: @color-notice;
 	font-weight: bold;
 	max-width: 50em;
 	position: relative;
 
 	&--error {
-		color: @errorColor;
+		color: @color-error;
 	}
 
 	&--success {
-		color: @successColor;
+		color: @color-success;
 	}
 
 	&--block {
-		border: 1px solid;
-		color: @base10;
+		color: @color-notice;
 		font-weight: normal;
 		padding: 16px 24px;
 
 		&.mw-message--notice {
-			background-color: @base80;
-			border-color: @base50;
+			background-color: @background-color-notice--framed;
+			border: @border-notice;
 		}
 
 		&.mw-message--error {
-			background-color: @errorBackground;
-			border-color: @errorBorder;
+			background-color: @background-color-error--framed;
+			border: @border-error;
 		}
 
 		&.mw-message--warning {
-			background-color: @warningBackground;
-			border-color: @warningBorder;
+			background-color: @background-color-warning--framed;
+			border: @border-warning;
 		}
 
 		&.mw-message--success {
-			background-color: @successBackground;
-			border-color: @successBorder;
+			background-color: @background-color-success--framed;
+			border: @border-success;
 		}
 	}
 
