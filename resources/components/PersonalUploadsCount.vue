@@ -1,5 +1,6 @@
 <template>
-	<div class="wbmad-personal-uploads-count">
+	<div v-if="unreviewedCount > 0"
+		class="wbmad-personal-uploads-count">
 		<p>{{ $i18n( 'machinevision-personal-uploads-count', unreviewedCount ) }}</p>
 	</div>
 </template>
@@ -17,8 +18,15 @@ module.exports = {
 </script>
 
 <style lang="less">
+@import '../style-variables.less';
+
 .wbmad-personal-uploads-count {
+	.fade-in( 0.5s );
 	font-weight: bold;
-	margin-bottom: 1em;
+	margin-bottom: 16px;
+
+	p {
+		margin: 0;
+	}
 }
 </style>

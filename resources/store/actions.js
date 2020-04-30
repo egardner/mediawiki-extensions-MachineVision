@@ -101,10 +101,14 @@ module.exports = {
 				} );
 			} );
 
-			context.commit( 'setUserStats', res.query.unreviewedimagecount.user );
-
-			// Commit the current number of unreviewed personal images into the store
-			context.commit( 'setUnreviewedCount', res.query.unreviewedimagecount.user.unreviewed );
+			try {
+				// Commit user stats and current number of unreviewed personal
+				// images into the store.
+				context.commit( 'setUserStats', res.query.unreviewedimagecount.user );
+				context.commit( 'setUnreviewedCount', res.query.unreviewedimagecount.user.unreviewed );
+			} catch ( e ) {
+				// Use default state values.
+			}
 
 			// Remove the pending state
 			context.commit( 'setPending', {
