@@ -84,9 +84,8 @@ module.exports = {
 
 .mw-suggestion {
 	.box-sizing( border-box );
-	.flex-display();
-	.transition( color @transition-duration-base );
-	align-items: center;
+	// TODO: We need to re-add this transition somehow.
+	// .transition( color @transition-duration-base );
 	background-color: @base90;
 	border: @suggestion-border-width solid @base50;
 	color: @base10;

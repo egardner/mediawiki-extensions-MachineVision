@@ -1,10 +1,12 @@
 <template>
-	<div
+	<transition-group
+		name="wbmad-suggestion-expand"
+		tag="div"
 		class="wbmad-suggestions-group"
 		v-bind:class="builtInClasses"
 	>
-		<suggestion v-for="( suggestion, index ) in currentImageSuggestions"
-			v-bind:key="index"
+		<suggestion v-for="suggestion in currentImageSuggestions"
+			v-bind:key="suggestion.wikidataId"
 			v-bind:text="suggestion.text"
 			v-bind:confirmed="suggestion.confirmed"
 			v-on:click="toggleTagConfirmation( suggestion )"
@@ -30,8 +32,9 @@
 				<label class="wbmad-suggestion__label">{{ suggestion.text }}</label>
 			</template>
 		</suggestion>
-	</div>
-	<!-- TODO: Add custom tag button. -->
+
+		<!-- TODO: Add custom tag button. -->
+	</transition-group>
 </template>
 
 <script>
@@ -66,7 +69,30 @@ module.exports = {
 
 	methods: $.extend( {}, mapActions( [
 		'toggleTagConfirmation'
-	] ) )
+	] ) ),
+
+	watch: {
+		// TODO: Try to find a way to get the transition to look right without
+		// mutating the list of images. If we can't, at least mutate it in
+		// the mutation instead of here.
+		tagDetailsExpanded: function () {
+			var odds = [],
+				evens = [];
+
+			// Without this, the transition doesn't move how I'd expect it to.
+			// This reorders the items so that they move in a more intuitive
+			// way durin the transition.
+			this.currentImageSuggestions.forEach( function ( item ) {
+				if ( item % 2 === 0 ) {
+					evens.push( item );
+				} else {
+					odds.push( item );
+				}
+			} );
+
+			this.currentImageSuggestions = odds.concat( evens );
+		}
+	}
 };
 </script>
 
@@ -110,5 +136,11 @@ module.exports = {
 
 .wbmad-suggestion__label__separator {
 	margin: 0 0.4em;
+}
+
+// TODO: need height/width transitions if possible.
+// TODO: Need to make sure transition works no matter where you've scrolled to.
+.wbmad-suggestion-expand-move {
+	transition: transform 1s;
 }
 </style>
