@@ -1,36 +1,40 @@
 <template>
-	<div class="wbmad-user-message">
-		<div class="wbmad-user-message-icon" />
-		<p class="wbmad-user-message-heading">
-			{{ heading }}
-		</p>
-		<div class="wbmad-user-message-text">
-			{{ text }}
+	<wbmad-fade-in>
+		<div class="wbmad-user-message">
+			<div class="wbmad-user-message-icon" />
+			<p class="wbmad-user-message-heading">
+				{{ heading }}
+			</p>
+			<div class="wbmad-user-message-text">
+				{{ text }}
+			</div>
+			<mw-button v-if="cta"
+				class="wbmad-user-message-cta"
+				v-bind:primary="true"
+				v-bind:progressive="true"
+				v-bind:title="cta"
+				v-on:click="$emit( 'cta-click' )"
+			>
+				{{ cta }}
+			</mw-button>
+			<p v-if="disclaimer" class="wbmad-user-message-disclaimer">
+				{{ disclaimer }}
+			</p>
 		</div>
-		<mw-button v-if="cta"
-			class="wbmad-user-message-cta"
-			v-bind:primary="true"
-			v-bind:progressive="true"
-			v-bind:title="cta"
-			v-on:click="$emit( 'cta-click' )"
-		>
-			{{ cta }}
-		</mw-button>
-		<p v-if="disclaimer" class="wbmad-user-message-disclaimer">
-			{{ disclaimer }}
-		</p>
-	</div>
+	</wbmad-fade-in>
 </template>
 
 <script>
-var Button = require( './base/Button.vue' );
+var Button = require( './base/Button.vue' ),
+	FadeIn = require( './FadeIn.vue' );
 
 // @vue/component
 module.exports = {
 	name: 'UserMessage',
 
 	components: {
-		'mw-button': Button
+		'mw-button': Button,
+		'wbmad-fade-in': FadeIn
 	},
 
 	props: {
