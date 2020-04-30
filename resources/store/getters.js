@@ -65,6 +65,17 @@ module.exports = {
 		}
 	},
 
+	currentImageNonDisplayableSuggestions: function ( state, getters ) {
+		if ( getters.currentImage ) {
+			// Return *only* suggestions with no label
+			return getters.currentImage.suggestions.filter( function ( suggestion ) {
+				return !suggestion.text;
+			} );
+		} else {
+			return [];
+		}
+	},
+
 	/**
 	 * Whether or not the user is logged in. Derived from non-Vuex global
 	 * state.
