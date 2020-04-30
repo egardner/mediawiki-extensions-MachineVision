@@ -27,14 +27,13 @@
 
 			<tabs v-bind:active="currentTab" v-on:tab-change="onTabChange">
 				<!-- Popular tab -->
-				<tab name="popular"
-					v-bind:title="popularTabTitle">
+				<tab name="popular" v-bind:title="popularTabTitle">
 					<card-stack v-bind:queue="'popular'" />
 				</tab>
 
 				<!-- User tab -->
-				<tab name="user"
-					v-bind:title="userTabTitle">
+				<tab name="user" v-bind:title="userTabTitle">
+					<personal-uploads-count />
 					<card-stack v-bind:queue="'user'" />
 				</tab>
 			</tabs>
@@ -92,6 +91,7 @@ var mapState = require( 'vuex' ).mapState,
 	Tab = require( './base/Tab.vue' ),
 	ToastNotification = require( './base/ToastNotification.vue' ),
 	CardStack = require( './CardStack.vue' ),
+	PersonalUploadsCount = require( './PersonalUploadsCount.vue' ),
 	url = new mw.Uri();
 
 // @vue/component
@@ -102,7 +102,8 @@ module.exports = {
 		tabs: Tabs,
 		tab: Tab,
 		'toast-notification': ToastNotification,
-		'card-stack': CardStack
+		'card-stack': CardStack,
+		'personal-uploads-count': PersonalUploadsCount
 	},
 
 	computed: $.extend( {}, mapState( [

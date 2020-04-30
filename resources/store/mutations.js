@@ -95,5 +95,21 @@ module.exports = {
 
 	setUserStats: function ( state, payload ) {
 		state.userStats = payload;
+	},
+
+	/**
+	 * Set the initial count of user's unreviewed images
+	 * @param {Object} state
+	 * @param {number} count
+	 */
+	setUnreviewedCount: function ( state, count ) {
+		state.unreviewedCount = count;
+	},
+
+	/**
+	 * @param {Object} state
+	 */
+	decrementUnreviewedCount: function ( state ) {
+		state.unreviewedCount--;
 	}
 };

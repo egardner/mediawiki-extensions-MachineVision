@@ -101,8 +101,16 @@ module.exports = {
 				} );
 			} );
 
-			context.commit( 'setUserStats', res.query.unreviewedimagecount.user );
+			try {
+				// Commit user stats and current number of unreviewed personal
+				// images into the store.
+				context.commit( 'setUserStats', res.query.unreviewedimagecount.user );
+				context.commit( 'setUnreviewedCount', res.query.unreviewedimagecount.user.unreviewed );
+			} catch ( e ) {
+				// Use default state values.
+			}
 
+			// Remove the pending state
 			context.commit( 'setPending', {
 				queue: queue,
 				pending: false
@@ -141,6 +149,7 @@ module.exports = {
 				return tag.confirmed;
 			} ),
 			setClaimsRequest = context.dispatch( 'setDepictsStatements', confirmedTags ),
+			isUserImage = context.state.currentTab === 'user',
 			reviewBatch,
 			reviewImageLabelsRequest;
 
@@ -172,6 +181,10 @@ module.exports = {
 		// Set claims, review labels, update publish status, and skip to next image
 		$.when( setClaimsRequest, reviewImageLabelsRequest ).done( function () {
 			context.dispatch( 'updatePublishStatus', 'success' );
+
+			if ( isUserImage ) {
+				context.commit( 'decrementUnreviewedCount' );
+			}
 		} ).fail( function () {
 			context.dispatch( 'updatePublishStatus', 'error' );
 		} ).always( function () {
@@ -233,7 +246,6 @@ module.exports = {
 	 */
 	skipImage: function ( context ) {
 		context.commit( 'removeImage' );
-
 	},
 
 	/**
