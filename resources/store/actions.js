@@ -137,42 +137,49 @@ module.exports = {
 	},
 
 	/**
-	 * @TODO implement this
-	 *
 	 * submits user selections for current image to API and commits the
-	 * mutations for removing image from queue; can also dispatch getImages if
-	 * we are running low on data
+	 * mutations for removing image from queue
 	 *
 	 * @param {Object} context
 	 */
 	publishTags: function ( context ) {
-		var tags = context.getters.currentImageSuggestions,
-			reviewBatch = tags.map( function ( tag ) {
-				return {
-					label: tag.wikidataId,
-					review: tag.confirmed ? 'accept' : 'reject'
-				};
-			} ),
-			confirmedTags = tags.filter( function ( tag ) {
+		var displayedTags = context.getters.currentImageSuggestions,
+			nonDisplayedTags = context.getters.currentImageNonDisplayableSuggestions,
+			confirmedTags = displayedTags.filter( function ( tag ) {
 				return tag.confirmed;
 			} ),
-			setClaims = context.dispatch( 'setDepictsStatements', confirmedTags ),
-			reviewImageLabels = api.postWithToken( 'csrf', {
-				action: 'reviewimagelabels',
-				filename: context.getters.currentImageTitle,
-				batch: JSON.stringify( reviewBatch )
-			} ),
-			isUserImage = context.state.currentTab === 'user';
+			setClaimsRequest = context.dispatch( 'setDepictsStatements', confirmedTags ),
+			isUserImage = context.state.currentTab === 'user',
+			reviewBatch,
+			reviewImageLabelsRequest;
+
+		// Set the review state for all tags which could be displayed to the user
+		reviewBatch = displayedTags.map( function ( tag ) {
+			return {
+				label: tag.wikidataId,
+				review: tag.confirmed ? 'accept' : 'reject'
+			};
+		} );
+
+		// If there were any tags which could not be displayed to the user in their language,
+		// set them to the "not-displayed" state
+		nonDisplayedTags.forEach( function ( tag ) {
+			reviewBatch.push( {
+				label: tag.wikidataId,
+				review: 'not-displayed'
+			} );
+		} );
+
+		reviewImageLabelsRequest = api.postWithToken( 'csrf', {
+			action: 'reviewimagelabels',
+			filename: context.getters.currentImageTitle,
+			batch: JSON.stringify( reviewBatch )
+		} );
 
 		context.dispatch( 'updatePublishStatus', 'pending' );
 
-		// TODO: this is where we should request more images if we are
-		// running low in a given queue
-
-		// TODO: this is where we should be logging some data
-
 		// Set claims, review labels, update publish status, and skip to next image
-		$.when( setClaims, reviewImageLabels ).done( function () {
+		$.when( setClaimsRequest, reviewImageLabelsRequest ).done( function () {
 			context.dispatch( 'updatePublishStatus', 'success' );
 
 			if ( isUserImage ) {

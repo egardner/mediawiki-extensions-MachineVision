@@ -38,6 +38,9 @@
 				</tab>
 			</tabs>
 
+			<p v-i18n-html:machinevision-machineaidedtagging-preferences-link
+				class="wbmad-suggested-tags-page-preferences-link" />
+
 			<div v-i18n-html:machinevision-machineaidedtagging-license-information
 				class="wbmad-suggested-tags-page-license-info" />
 		</template>
@@ -217,7 +220,7 @@ module.exports = {
 	}
 
 	.mw-tabs__content {
-		padding: 24px 4px 32px;
+		padding: 24px 4px 16px;
 	}
 
 	.wbmad-suggested-tags-page-license-info {
@@ -228,6 +231,10 @@ module.exports = {
 		p {
 			margin: 0;
 		}
+	}
+
+	.wbmad-suggested-tags-page-preferences-link {
+		margin: 0 0 16px;
 	}
 }
 </style>
