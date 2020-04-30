@@ -19,8 +19,8 @@
 			v-bind:class="toggleClasses"
 			role="checkbox"
 			tabindex="0"
-			v-bind:aria-disabled="disabled ? 'true' : 'false'"
-			v-bind:aria-checked="on ? 'true' : 'false'"
+			v-bind:aria-disabled="disabledState ? 'true' : 'false'"
+			v-bind:aria-checked="onState ? 'true' : 'false'"
 			v-bind:aria-labelled-by="name"
 		>
 			<span class="mw-toggle-switch__toggle__grip" />
@@ -64,29 +64,36 @@ module.exports = {
 		}
 	},
 
+	data: function () {
+		return {
+			onState: this.on,
+			disabledState: this.disabled
+		};
+	},
+
 	computed: {
 		labelClasses: function () {
 			return {
-				'mw-toggle-switch__label--disabled': this.disabled
+				'mw-toggle-switch__label--disabled': this.disabledState
 			};
 		},
 
 		toggleClasses: function () {
 			return {
-				'mw-toggle-switch__toggle--on': this.on,
-				'mw-toggle-switch__toggle--enabled': !this.disabled,
-				'mw-toggle-switch__toggle--disabled': this.disabled
+				'mw-toggle-switch__toggle--on': this.onState,
+				'mw-toggle-switch__toggle--enabled': !this.disabledState,
+				'mw-toggle-switch__toggle--disabled': this.disabledState
 			};
 		}
 	},
 
 	methods: {
 		onClick: function () {
-			if ( this.disabled ) {
+			if ( this.disabledState ) {
 				return;
 			}
 
-			this.on = !this.on;
+			this.onState = !this.onState;
 			this.$emit( 'click' );
 		}
 	}
