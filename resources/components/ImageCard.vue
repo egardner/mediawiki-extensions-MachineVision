@@ -71,7 +71,8 @@ var mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState,
 	Spinner = require( './Spinner.vue' ),
 	Button = require( './base/Button.vue' ),
-	Suggestion = require( './base/Suggestion.vue' );
+	Suggestion = require( './base/Suggestion.vue' ),
+	ConfirmTagsDialog = require( '../widgets/ConfirmTagsDialog.js' );
 
 // @vue/component
 module.exports = {
@@ -176,7 +177,18 @@ module.exports = {
 		 * lives in Vuex, so all we need to do is trigger things here.
 		 */
 		onPublish: function () {
-			this.publishTags();
+			var windowManager = new OO.ui.WindowManager(),
+				confirmTagsDialog = new ConfirmTagsDialog( {
+					tagsList: this.confirmedSuggestions.map( function ( tag ) {
+						return tag.text;
+					} ).join( ' ,' ),
+					imgUrl: this.thumbUrl,
+					imgTitle: this.imgTitle
+				} ).connect( this, { confirm: 'publishTags' } );
+
+			$( document.body ).append( windowManager.$element );
+			windowManager.addWindows( [ confirmTagsDialog ] );
+			windowManager.openWindow( confirmTagsDialog );
 		},
 
 		/**
