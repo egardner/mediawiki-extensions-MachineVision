@@ -1,14 +1,16 @@
 <template>
-	<div
-		v-show="isActive"
-		v-bind:id="id"
-		v-bind:aria-hidden="!isActive"
-		v-bind:aria-labeledby="id + '-label'"
-		class="mw-tab"
-		role="tabpanel"
-	>
-		<slot />
-	</div>
+	<transition name="mw-tab-fade-in">
+		<div
+			v-show="isActive"
+			v-bind:id="id"
+			v-bind:aria-hidden="!isActive"
+			v-bind:aria-labeledby="id + '-label'"
+			class="mw-tab"
+			role="tabpanel"
+		>
+			<slot />
+		</div>
+	</transition>
 </template>
 
 <script>
@@ -45,3 +47,13 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.mw-tab-fade-in-enter {
+	opacity: 0;
+}
+
+.mw-tab-fade-in-enter-active {
+	transition: opacity 0.25s;
+}
+</style>
