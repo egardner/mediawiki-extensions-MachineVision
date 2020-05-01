@@ -34,7 +34,8 @@ module.exports = {
 	  "resources/components/index.js",
 	  "resources/plugins/index.js",
 	  "resources/init.js",
-	  "resources/vendor/"
+	  "resources/vendor/",
+	  "resources/widgets"
 	],
   
 	// A list of reporter names that Jest uses when writing coverage reports
