@@ -225,7 +225,10 @@ module.exports = {
 		// Listen for hash changes.
 		window.addEventListener( 'hashchange', this.onHashChange );
 
-		this.showOnboardingDialog();
+		// Show onboarding dialog on user tab.
+		if ( hash === 'user' ) {
+			this.showOnboardingDialog();
+		}
 	}
 };
 </script>

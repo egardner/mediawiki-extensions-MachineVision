@@ -2,7 +2,10 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
-		<transition v-else-if="shouldDisplayImage" name="wbmad-fade" appear>
+		<transition v-else-if="shouldDisplayImage"
+			name="wbmad-fade"
+			appear
+		>
 			<wbmad-image-card v-bind:key="currentImageId" />
 		</transition>
 
