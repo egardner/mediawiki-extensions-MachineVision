@@ -128,17 +128,17 @@ module.exports = {
 
 <style lang="less">
 @import 'mediawiki.mixins';
-@import '../../style-variables.less';
+@import '../../../lib/wikimedia-ui-base.less';
 
 // stylelint-disable selector-class-pattern
 
 .mw-tabs {
 	&__header {
 		.flex-display();
-		.box-shadow( inset 0 -1px 0 0 @base50 );
+		.box-shadow( inset 0 -1px 0 0 @border-color-base );
 
 		&__item {
-			color: @base30;
+			color: @color-base--subtle;
 			cursor: pointer;
 			font-weight: bold;
 			margin: 6px 6px 0 0;
@@ -147,22 +147,22 @@ module.exports = {
 
 			&:hover,
 			&.is-active {
-				color: @progressive;
-				.box-shadow( inset 0 -2px 0 0 @progressive );
+				color: @color-primary;
+				.box-shadow( inset 0 -2px 0 0 @color-primary );
 			}
 
 			&:hover {
-				color: @progressive-hover;
-				.box-shadow( inset 0 -2px 0 0 @progressive-hover );
+				color: @color-primary--hover;
+				.box-shadow( inset 0 -2px 0 0 @color-primary--hover );
 			}
 
 			&.is-disabled {
-				color: @base50;
+				color: @color-base--disabled;
 				cursor: not-allowed;
 
 				&:hover,
 				&.is-active {
-					color: @base50;
+					color: @color-base--disabled;
 					box-shadow: unset;
 				}
 			}

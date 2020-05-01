@@ -31,7 +31,7 @@
  * and process the notification. Message content should be as concise as
  * possible.
  *
- * Specifitying notification type provides helpful information to screen readers.
+ * Specifying notification type provides helpful information to screen readers.
  * Type can be one of "success" or "error".
  */
 // @vue/component
@@ -62,10 +62,10 @@ module.exports = {
 		 * duration, then hide the toast, which kicks off leave transitions.
 		 */
 		onAppear: function () {
-			var self = this;
-			setTimeout( function () {
-				self.show = false;
-			}, this.duration * 1000 );
+			var hideToast = function () {
+				this.show = false;
+			};
+			setTimeout( hideToast.bind( this ), this.duration * 1000 );
 		},
 		/**
 		 * After the leave transitions finish, remove the toast and wrapper.
@@ -83,7 +83,7 @@ module.exports = {
 
 <style lang="less">
 @import 'mediawiki.mixins';
-@import '../../style-variables.less';
+@import '../../../lib/wikimedia-ui-base.less';
 
 .mw-toast {
 	// Center the toast within the parent container.
@@ -92,16 +92,18 @@ module.exports = {
 }
 
 .mw-toast__notification {
-	background-color: @base10;
-	border-radius: @outer-border-radius;
+	background-color: @color-base;
+	border-radius: @border-radius-base * 4;
 	bottom: 5vh;
-	color: @base100;
+	color: @color-base--inverted;
 	display: inline-block;
 	margin: 0;
 	padding: 8px 32px;
 	position: fixed;
 	text-align: center;
 	width: 95%;
+	// This is debatable.
+	z-index: 4;
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		width: auto;

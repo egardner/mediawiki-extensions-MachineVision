@@ -1,8 +1,10 @@
 <template>
 	<div
 		class="mw-suggestion"
-		tabindex="0"
 		v-bind:class="classObject"
+		role="checkbox"
+		tabindex="0"
+		v-bind:aria-checked="confirmed ? 'true' : 'false'"
 		v-on:click="$emit( 'click' )"
 		v-on:keyup.enter="$emit( 'click' )"
 		v-on:keyup.space="$emit( 'click' )"
@@ -21,6 +23,7 @@
 <script>
 var Icon = require( './Icon.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'Suggestion',
 
@@ -57,13 +60,13 @@ module.exports = {
 
 <style lang="less">
 @import 'mediawiki.mixins';
-@import '../../style-variables.less';
+@import '../../../lib/wikimedia-ui-base.less';
 
 .mw-suggestion {
 	.transition( color @transition-duration-base );
-	background-color: @base90;
-	border: @suggestion-border-width solid @base50;
-	color: @base10;
+	background-color: @background-color-framed;
+	border: @border-base;
+	color: @color-base;
 	cursor: pointer;
 	margin: 0 4px 4px 0;
 	padding: 4px 1.25em;
@@ -72,12 +75,12 @@ module.exports = {
 
 	&:hover,
 	&:focus {
-		color: @base0;
+		color: @color-base--emphasized;
 	}
 
 	&:focus {
-		border-color: @accent30;
-		box-shadow: inset 0 0 0 1px @accent30;
+		border-color: @color-primary--active;
+		box-shadow: inset 0 0 0 1px @color-primary--active;
 		outline: 0;
 	}
 
@@ -99,9 +102,9 @@ module.exports = {
 	}
 
 	&--confirmed {
-		background-color: @accent90;
-		border-color: @accent30;
-		color: @base0;
+		background-color: @background-color-primary;
+		border-color: @color-primary--active;
+		color: @color-base--emphasized;
 		position: relative;
 
 		.mw-suggestion__label {
