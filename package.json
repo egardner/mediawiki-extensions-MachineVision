@@ -19,6 +19,7 @@
 		"jquery": "3.4.1",
 		"mockery": "^2.1.0",
 		"oojs": "3.0.0",
+		"oojs-ui": "0.36.3",
 		"stylelint-config-wikimedia": "0.10.1",
 		"vue": "^2.6.11",
 		"vue-jest": "^3.0.5",

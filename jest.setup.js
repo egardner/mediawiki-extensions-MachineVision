@@ -112,6 +112,8 @@ global.mw = mw;
 
 global.$ = require( 'jquery' );
 global.OO = require( 'oojs' );
+require( 'oojs-ui' );
+require( 'oojs-ui/dist/oojs-ui-wikimediaui.js' );
 
 mockWbApi = {
 	get: jest.fn().mockResolvedValue( {} ),

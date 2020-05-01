@@ -94,6 +94,7 @@ var mapState = require( 'vuex' ).mapState,
 	ToastNotification = require( './base/ToastNotification.vue' ),
 	CardStack = require( './CardStack.vue' ),
 	PersonalUploadsCount = require( './PersonalUploadsCount.vue' ),
+	OnboardingDialog = require( '../widgets/OnboardingDialog.js' ),
 	FadeIn = require( './FadeIn.vue' ),
 	url = new mw.Uri();
 
@@ -185,8 +186,36 @@ module.exports = {
 			if ( this.tabs.indexOf( newTabName ) !== -1 ) {
 				this.updateCurrentTab( newTabName );
 			}
+		},
+
+		showOnboardingDialog: function () {
+			var onboardingDialog,
+				prefKey = 'wbmad-onboarding-dialog-dismissed',
+				windowManager;
+
+			// Don't show if user has dismissed it or if this isn't the user
+			// tab. Type coercion is necessary due to limitations of browser
+			// localstorage.
+			if ( Number( mw.user.options.get( prefKey ) ) === 1 ) {
+				return;
+			}
+
+			windowManager = new OO.ui.WindowManager();
+			onboardingDialog = new OnboardingDialog( { onboardingPrefKey: prefKey } );
+
+			$( document.body ).append( windowManager.$element );
+			windowManager.addWindows( [ onboardingDialog ] );
+			windowManager.openWindow( onboardingDialog );
 		}
 	} ),
+
+	watch: {
+		currentTab: function ( newVal ) {
+			if ( newVal === 'user' ) {
+				this.showOnboardingDialog();
+			}
+		}
+	},
 
 	mounted: function () {
 		// If there's a URL fragment and it's one of the tabs, select that tab.
