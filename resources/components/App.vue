@@ -193,8 +193,11 @@ module.exports = {
 				prefKey = 'wbmad-onboarding-dialog-dismissed',
 				windowManager;
 
-			// Type coercion is necessary due to limitations of browser localstorage.
-			if ( Number( mw.user.options.get( prefKey ) ) === 1 ) {
+			// Don't show if user has dismissed it or if this isn't the user
+			// tab. Type coercion is necessary due to limitations of browser
+			// localstorage.
+			if ( Number( mw.user.options.get( prefKey ) ) === 1 ||
+				this.currentTab !== 'user' ) {
 				return;
 			}
 
@@ -206,6 +209,12 @@ module.exports = {
 			windowManager.openWindow( onboardingDialog );
 		}
 	} ),
+
+	watch: {
+		currentTab: function () {
+			this.showOnboardingDialog();
+		}
+	},
 
 	mounted: function () {
 		// If there's a URL fragment and it's one of the tabs, select that tab.
@@ -224,11 +233,6 @@ module.exports = {
 
 		// Listen for hash changes.
 		window.addEventListener( 'hashchange', this.onHashChange );
-
-		// Show onboarding dialog on user tab.
-		if ( hash === 'user' ) {
-			this.showOnboardingDialog();
-		}
 	}
 };
 </script>
