@@ -196,8 +196,7 @@ module.exports = {
 			// Don't show if user has dismissed it or if this isn't the user
 			// tab. Type coercion is necessary due to limitations of browser
 			// localstorage.
-			if ( Number( mw.user.options.get( prefKey ) ) === 1 ||
-				this.currentTab !== 'user' ) {
+			if ( Number( mw.user.options.get( prefKey ) ) === 1 ) {
 				return;
 			}
 
@@ -211,8 +210,10 @@ module.exports = {
 	} ),
 
 	watch: {
-		currentTab: function () {
-			this.showOnboardingDialog();
+		currentTab: function ( newVal ) {
+			if ( newVal === 'user' ) {
+				this.showOnboardingDialog();
+			}
 		}
 	},
 
