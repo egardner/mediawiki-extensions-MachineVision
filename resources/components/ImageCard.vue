@@ -52,7 +52,7 @@
 					</mw-button>
 					<mw-button
 						class="wbmad-action-buttons__skip"
-						v-bind:framed="false"
+						v-bind:frameless="true"
 						v-bind:disabled="skipDisabled"
 						v-bind:title="$i18n( 'machinevision-skip-title', title ).parse()"
 						v-on:click="onSkip"
@@ -194,13 +194,7 @@ module.exports = {
 @import '../style-variables.less';
 
 .wbmad-image-with-suggestions {
-	.fade-in( 0.5s );
-	display: none;
 	position: relative;
-
-	&:first-child {
-		display: block;
-	}
 
 	&__container {
 		.box-shadow(0 1px 4px rgba( 0, 0, 0, 0.25 ));

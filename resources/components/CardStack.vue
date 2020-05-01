@@ -2,7 +2,9 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
-		<wbmad-image-card v-else-if="shouldDisplayImage" />
+		<transition v-else-if="shouldDisplayImage" name="wbmad-fade" appear>
+			<wbmad-image-card v-bind:key="currentImageId" />
+		</transition>
 
 		<wbmad-user-message v-else-if="showUserCta"
 			class="wbmad-user-cta"
@@ -84,7 +86,7 @@ module.exports = {
 		 * @return {boolean}
 		 */
 		shouldDisplayImage: function () {
-			return this.currentImage && this.imagesInQueue;
+			return this.currentTab === this.queue && this.currentImage && this.imagesInQueue;
 		},
 
 		/**
@@ -119,6 +121,15 @@ module.exports = {
 		 */
 		showUserCtaNoLabeledUploads: function () {
 			return this.isUserTab && !this.userHasLabeledUploads;
+		},
+
+		/**
+		 * We need a unique ID for each image card so the component isn't
+		 * reused. Otherwise, transitions won't work.
+		 * @return {number}
+		 */
+		currentImageId: function () {
+			return this.currentImage.pageid;
 		}
 	} ),
 
@@ -162,5 +173,25 @@ module.exports = {
 	.wbmad-user-message-icon {
 		background-image: url( ../icons/empty-state-icon-no-uploads.svg );
 	}
+}
+
+// Transitions.
+// Fade in new image.
+.wbmad-fade-enter-active,
+.wbmad-fade-appear-active {
+	transition: opacity 0.5s;
+}
+
+.wbmad-fade-enter,
+.wbmad-fade-appear {
+	opacity: 0;
+}
+
+// To avoid a jump in the layout for an instant between images, we can't use
+// the out-in mode. Instead, let's hide the old image and remove it from the
+// layout flow while the new one fades in.
+.wbmad-fade-leave-active {
+	opacity: 0;
+	position: absolute;
 }
 </style>

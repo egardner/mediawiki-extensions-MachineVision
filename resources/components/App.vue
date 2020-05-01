@@ -1,60 +1,62 @@
 <template>
-	<div class="wbmad-suggested-tags-page">
-		<toast-notification
-			v-if="publishError"
-			v-bind:key="'publishError-' + Date.now()"
-			type="error"
-			duration="8"
-			v-on:leave="onToastLeave"
-		>
-			<p v-i18n-html:machinevision-publish-error-message />
-		</toast-notification>
+	<wbmad-fade-in>
+		<div class="wbmad-suggested-tags-page">
+			<toast-notification
+				v-if="publishError"
+				v-bind:key="'publishError-' + Date.now()"
+				type="error"
+				duration="8"
+				v-on:leave="onToastLeave"
+			>
+				<p v-i18n-html:machinevision-publish-error-message />
+			</toast-notification>
 
-		<toast-notification
-			v-if="publishSuccess"
-			v-bind:key="'publishSuccess-' + Date.now()"
-			type="success"
-			v-bind:duration="4"
-			v-on:leave="onToastLeave"
-		>
-			<p v-i18n-html:machinevision-success-message />
-		</toast-notification>
+			<toast-notification
+				v-if="publishSuccess"
+				v-bind:key="'publishSuccess-' + Date.now()"
+				type="success"
+				v-bind:duration="4"
+				v-on:leave="onToastLeave"
+			>
+				<p v-i18n-html:machinevision-success-message />
+			</toast-notification>
 
-		<!-- Tabs container -->
-		<template v-if="showTabs">
-			<h2 v-i18n-html:machinevision-machineaidedtagging-tabs-heading
-				class="wbmad-suggested-tags-page-tabs-heading" />
+			<!-- Tabs container -->
+			<template v-if="showTabs">
+				<h2 v-i18n-html:machinevision-machineaidedtagging-tabs-heading
+					class="wbmad-suggested-tags-page-tabs-heading" />
 
-			<tabs v-bind:active="currentTab" v-on:tab-change="onTabChange">
-				<!-- Popular tab -->
-				<tab name="popular" v-bind:title="popularTabTitle">
-					<card-stack v-bind:queue="'popular'" />
-				</tab>
+				<tabs v-bind:active="currentTab" v-on:tab-change="onTabChange">
+					<!-- Popular tab -->
+					<tab name="popular" v-bind:title="popularTabTitle">
+						<card-stack v-bind:queue="'popular'" />
+					</tab>
 
-				<!-- User tab -->
-				<tab name="user" v-bind:title="userTabTitle">
-					<personal-uploads-count />
-					<card-stack v-bind:queue="'user'" />
-				</tab>
-			</tabs>
+					<!-- User tab -->
+					<tab name="user" v-bind:title="userTabTitle">
+						<personal-uploads-count />
+						<card-stack v-bind:queue="'user'" />
+					</tab>
+				</tabs>
 
-			<p v-i18n-html:machinevision-machineaidedtagging-preferences-link
-				class="wbmad-suggested-tags-page-preferences-link" />
+				<p v-i18n-html:machinevision-machineaidedtagging-preferences-link
+					class="wbmad-suggested-tags-page-preferences-link" />
 
-			<div v-i18n-html:machinevision-machineaidedtagging-license-information
-				class="wbmad-suggested-tags-page-license-info" />
-		</template>
+				<div v-i18n-html:machinevision-machineaidedtagging-license-information
+					class="wbmad-suggested-tags-page-license-info" />
+			</template>
 
-		<!-- Login message container -->
-		<template v-else-if="!isAuthenticated">
-			<!-- eslint-disable-next-line vue/no-v-html -->
-			<p v-html="loginMessage" />
-		</template>
+			<!-- Login message container -->
+			<template v-else-if="!isAuthenticated">
+				<!-- eslint-disable-next-line vue/no-v-html -->
+				<p v-html="loginMessage" />
+			</template>
 
-		<template v-else>
-			<p v-i18n-html:machinevision-autoconfirmed-message />
-		</template>
-	</div>
+			<template v-else>
+				<p v-i18n-html:machinevision-autoconfirmed-message />
+			</template>
+		</div>
+	</wbmad-fade-in>
 </template>
 
 <script>
@@ -93,6 +95,7 @@ var mapState = require( 'vuex' ).mapState,
 	CardStack = require( './CardStack.vue' ),
 	PersonalUploadsCount = require( './PersonalUploadsCount.vue' ),
 	OnboardingDialog = require( '../widgets/OnboardingDialog.js' ),
+	FadeIn = require( './FadeIn.vue' ),
 	url = new mw.Uri();
 
 // @vue/component
@@ -104,7 +107,8 @@ module.exports = {
 		tab: Tab,
 		'toast-notification': ToastNotification,
 		'card-stack': CardStack,
-		'personal-uploads-count': PersonalUploadsCount
+		'personal-uploads-count': PersonalUploadsCount,
+		'wbmad-fade-in': FadeIn
 	},
 
 	computed: $.extend( {}, mapState( [
