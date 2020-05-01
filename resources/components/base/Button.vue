@@ -29,7 +29,7 @@ module.exports = {
 		disabled: {
 			type: Boolean
 		},
-		unframed: {
+		frameless: {
 			type: Boolean
 		},
 		icon: {
@@ -54,7 +54,7 @@ module.exports = {
 	computed: {
 		builtInClasses: function () {
 			return {
-				'mw-button--framed': !this.unframed,
+				'mw-button--framed': !this.frameless,
 				'mw-button--icon': this.icon,
 				'mw-button--progressive': this.progressive,
 				'mw-button--destructive': this.destructive,
@@ -62,7 +62,7 @@ module.exports = {
 			};
 		},
 		invert: function () {
-			return ( this.primary || this.disabled ) && !this.unframed;
+			return ( this.primary || this.disabled ) && !this.frameless;
 		}
 	}
 };

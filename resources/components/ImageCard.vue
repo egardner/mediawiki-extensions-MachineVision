@@ -52,7 +52,7 @@
 					</mw-button>
 					<mw-button
 						class="wbmad-action-buttons__skip"
-						v-bind:unframed="true"
+						v-bind:frameless="true"
 						v-bind:disabled="skipDisabled"
 						v-bind:title="$i18n( 'machinevision-skip-title', title ).parse()"
 						v-on:click="onSkip"
