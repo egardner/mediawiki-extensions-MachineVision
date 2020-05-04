@@ -256,5 +256,11 @@ module.exports = {
 	 */
 	updatePublishStatus: function ( context, publishStatus ) {
 		context.commit( 'setPublishStatus', publishStatus );
+	},
+
+	addCustomTag: function ( context, tag ) {
+		var suggestion = new MvSuggestion( tag.text, tag.wikidataId );
+		context.commit( 'addSuggestionToCurrentImage', suggestion );
+		context.commit( 'toggleSuggestion', tag.wikidataId );
 	}
 };

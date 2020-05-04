@@ -48,7 +48,14 @@ module.exports = {
 		} else {
 			state.images[ state.currentTab ].push( payload.image );
 		}
+	},
 
+	/**
+	 * @param {Object} state
+	 * @param {Object} suggestion
+	 */
+	addSuggestionToCurrentImage: function ( state, suggestion ) {
+		state.images[ state.currentTab ][ 0 ].suggestions.push( suggestion );
 	},
 
 	/**

@@ -245,9 +245,12 @@
 				"widgets/OnboardingDialog.js",
 				"widgets/ConfirmTagsDialog.js",
 				"widgets/ConfirmTagsDialogContent.js",
+				"widgets/AddCustomTagDialog.js",
+				"widgets/EntityAutocompleteInputWidget.js",
 				"widgets/UserMessage.js",
 				"widgets/base/TemplateRenderingDOMLessGroupWidget.js",
 				"widgets/base/DOMLessGroupWidget.js",
+				"widgets/base/FormatValueElement.js",
 				"plugins/api.js",
 				"store/index.js",
 				"store/state.js",
@@ -260,6 +263,8 @@
 			],
 			"styles": [
 				"widgets/UserMessage.less",
+				"widgets/AddCustomTagDialog.less",
+				"widgets/EntityAutocompleteWidget.less",
 				"widgets/OnboardingDialog.less",
 				"widgets/ConfirmTagsDialog.less",
 				"widgets/ConfirmTagsDialogContent.less"
@@ -281,7 +286,8 @@
 			],
 			"templates": [
 				"widgets/UserMessage.mustache+dom",
-				"widgets/ConfirmTagsDialogContent.mustache+dom"
+				"widgets/ConfirmTagsDialogContent.mustache+dom",
+				"widgets/EntityAutocompleteInputWidgetLabel.mustache+dom"
 			],
 			"messages": [
 				"machinevision-machineaidedtagging",
