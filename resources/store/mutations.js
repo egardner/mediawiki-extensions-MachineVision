@@ -74,11 +74,15 @@ module.exports = {
 	 * Toggle the confirmation state of a single suggestion of an image
 	 *
 	 * @param {Object} state
-	 * @param {integer} index
+	 * @param {Object} suggestion
+	 * @param {string} suggestion.text
 	 */
-	toggleSuggestion: function ( state, index ) {
+	toggleSuggestion: function ( state, suggestion ) {
 		var currentImage = state.images[ state.currentTab ][ 0 ],
-			selected = currentImage.suggestions[ index ];
+			// eslint-disable-next-line no-restricted-syntax
+			selected = currentImage.suggestions.find( function ( s ) {
+				return s.text === suggestion.text;
+			} );
 
 		selected.confirmed = !selected.confirmed;
 	},
