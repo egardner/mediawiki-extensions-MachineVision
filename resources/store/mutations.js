@@ -75,13 +75,13 @@ module.exports = {
 	 *
 	 * @param {Object} state
 	 * @param {Object} suggestion
-	 * @param {string} suggestion.text
+	 * @param {string} suggestion.wikidataId
 	 */
 	toggleSuggestion: function ( state, suggestion ) {
 		var currentImage = state.images[ state.currentTab ][ 0 ],
 			// eslint-disable-next-line no-restricted-syntax
 			selected = currentImage.suggestions.find( function ( s ) {
-				return s.text === suggestion.text;
+				return s.wikidataId === suggestion.wikidataId;
 			} );
 
 		selected.confirmed = !selected.confirmed;
