@@ -183,10 +183,20 @@ module.exports = {
 		'addCustomTag'
 	] ), {
 		/**
-		 * Publish the confirmed tags as depicts statements. All relevant state
-		 * lives in Vuex, so all we need to do is trigger things here.
+		 * Launch the confirmation modal (OOUI modal). If confirmed, dispatches
+		 * the publishTags action; Vuex handles the rest (all the necessary
+		 * data is already in the store)
 		 */
 		onPublish: function () {
+			this.confirmTagsDialog = new ConfirmTagsDialog( {
+				tagsList: this.confirmedSuggestions.map( function ( tag ) {
+					return tag.text;
+				} ).join( ', ' ),
+				imgUrl: this.thumbUrl,
+				imgTitle: this.imgTitle
+			} ).connect( this, { confirm: 'publishTags' } );
+
+			this.windowManager.addWindows( [ this.confirmTagsDialog ] );
 			this.windowManager.openWindow( this.confirmTagsDialog );
 		},
 
@@ -197,6 +207,9 @@ module.exports = {
 			this.skipImage();
 		},
 
+		/**
+		 * Launch the "add custom tag" dialog (OOUI modal)
+		 */
 		launchCustomTagDialog: function () {
 			this.windowManager.openWindow( this.addCustomTagDialog );
 		}
@@ -206,28 +219,18 @@ module.exports = {
 	 * We are still relying on OOUI for modals, so we need to set up the
 	 * WindowManager and dialog widgets when the component mounts.
 	 * Once MediaWiki exposes an appropriate DOM element for vue-based modals
-	 * to target, we can rewrite this functionality in Vue
+	 * to target, we can rewrite this functionality in Vue. This is an
+	 * exception to the general rule of "don't manipulate the DOM directly from
+	 * Vue".
 	 */
 	mounted: function () {
+		this.windowManager = new OO.ui.WindowManager();
 		this.addCustomTagDialog = new AddCustomTagDialog().connect( this, {
 			addCustomTag: 'addCustomTag'
 		} );
 
-		this.confirmTagsDialog = new ConfirmTagsDialog( {
-			tagsList: this.confirmedSuggestions.map( function ( tag ) {
-				return tag.text;
-			} ).join( ' ,' ),
-			imgUrl: this.thumbUrl,
-			imgTitle: this.imgTitle
-		} ).connect( this, { confirm: 'publishTags' } );
-
-		this.windowManager = new OO.ui.WindowManager();
 		$( document.body ).append( this.windowManager.$element );
-
-		this.windowManager.addWindows( [
-			this.addCustomTagDialog,
-			this.confirmTagsDialog
-		] );
+		this.windowManager.addWindows( [ this.addCustomTagDialog ] );
 	}
 };
 </script>

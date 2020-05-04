@@ -8,6 +8,15 @@ const localVue = VueTestUtils.createLocalVue();
 localVue.use( i18n );
 localVue.use( Vuex );
 
+// The ImageCard template creates a Suggestion component with some message-based
+// props (title, text). These props are required, but the messages are not
+// available in the test environment. In cases where we call mount() as opposed
+// to just shallowMount(), it is helpful to fake an object that can give us a
+// string to pass down.
+const $i18n = jest.fn().mockReturnValue( {
+	parse: jest.fn().mockReturnValue( 'message' )
+} );
+
 describe( 'ImageCard', () => {
 	let state,
 		getters,
@@ -43,7 +52,7 @@ describe( 'ImageCard', () => {
 		getters.currentImage.mockReturnValue( imageFixtures[ 0 ] );
 		getters.currentImageSuggestions.mockReturnValue( imageFixtures[ 0 ].suggestions );
 
-		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
+		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue, mocks: { $i18n } } );
 		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
 
 		expect( publishButton.attributes( 'disabled' ) ).toBe( 'disabled' );
@@ -64,7 +73,7 @@ describe( 'ImageCard', () => {
 			confirmedSuggestion
 		] );
 
-		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
+		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue, mocks: { $i18n } } );
 		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
 
 		expect( publishButton.attributes( 'disabled' ) ).not.toBe( 'disabled' );
@@ -81,7 +90,7 @@ describe( 'ImageCard', () => {
 			confirmedSuggestion
 		] );
 
-		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
+		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue, mocks: { $i18n } } );
 		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
 		expect( actions.publishTags ).not.toHaveBeenCalled();
 
@@ -94,7 +103,7 @@ describe( 'ImageCard', () => {
 		getters.currentImage.mockReturnValue( imageFixtures[ 0 ] );
 		getters.currentImageSuggestions.mockReturnValue( imageFixtures[ 0 ].suggestions );
 
-		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
+		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue, mocks: { $i18n } } );
 		const skipButton = wrapper.find( '.wbmad-action-buttons__skip' );
 
 		expect( actions.skipImage ).not.toHaveBeenCalled();

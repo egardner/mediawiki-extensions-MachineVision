@@ -260,7 +260,8 @@ module.exports = {
 
 	addCustomTag: function ( context, tag ) {
 		var suggestion = new MvSuggestion( tag.text, tag.wikidataId );
+		suggestion.confirmed = true;
+
 		context.commit( 'addSuggestionToCurrentImage', suggestion );
-		context.commit( 'toggleSuggestion', tag.wikidataId );
 	}
 };
