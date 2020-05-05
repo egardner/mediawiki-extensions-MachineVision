@@ -94,7 +94,8 @@ module.exports = {
 		 * @return {string}
 		 */
 		title: function () {
-			return this.currentImage.title;
+			// Remove "File:" from the image title.
+			return this.currentImage.title.split( ':' ).pop();
 		},
 
 		/**
