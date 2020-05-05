@@ -202,6 +202,15 @@
 		"remoteExtPath": "MachineVision/resources"
 	},
 	"ResourceModules": {
+		"ext.MachineVision.polyfill": {
+			"scripts": [
+				"polyfills/Array.prototype.find.js"
+			],
+			"targets": [
+				"mobile",
+				"desktop"
+			]
+		},
 		"ext.MachineVision.init": {
 			"styles": [
 				"init.css"
@@ -266,6 +275,7 @@
 			],
 			"dependencies": [
 				"ext.MachineVision.config",
+				"ext.MachineVision.polyfill",
 				"ext.eventLogging",
 				"oojs",
 				"oojs-ui-core",

@@ -142,7 +142,7 @@ describe( 'getters', () => {
 	} );
 
 	describe( 'toggleTagConfirmation', () => {
-		it( 'Commits a toggleSuggestion mutation with the tag index as an argument', () => {
+		it( 'Commits a toggleSuggestion mutation with the tag as an argument', () => {
 			var suggestions = fixtures[ 0 ].suggestions,
 				tagIndex = 1,
 				tag = suggestions[ tagIndex ];
@@ -152,7 +152,7 @@ describe( 'getters', () => {
 			} );
 
 			actions.toggleTagConfirmation( context, tag );
-			expect( context.commit ).toHaveBeenCalledWith( 'toggleSuggestion', tagIndex );
+			expect( context.commit ).toHaveBeenCalledWith( 'toggleSuggestion', tag );
 		} );
 	} );
 
