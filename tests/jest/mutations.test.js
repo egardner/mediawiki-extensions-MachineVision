@@ -124,14 +124,15 @@ describe( 'mutations', () => {
 	} );
 
 	describe( 'toggleSuggestion', () => {
-		it( 'finds a suggestion of the first image in the active tab based on index and toggles its state', () => {
+		it( 'finds a suggestion of the first image in the active tab and toggles its state', () => {
 			var image = fixtures[ 0 ],
-				suggestions = image.suggestions;
+				suggestions = image.suggestions,
+				suggestionToToggle = suggestions[ 0 ];
 
 			state.images.popular = [ image ];
-			expect( state.images.popular[ 0 ].suggestions[ 0 ].confirmed ).toBe( false );
+			expect( suggestionToToggle.confirmed ).toBe( false );
 
-			mutations.toggleSuggestion( state, 0 );
+			mutations.toggleSuggestion( state, suggestionToToggle );
 			expect( state.images.popular[ 0 ].suggestions[ 0 ].confirmed ).toBe( true );
 			expect( state.images.popular[ 0 ].suggestions[ 0 ].wikidataId ).toEqual( suggestions[ 0 ].wikidataId );
 		} );

@@ -121,19 +121,11 @@ module.exports = {
 	},
 
 	/**
-	 * Find a given tag among the current image suggestions and commit the
-	 * toggleSuggestion mutation to flip its state. Do nothing if tag is
-	 * not found.
-	 *
 	 * @param {Object} context
 	 * @param {Object} tag
 	 */
 	toggleTagConfirmation: function ( context, tag ) {
-		var tagIndex = context.getters.currentImageSuggestions.indexOf( tag );
-
-		if ( tagIndex >= 0 ) {
-			context.commit( 'toggleSuggestion', tagIndex );
-		}
+		context.commit( 'toggleSuggestion', tag );
 	},
 
 	/**
