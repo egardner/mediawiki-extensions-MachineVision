@@ -183,7 +183,7 @@ module.exports = {
 			this.confirmTagsDialog = new ConfirmTagsDialog( {
 				tagsList: this.confirmedSuggestions.map( function ( tag ) {
 					return tag.text;
-				} ).join( ' ,' ),
+				} ).join( ', ' ),
 				imgUrl: this.thumbUrl,
 				imgTitle: this.imgTitle
 			} ).connect( this, { confirm: 'publishTags' } );
