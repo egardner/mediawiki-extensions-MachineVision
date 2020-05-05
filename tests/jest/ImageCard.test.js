@@ -83,10 +83,10 @@ describe( 'ImageCard', () => {
 
 		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue } );
 		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
-
 		expect( actions.publishTags ).not.toHaveBeenCalled();
 
 		publishButton.trigger( 'click' );
+		wrapper.vm.confirmTagsDialog.emit( 'confirm' );
 		expect( actions.publishTags ).toHaveBeenCalled();
 	} );
 
