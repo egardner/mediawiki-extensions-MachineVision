@@ -297,7 +297,7 @@
 			"templates": [
 				"widgets/UserMessage.mustache+dom",
 				"widgets/ConfirmTagsDialogContent.mustache+dom",
-				"widgets/EntityAutocompleteInputWidgetLabel.mustache+dom"
+				"widgets/EntityAutocompleteInputWidgetLabel.mustache+dom",
 				"widgets/ConfirmTagsDialogContent.mustache+dom"
 			],
 			"messages": [
