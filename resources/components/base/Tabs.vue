@@ -1,6 +1,15 @@
 <template>
 	<div class="mw-tabs">
-		<div class="mw-tabs__header" role="tablist">
+		<div
+			class="mw-tabs__header"
+			role="tablist"
+			tabindex="0"
+			v-bind:aria-activedescendant="currentTabId"
+			v-on:keydown.left="moveBack"
+			v-on:keydown.up.prevent="moveBack"
+			v-on:keydown.right="moveForward"
+			v-on:keydown.down.prevent="moveForward"
+		>
 			<div v-for="tab in tabs"
 				v-bind:id="tab.id + '-label'"
 				v-bind:key="tab.title"
@@ -9,7 +18,6 @@
 				v-bind:aria-controls="tab.id"
 				class="mw-tabs__header__item"
 				role="tab"
-				tabindex="0"
 				v-on:click="selectTab( tab.name )"
 				v-on:keyup.enter="selectTab( tab.name )"
 			>
@@ -40,6 +48,14 @@ module.exports = {
 			tabs: {},
 			currentTabName: null
 		};
+	},
+
+	computed: {
+		currentTabId: function () {
+			return this.tabs[ this.currentTabName ] ?
+				this.tabs[ this.currentTabName ].id + '-label' :
+				false;
+		}
 	},
 
 	methods: {
@@ -76,6 +92,36 @@ module.exports = {
 				'is-active': tab.name === this.currentTabName,
 				'is-disabled': tab.disabled
 			};
+		},
+
+		/**
+		 * Left or up arrow keydown should move to previous tab, if one exists.
+		 */
+		moveBack: function () {
+			var tabNames = Object.keys( this.tabs ),
+				previousTabIndex = tabNames.indexOf( this.currentTabName ) - 1;
+
+			if ( previousTabIndex < 0 ) {
+				// There is no previous tab, do nothing.
+				return;
+			}
+
+			this.selectTab( Object.keys( this.tabs )[ previousTabIndex ] );
+		},
+
+		/**
+		 * Right or down arrow keydown should move to next tab, if one exists.
+		 */
+		moveForward: function () {
+			var tabNames = Object.keys( this.tabs ),
+				nextTabIndex = tabNames.indexOf( this.currentTabName ) + 1;
+
+			if ( nextTabIndex >= tabNames.length ) {
+				// There is no next tab, do nothing.
+				return;
+			}
+
+			this.selectTab( tabNames[ nextTabIndex ] );
 		},
 
 		/**
@@ -136,6 +182,15 @@ module.exports = {
 	&__header {
 		.flex-display();
 		.box-shadow( inset 0 -1px 0 0 @border-color-base );
+
+		&:focus {
+			outline: 0;
+
+			.mw-tabs__header__item.is-active {
+				border-radius: 2px;
+				box-shadow: inset 0 0 0 2px @color-primary;
+			}
+		}
 
 		&__item {
 			color: @color-base--subtle;
