@@ -143,7 +143,17 @@ module.exports = {
 			setClaimsRequest = context.dispatch( 'setDepictsStatements', confirmedTags ),
 			isUserImage = context.state.currentTab === 'user',
 			reviewBatch,
-			reviewImageLabelsRequest;
+			reviewImageLabelsRequest,
+			successToast = {
+				messageKey: 'machinevision-success-message',
+				type: 'success',
+				duration: 4
+			},
+			errorToast = {
+				messageKey: 'machinevision-publish-error-message',
+				type: 'error',
+				duration: 8
+			};
 
 		// Set the review state for non-user-provided tags which could be
 		// displayed to the user
@@ -171,19 +181,20 @@ module.exports = {
 			batch: JSON.stringify( reviewBatch )
 		} );
 
-		context.dispatch( 'updatePublishStatus', 'pending' );
+		context.dispatch( 'updatePublishPending', 'true' );
 
-		// Set claims, review labels, update publish status, and skip to next image
+		// Set claims, review labels, show toast notification, and skip to next image
 		$.when( setClaimsRequest, reviewImageLabelsRequest ).done( function () {
-			context.dispatch( 'updatePublishStatus', 'success' );
+			context.dispatch( 'showToastNotification', successToast );
 
 			if ( isUserImage ) {
 				context.commit( 'decrementUnreviewedCount' );
 			}
 		} ).fail( function () {
-			context.dispatch( 'updatePublishStatus', 'error' );
+			context.dispatch( 'showToastNotification', errorToast );
 		} ).always( function () {
 			context.dispatch( 'skipImage' );
+			context.dispatch( 'updatePublishPending', false );
 		} );
 	},
 
@@ -244,13 +255,37 @@ module.exports = {
 	},
 
 	/**
-	 * Set the publish status to show or clear notifications.
+	 * Set publish pending status so we can show a spinner during publish process.
 	 *
 	 * @param {Object} context
-	 * @param {string} publishStatus
+	 * @param {boolean} publishPendingStatus
 	 */
-	updatePublishStatus: function ( context, publishStatus ) {
-		context.commit( 'setPublishStatus', publishStatus );
+	updatePublishPending: function ( context, publishPendingStatus ) {
+		context.commit( 'setPublishPending', publishPendingStatus );
+	},
+
+	/**
+	 * Display a toast notification.
+	 *
+	 * @param {Object} context
+	 * @param {Object} toastData
+	 * @param {string} toastData.messageKey The i18n message key to display
+	 * @param {string} toastData.type The message type (success, error, etc.)
+	 * @param {number} toastData.duration Display duration in seconds
+	 */
+	showToastNotification: function ( context, toastData ) {
+		toastData.key = toastData.type + Date.now();
+		context.commit( 'setToastNotification', toastData );
+	},
+
+	/**
+	 * Hide a toast notification.
+	 *
+	 * @param {Object} context
+	 * @param {string} toastKey Unique key of the toast to be hidden
+	 */
+	hideToastNotification: function ( context, toastKey ) {
+		context.commit( 'removeToastNotification', toastKey );
 	},
 
 	addCustomTag: function ( context, tag ) {

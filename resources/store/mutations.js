@@ -95,13 +95,13 @@ module.exports = {
 	},
 
 	/**
-	 * Set the publish status (to success, error, pending or null).
+	 * Set publish pending status.
 	 *
 	 * @param {Object} state
-	 * @param {string|null} publishStatus
+	 * @param {boolean} publishPendingStatus
 	 */
-	setPublishStatus: function ( state, publishStatus ) {
-		state.publishStatus = publishStatus;
+	setPublishPending: function ( state, publishPendingStatus ) {
+		state.publishPending = publishPendingStatus;
 	},
 
 	setUserStats: function ( state, payload ) {
@@ -110,6 +110,7 @@ module.exports = {
 
 	/**
 	 * Set the initial count of user's unreviewed images
+	 *
 	 * @param {Object} state
 	 * @param {number} count
 	 */
@@ -122,5 +123,30 @@ module.exports = {
 	 */
 	decrementUnreviewedCount: function ( state ) {
 		state.unreviewedCount--;
+	},
+
+	/**
+	 * Add a new toast notification to the store.
+	 *
+	 * @param {Object} state
+	 * @param {Object} toastData
+	 * @param {string} toastData.key The i18n message key to display
+	 * @param {string} toastData.type The message type (success, error, etc.)
+	 * @param {number} toastData.duration Display duration in seconds
+	 */
+	setToastNotification: function ( state, toastData ) {
+		state.toastNotifications = state.toastNotifications.concat( [ toastData ] );
+	},
+
+	/**
+	 * Remove a toast notification from the store.
+	 *
+	 * @param {Object} state
+	 * @param {string} toastKey Unique key of the toast to be hidden
+	 */
+	removeToastNotification: function ( state, toastKey ) {
+		state.toastNotifications = state.toastNotifications.filter( function ( toast ) {
+			return toast.key !== toastKey;
+		} );
 	}
 };

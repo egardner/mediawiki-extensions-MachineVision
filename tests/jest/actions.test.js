@@ -221,10 +221,15 @@ describe( 'getters', () => {
 		// For these tests, mockApi needs to return jQuery deferred objects
 		// rather than vanilla promises
 
-		it( 'updates publish status to "success" if requests are successful', done => {
+		it( 'shows success toast notification if requests are successful', done => {
 			var suggestions = fixtures[ 0 ].suggestions,
 				deferred = $.Deferred(),
-				promise = deferred.promise();
+				promise = deferred.promise(),
+				successToast = {
+					messageKey: 'machinevision-success-message',
+					type: 'success',
+					duration: 4
+				};
 
 			suggestions[ 0 ].confirmed = true;
 
@@ -245,14 +250,14 @@ describe( 'getters', () => {
 			actions.publishTags( context );
 
 			promise.always( () => {
-				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishStatus', 'success' );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'showToastNotification', successToast );
 				done();
 			} );
 
 			deferred.resolve( {} );
 		} );
 
-		it( 'updates publish status to error if requests fail', done => {
+		it( 'sets publishPending to false after successful request completes', done => {
 			var suggestions = fixtures[ 0 ].suggestions,
 				deferred = $.Deferred(),
 				promise = deferred.promise();
@@ -276,7 +281,74 @@ describe( 'getters', () => {
 			actions.publishTags( context );
 
 			promise.always( () => {
-				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishStatus', 'error' );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishPending', false );
+				done();
+			} );
+
+			deferred.resolve( {} );
+		} );
+
+		it( 'shows error toast notification if requests fail', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise(),
+				toast = {
+					messageKey: 'machinevision-publish-error-message',
+					type: 'error',
+					duration: 8
+				};
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'showToastNotification', toast );
+				done();
+			} );
+
+			deferred.reject( {} );
+		} );
+
+		it( 'sets publishPending to false after failed request completes', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishPending', false );
 				done();
 			} );
 
@@ -427,13 +499,13 @@ describe( 'getters', () => {
 		} );
 	} );
 
-	describe( 'updatePublishStatus', () => {
-		it( 'commits the setPublishStatus mutation with the payload as an argument', () => {
-			actions.updatePublishStatus( context, true );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPublishStatus', true );
+	describe( 'updatePublishPending', () => {
+		it( 'commits the setPublishPending mutation with the payload as an argument', () => {
+			actions.updatePublishPending( context, true );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPublishPending', true );
 
-			actions.updatePublishStatus( context, false );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPublishStatus', false );
+			actions.updatePublishPending( context, false );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPublishPending', false );
 		} );
 	} );
 } );

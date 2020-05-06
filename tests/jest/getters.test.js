@@ -20,7 +20,7 @@ describe( 'getters', () => {
 			},
 
 			currentTab: 'popular',
-			publishStatus: null
+			publishPending: false
 		};
 
 		// Create a fresh copy of imageFixtures so any mutations made to the

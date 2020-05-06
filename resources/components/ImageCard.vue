@@ -98,7 +98,7 @@ module.exports = {
 		'currentImage',
 		'currentImageSuggestions'
 	] ), mapState( [
-		'publishStatus'
+		'publishPending'
 	] ), {
 		/**
 		 * @return {string}
@@ -159,13 +159,6 @@ module.exports = {
 			return this.currentImageSuggestions.filter( function ( suggestion ) {
 				return suggestion.confirmed;
 			} );
-		},
-
-		/**
-		 * @return {boolean}
-		 */
-		publishPending: function () {
-			return this.publishStatus === 'pending';
 		},
 
 		/**

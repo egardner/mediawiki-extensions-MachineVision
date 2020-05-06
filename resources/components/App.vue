@@ -1,25 +1,17 @@
 <template>
 	<wbmad-fade-in>
 		<div class="wbmad-suggested-tags-page">
-			<toast-notification
-				v-if="publishError"
-				v-bind:key="'publishError-' + Date.now()"
-				type="error"
-				duration="8"
-				v-on:leave="onToastLeave"
-			>
-				<p v-i18n-html:machinevision-publish-error-message />
-			</toast-notification>
-
-			<toast-notification
-				v-if="publishSuccess"
-				v-bind:key="'publishSuccess-' + Date.now()"
-				type="success"
-				v-bind:duration="4"
-				v-on:leave="onToastLeave"
-			>
-				<p v-i18n-html:machinevision-success-message />
-			</toast-notification>
+			<template v-if="showToasts">
+				<mw-toast-notification
+					v-for="toast in toastNotifications"
+					v-bind:key="toast.key"
+					v-bind:type="toast.type"
+					v-bind:duration="toast.duration"
+					v-on:leave="onToastLeave"
+				>
+					<p>{{ $i18n( toast.messageKey ) }}</p>
+				</mw-toast-notification>
+			</template>
 
 			<!-- Tabs container -->
 			<template v-if="showTabs">
@@ -105,7 +97,7 @@ module.exports = {
 	components: {
 		tabs: Tabs,
 		tab: Tab,
-		'toast-notification': ToastNotification,
+		'mw-toast-notification': ToastNotification,
 		'card-stack': CardStack,
 		'personal-uploads-count': PersonalUploadsCount,
 		'wbmad-fade-in': FadeIn
@@ -113,7 +105,7 @@ module.exports = {
 
 	computed: $.extend( {}, mapState( [
 		'currentTab',
-		'publishStatus'
+		'toastNotifications'
 	] ), mapGetters( [
 		'isAuthenticated',
 		'isAutoconfirmed',
@@ -147,19 +139,15 @@ module.exports = {
 			return this.$i18n( 'machinevision-machineaidedtagging-user-tab' ).text();
 		},
 
-		publishSuccess: function () {
-			return this.publishStatus === 'success';
-		},
-
-		publishError: function () {
-			return this.publishStatus === 'error';
+		showToasts: function () {
+			return this.toastNotifications && this.toastNotifications.length > 0;
 		}
 	} ),
 
 	methods: $.extend( {}, mapActions( [
 		'updateCurrentTab',
 		'getImages',
-		'updatePublishStatus'
+		'hideToastNotification'
 	] ), {
 		/**
 		 * Watch the tab change events emitted by the <Tabs> component
@@ -172,8 +160,14 @@ module.exports = {
 			this.updateCurrentTab( tab.name );
 		},
 
-		onToastLeave: function () {
-			this.updatePublishStatus( null );
+		/**
+		 * Hide a toast notification that has past its display duration.
+		 *
+		 * @param {string} toastKey
+		 */
+		onToastLeave: function ( toastKey ) {
+			console.log('on toast leave');
+			this.hideToastNotification( toastKey );
 		},
 
 		/**

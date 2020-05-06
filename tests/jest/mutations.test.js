@@ -18,7 +18,7 @@ describe( 'mutations', () => {
 			},
 
 			currentTab: 'popular',
-			publishStatus: null
+			publishPending: false
 		};
 
 		// Create a fresh copy of imageFixtures so any mutations made to the
@@ -138,10 +138,10 @@ describe( 'mutations', () => {
 		} );
 	} );
 
-	describe( 'setPublishStatus', () => {
-		it( 'sets the publishStatus state to the specified value', () => {
-			mutations.setPublishStatus( state, 'error' );
-			expect( state.publishStatus ).toBe( 'error' );
+	describe( 'setPublishPending', () => {
+		it( 'sets the publishPending state to the specified value', () => {
+			mutations.setPublishPending( state, true );
+			expect( state.publishPending ).toBe( true );
 		} );
 	} );
 } );

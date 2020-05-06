@@ -15,18 +15,9 @@ module.exports = {
 
 	unreviewedCount: 0,
 
-	/**
-	 * @TODO Currently four possible status states exist:
-	 * - "success"
-	 * - "error"
-	 * - "pending"
-	 * - null (default)
-	 *
-	 * It may be time to think about enforcing a consistent and constrained
-	 * list of states here and in the corresponding mutation, maybe by defining
-	 * publish states in an external object and importing them here
-	 */
-	publishStatus: null,
+	publishPending: false,
 
-	userStats: {}
+	userStats: {},
+
+	toastNotifications: []
 };
