@@ -75,6 +75,7 @@ module.exports = {
 
 	&:hover,
 	&:focus {
+		background-color: @background-color-framed--hover;
 		color: @color-base--emphasized;
 	}
 
