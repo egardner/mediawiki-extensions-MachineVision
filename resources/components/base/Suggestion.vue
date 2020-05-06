@@ -63,6 +63,7 @@ module.exports = {
 @import '../../../lib/wikimedia-ui-base.less';
 
 .mw-suggestion {
+	.transition( background-color @transition-duration-base );
 	.transition( color @transition-duration-base );
 	background-color: @background-color-framed;
 	border: @border-base;
@@ -107,6 +108,11 @@ module.exports = {
 		border-color: @color-primary--active;
 		color: @color-base--emphasized;
 		position: relative;
+
+		&:hover,
+		&:focus {
+			background-color: @background-color-primary;
+		}
 
 		.mw-suggestion__label {
 			transform: translateX( -0.5em );

@@ -238,10 +238,7 @@ module.exports = {
 
 <style lang="less">
 @import 'mediawiki.mixins';
-@import '../../lib/wikimedia-ui-base.less';
 @import '../style-variables.less';
-
-/* stylelint-disable selector-class-pattern */
 
 .wbmad-image-with-suggestions {
 	position: relative;
@@ -369,14 +366,10 @@ module.exports = {
 }
 
 .wbmad-custom-tag-button.mw-button {
-	.transition( color @transition-duration-base );
-	background-color: @background-color-framed;
-	border: @border-base;
+	border-radius: 18px;
 	color: @color-base;
-	cursor: pointer;
 	margin: 0 4px 4px 0;
 	padding: 4px 1.25em;
-	border-radius: 18px;
 	white-space: nowrap;
 
 	&:hover,
