@@ -94,7 +94,8 @@ module.exports = {
 		 * @return {string}
 		 */
 		title: function () {
-			return this.currentImage.title;
+			// Remove "File:" from the image title.
+			return this.currentImage.title.split( ':' ).pop();
 		},
 
 		/**
@@ -245,10 +246,6 @@ module.exports = {
 			@media screen and ( min-width: @width-breakpoint-tablet ) {
 				max-height: 600px;
 			}
-
-			&.wbmad-lazy {
-				background-color: @base80;
-			}
 		}
 	}
 
@@ -273,6 +270,8 @@ module.exports = {
 	}
 
 	.wbmad-spinner {
+		background-color: rgba( 255, 255, 255, 0.5 );
+		border-radius: @outer-border-radius;
 		height: 100%;
 		padding: 0;
 		position: absolute;
