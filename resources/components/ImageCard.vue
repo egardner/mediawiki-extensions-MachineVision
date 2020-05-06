@@ -38,14 +38,15 @@
 					/>
 
 					<!-- Add custom tag button -->
-					<suggestion
-						key="add-custom-tag"
-						v-bind:text="$i18n( 'machinevision-add-custom-tag' ).parse()"
+					<mw-button
+						icon="add"
+						class="wbmad-custom-tag-button"
 						v-bind:title="$i18n( 'machinevision-add-custom-tag-title' ).parse()"
 						v-on:click="launchCustomTagDialog()"
-					/>
+					>
+						{{ $i18n( 'machinevision-add-custom-tag' ).parse() }}
+					</mw-button>
 				</div>
-				<!-- TODO: Add custom tag button. -->
 
 				<div class="wbmad-action-buttons">
 					<mw-button
@@ -237,7 +238,10 @@ module.exports = {
 
 <style lang="less">
 @import 'mediawiki.mixins';
+@import '../../lib/wikimedia-ui-base.less';
 @import '../style-variables.less';
+
+/* stylelint-disable selector-class-pattern */
 
 .wbmad-image-with-suggestions {
 	position: relative;
@@ -361,6 +365,29 @@ module.exports = {
 
 	&__skip {
 		margin-left: auto;
+	}
+}
+
+.wbmad-custom-tag-button.mw-button {
+	.transition( color @transition-duration-base );
+	background-color: @background-color-framed;
+	border: @border-base;
+	color: @color-base;
+	cursor: pointer;
+	margin: 0 4px 4px 0;
+	padding: 4px 1.25em;
+	border-radius: 18px;
+	white-space: nowrap;
+
+	&:hover,
+	&:focus {
+		color: @color-base--emphasized;
+	}
+
+	&:focus {
+		border-color: @color-primary--active;
+		box-shadow: inset 0 0 0 1px @color-primary--active;
+		outline: 0;
 	}
 }
 </style>
