@@ -2,6 +2,15 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
+		<wbmad-fade-in v-else-if="cardStackMessage">
+			<mw-message
+				class="wbmad-cardstack-message"
+				v-bind:type="cardStackMessage.type"
+			>
+				<p v-i18n-html="cardStackMessage.messageKey" />
+			</mw-message>
+		</wbmad-fade-in>
+
 		<transition v-else-if="shouldDisplayImage"
 			name="wbmad-fade"
 			appear
@@ -38,8 +47,10 @@ var mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CardStackPlaceholder = require( './CardStackPlaceholder.vue' ),
+	FadeIn = require( './FadeIn.vue' ),
 	ImageCard = require( './ImageCard.vue' ),
-	UserImage = require( './UserMessage.vue' );
+	UserImage = require( './UserMessage.vue' ),
+	Message = require( './base/Message.vue' );
 
 // @vue/component
 module.exports = {
@@ -47,8 +58,10 @@ module.exports = {
 
 	components: {
 		'wbmad-cardstack-placeholder': CardStackPlaceholder,
+		'wbmad-fade-in': FadeIn,
 		'wbmad-image-card': ImageCard,
-		'wbmad-user-message': UserImage
+		'wbmad-user-message': UserImage,
+		'mw-message': Message
 	},
 
 	props: {
@@ -62,7 +75,8 @@ module.exports = {
 		'currentTab',
 		'pending',
 		'images',
-		'userStats'
+		'userStats',
+		'cardStackMessage'
 	] ), mapGetters( [
 		'currentImage'
 	] ), {
@@ -175,6 +189,15 @@ module.exports = {
 .wbmad-user-cta--generic-no-images {
 	.wbmad-user-message-icon {
 		background-image: url( ../icons/empty-state-icon-no-uploads.svg );
+	}
+}
+
+.wbmad-cardstack-message {
+	// Avoid a major layout jump for items below cardstack.
+	margin-bottom: 150px;
+
+	p {
+		margin: 0;
 	}
 }
 

@@ -19,5 +19,7 @@ module.exports = {
 
 	userStats: {},
 
-	toastNotifications: []
+	toastNotifications: [],
+
+	cardStackMessage: null
 };

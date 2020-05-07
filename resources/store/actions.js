@@ -62,6 +62,7 @@ module.exports = {
 			queue: queue,
 			pending: true
 		} );
+		context.commit( 'hideCardStackMessage' );
 
 		// Request images from the API
 		return api.get( query ).then( function ( res ) {
@@ -109,14 +110,18 @@ module.exports = {
 			} catch ( e ) {
 				// Use default state values.
 			}
-
+		} ).catch( function ( /* errorCode, error */ ) {
+			// Show a generic error message if fetch fails.
+			context.dispatch( 'showCardStackMessage', {
+				messageKey: 'machinevision-failure-message',
+				type: 'error'
+			} );
+		} ).always( function () {
 			// Remove the pending state
 			context.commit( 'setPending', {
 				queue: queue,
 				pending: false
 			} );
-		} ).catch( function ( /* error */ ) {
-			// @TODO error handling logic
 		} );
 	},
 
@@ -264,6 +269,15 @@ module.exports = {
 		context.commit( 'setPublishPending', publishPendingStatus );
 	},
 
+	addCustomTag: function ( context, tag ) {
+		var suggestion = new MvSuggestion( tag.text, tag.wikidataId );
+
+		suggestion.custom = true; // Set this so we can filter out user-added suggestions on submit
+		suggestion.confirmed = true;
+
+		context.commit( 'addSuggestionToCurrentImage', suggestion );
+	},
+
 	/**
 	 * Display a toast notification.
 	 *
@@ -288,12 +302,24 @@ module.exports = {
 		context.commit( 'removeToastNotification', toastKey );
 	},
 
-	addCustomTag: function ( context, tag ) {
-		var suggestion = new MvSuggestion( tag.text, tag.wikidataId );
+	/**
+	 * Display a standard message, to be shown in the CardStack component.
+	 *
+	 * @param {Object} context
+	 * @param {Object} messageData
+	 * @param {string} messageData.messageKey The i18n message key to display
+	 * @param {string} messageData.type The message type (success, error, etc.)
+	 */
+	showCardStackMessage: function ( context, messageData ) {
+		context.commit( 'setCardStackMessage', messageData );
+	},
 
-		suggestion.custom = true; // Set this so we can filter out user-added suggestions on submit
-		suggestion.confirmed = true;
-
-		context.commit( 'addSuggestionToCurrentImage', suggestion );
+	/**
+	 * Hide CardStack message.
+	 *
+	 * @param {Object} context
+	 */
+	hideCardStackMessage: function ( context ) {
+		context.commit( 'removeCardStackMessage' );
 	}
 };

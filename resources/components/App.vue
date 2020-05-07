@@ -166,7 +166,6 @@ module.exports = {
 		 * @param {string} toastKey
 		 */
 		onToastLeave: function ( toastKey ) {
-			console.log('on toast leave');
 			this.hideToastNotification( toastKey );
 		},
 

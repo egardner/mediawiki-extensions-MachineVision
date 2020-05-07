@@ -130,7 +130,8 @@ module.exports = {
 	 *
 	 * @param {Object} state
 	 * @param {Object} toastData
-	 * @param {string} toastData.key The i18n message key to display
+	 * @param {string} toastData.key Unique key for the toast component
+	 * @param {string} toastData.messageKey The i18n message key to display
 	 * @param {string} toastData.type The message type (success, error, etc.)
 	 * @param {number} toastData.duration Display duration in seconds
 	 */
@@ -148,5 +149,26 @@ module.exports = {
 		state.toastNotifications = state.toastNotifications.filter( function ( toast ) {
 			return toast.key !== toastKey;
 		} );
+	},
+
+	/**
+	 * Add a CardStack message to the store.
+	 *
+	 * @param {Object} state
+	 * @param {Object} messageData
+	 * @param {string} messageData.messageKey The i18n message key to display
+	 * @param {string} messageData.type The message type (success, error, etc.)
+	 */
+	setCardStackMessage: function ( state, messageData ) {
+		state.cardStackMessage = messageData;
+	},
+
+	/**
+	 * Remove CardStack message from the store.
+	 *
+	 * @param {Object} state
+	 */
+	removeCardStackMessage: function ( state ) {
+		state.cardStackMessage = null;
 	}
 };
