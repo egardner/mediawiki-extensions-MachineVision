@@ -220,12 +220,16 @@ module.exports = {
 		} );
 
 		// send wbsetclaim calls one at a time to prevent edit conflicts
-		statements.forEach( function ( statement ) {
+		statements.forEach( function ( statement, index ) {
+			var correspondingTag = confirmedTags[ index ];
+
 			promise = promise.then( function () {
 				return api.postWithToken( 'csrf', {
 					action: 'wbsetclaim',
 					claim: JSON.stringify( serializer.serialize( statement ) ),
-					tags: 'computer-aided-tagging'
+					tags: correspondingTag.custom ?
+						'computer-aided-tagging-manual' :
+						'computer-aided-tagging'
 				} );
 			} );
 		} );
