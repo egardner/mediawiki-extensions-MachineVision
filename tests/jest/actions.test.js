@@ -51,6 +51,11 @@ describe( 'getters', () => {
 
 	describe( 'getImages', () => {
 		it( 'makes a GET request to the API with the correct parameters', () => {
+			var deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			mockApi.get.mockReturnValue( promise );
+
 			actions.getImages( context );
 			expect( mockApi.get ).toHaveBeenCalled();
 			expect( mockApi.get ).toHaveBeenCalledWith(
@@ -73,6 +78,11 @@ describe( 'getters', () => {
 		} );
 
 		it( 'defaults to fetching images for the current tab queue if no "queue" option is provided', () => {
+			var deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			mockApi.get.mockReturnValue( promise );
+
 			context.state.currentTab = 'popular';
 			actions.getImages( context );
 			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
@@ -89,6 +99,11 @@ describe( 'getters', () => {
 		} );
 
 		it( 'fetches user images if a "user" queue option is provided', () => {
+			var deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			mockApi.get.mockReturnValue( promise );
+
 			context.state.currentTab = 'popular';
 			actions.getImages( context, { queue: 'user' } );
 			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
@@ -98,8 +113,11 @@ describe( 'getters', () => {
 		} );
 
 		it( 'Commits an addImage mutation for each image in the response', done => {
-			var apiImages = apiResponse.query.pages;
-			mockApi.get.mockResolvedValue( apiResponse );
+			var apiImages = apiResponse.query.pages,
+				deferred = $.Deferred(),
+				promise = deferred.resolve( apiResponse ).promise();
+
+			mockApi.get.mockReturnValue( promise );
 
 			actions.getImages( context ).then( () => {
 				var mutations = context.commit.mock.calls,
@@ -113,8 +131,11 @@ describe( 'getters', () => {
 		} );
 
 		it( 'Removes the pending state on the appropriate queue when request completes', done => {
+			var deferred = $.Deferred(),
+				promise = deferred.resolve( apiResponse ).promise();
+
 			context.state.currentTab = 'popular';
-			mockApi.get.mockResolvedValue( apiResponse );
+			mockApi.get.mockReturnValue( promise );
 
 			actions.getImages( context ).then( () => {
 				expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
@@ -125,11 +146,39 @@ describe( 'getters', () => {
 			} );
 		} );
 
-		test.todo( 'Handles errors successfully' );
+		it( 'Handles fetch errors successfully', done => {
+			var deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			context.state.currentTab = 'popular';
+			mockApi.get.mockReturnValue( promise );
+
+			actions.getImages( context );
+
+			promise.always( () => {
+				// Error message should be added.
+				expect( context.commit ).toHaveBeenCalledWith( 'showCardStackMessage', {
+					messageKey: 'machinevision-failure-message',
+					type: 'error'
+				} );
+
+				// Pending state should be removed.
+				expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+					queue: 'popular',
+					pending: false
+				} );
+				done();
+			} );
+
+			deferred.reject( {} );
+		} );
 
 		it( 'commits a setUnreviewedCount action when request completes', done => {
+			var deferred = $.Deferred(),
+				promise = deferred.resolve( apiResponse ).promise();
+
+			mockApi.get.mockReturnValue( promise );
 			context.state.currentTab = 'popular';
-			mockApi.get.mockResolvedValue( apiResponse );
 
 			actions.getImages( context ).then( () => {
 				expect( context.commit ).toHaveBeenCalledWith(
