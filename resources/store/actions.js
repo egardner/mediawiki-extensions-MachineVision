@@ -145,8 +145,11 @@ module.exports = {
 			reviewBatch,
 			reviewImageLabelsRequest;
 
-		// Set the review state for all tags which could be displayed to the user
-		reviewBatch = displayedTags.map( function ( tag ) {
+		// Set the review state for non-user-provided tags which could be
+		// displayed to the user
+		reviewBatch = displayedTags.filter( function ( tag ) {
+			return !tag.custom;
+		} ).map( function ( tag ) {
 			return {
 				label: tag.wikidataId,
 				review: tag.confirmed ? 'accept' : 'reject'
@@ -248,5 +251,14 @@ module.exports = {
 	 */
 	updatePublishStatus: function ( context, publishStatus ) {
 		context.commit( 'setPublishStatus', publishStatus );
+	},
+
+	addCustomTag: function ( context, tag ) {
+		var suggestion = new MvSuggestion( tag.text, tag.wikidataId );
+
+		suggestion.custom = true; // Set this so we can filter out user-added suggestions on submit
+		suggestion.confirmed = true;
+
+		context.commit( 'addSuggestionToCurrentImage', suggestion );
 	}
 };

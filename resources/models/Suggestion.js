@@ -10,4 +10,5 @@ module.exports = function MvSuggestion( text, wikidataId ) {
 	this.text = text;
 	this.wikidataId = wikidataId;
 	this.confirmed = false;
+	this.custom = false;
 };

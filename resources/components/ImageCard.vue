@@ -36,8 +36,17 @@
 						v-bind:confirmed="suggestion.confirmed"
 						v-on:click="toggleTagConfirmation( suggestion )"
 					/>
+
+					<!-- Add custom tag button -->
+					<mw-button
+						icon="add"
+						class="wbmad-custom-tag-button"
+						v-bind:title="$i18n( 'machinevision-add-custom-tag-title' ).parse()"
+						v-on:click="launchCustomTagDialog()"
+					>
+						{{ $i18n( 'machinevision-add-custom-tag' ).parse() }}
+					</mw-button>
 				</div>
-				<!-- TODO: Add custom tag button. -->
 
 				<div class="wbmad-action-buttons">
 					<mw-button
@@ -72,7 +81,8 @@ var mapActions = require( 'vuex' ).mapActions,
 	Spinner = require( './Spinner.vue' ),
 	Button = require( './base/Button.vue' ),
 	Suggestion = require( './base/Suggestion.vue' ),
-	ConfirmTagsDialog = require( '../widgets/ConfirmTagsDialog.js' );
+	ConfirmTagsDialog = require( '../widgets/ConfirmTagsDialog.js' ),
+	AddCustomTagDialog = require( '../widgets/AddCustomTagDialog.js' );
 
 // @vue/component
 module.exports = {
@@ -171,16 +181,15 @@ module.exports = {
 	methods: $.extend( {}, mapActions( [
 		'publishTags',
 		'skipImage',
-		'toggleTagConfirmation'
+		'toggleTagConfirmation',
+		'addCustomTag'
 	] ), {
 		/**
-		 * Publish the confirmed tags as depicts statements. All relevant state
-		 * lives in Vuex, so all we need to do is trigger things here.
+		 * Launch the confirmation modal (OOUI modal). If confirmed, dispatches
+		 * the publishTags action; Vuex handles the rest (all the necessary
+		 * data is already in the store)
 		 */
 		onPublish: function () {
-			var windowManager = new OO.ui.WindowManager();
-
-			// We need to expose confirmTagsDialog on the vm so that we can access it in testing
 			this.confirmTagsDialog = new ConfirmTagsDialog( {
 				tagsList: this.confirmedSuggestions.map( function ( tag ) {
 					return tag.text;
@@ -189,9 +198,8 @@ module.exports = {
 				imgTitle: this.imgTitle
 			} ).connect( this, { confirm: 'publishTags' } );
 
-			$( document.body ).append( windowManager.$element );
-			windowManager.addWindows( [ this.confirmTagsDialog ] );
-			windowManager.openWindow( this.confirmTagsDialog );
+			this.windowManager.addWindows( [ this.confirmTagsDialog ] );
+			this.windowManager.openWindow( this.confirmTagsDialog );
 		},
 
 		/**
@@ -199,8 +207,33 @@ module.exports = {
 		 */
 		onSkip: function () {
 			this.skipImage();
+		},
+
+		/**
+		 * Launch the "add custom tag" dialog (OOUI modal)
+		 */
+		launchCustomTagDialog: function () {
+			this.windowManager.openWindow( this.addCustomTagDialog );
 		}
-	} )
+	} ),
+
+	/**
+	 * We are still relying on OOUI for modals, so we need to set up the
+	 * WindowManager and dialog widgets when the component mounts.
+	 * Once MediaWiki exposes an appropriate DOM element for vue-based modals
+	 * to target, we can rewrite this functionality in Vue. This is an
+	 * exception to the general rule of "don't manipulate the DOM directly from
+	 * Vue".
+	 */
+	mounted: function () {
+		this.windowManager = new OO.ui.WindowManager();
+		this.addCustomTagDialog = new AddCustomTagDialog().connect( this, {
+			addCustomTag: 'addCustomTag'
+		} );
+
+		$( document.body ).append( this.windowManager.$element );
+		this.windowManager.addWindows( [ this.addCustomTagDialog ] );
+	}
 };
 </script>
 
@@ -328,6 +361,30 @@ module.exports = {
 
 	&__skip {
 		margin-left: auto;
+	}
+}
+
+.wbmad-custom-tag-button.mw-button {
+	border-radius: 18px;
+	color: @color-base;
+	line-height: 1.6;
+	margin: 0 4px 4px 0;
+	padding: 4px 1.25em 4px 30/14em;
+	white-space: nowrap;
+
+	&:hover,
+	&:focus {
+		color: @color-base--emphasized;
+	}
+
+	&:focus {
+		border-color: @color-primary--active;
+		box-shadow: inset 0 0 0 1px @color-primary--active;
+		outline: 0;
+	}
+
+	.mw-icon {
+		width: 1em;
 	}
 }
 </style>
