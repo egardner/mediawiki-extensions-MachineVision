@@ -368,8 +368,9 @@ module.exports = {
 .wbmad-custom-tag-button.mw-button {
 	border-radius: 18px;
 	color: @color-base;
+	line-height: 1.6;
 	margin: 0 4px 4px 0;
-	padding: 4px 1.25em;
+	padding: 4px 1.25em 4px 30/14em;
 	white-space: nowrap;
 
 	&:hover,
@@ -381,6 +382,10 @@ module.exports = {
 		border-color: @color-primary--active;
 		box-shadow: inset 0 0 0 1px @color-primary--active;
 		outline: 0;
+	}
+
+	.mw-icon {
+		width: 1em;
 	}
 }
 </style>
