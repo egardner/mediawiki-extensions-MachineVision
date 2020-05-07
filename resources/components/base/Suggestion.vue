@@ -63,8 +63,7 @@ module.exports = {
 @import '../../../lib/wikimedia-ui-base.less';
 
 .mw-suggestion {
-	.transition( background-color @transition-duration-base );
-	.transition( color @transition-duration-base );
+	.transition( ~'background-color 100ms, color 100ms, border-color 100ms, box-shadow 100ms' );
 	background-color: @background-color-framed;
 	border: @border-base;
 	color: @color-base;
