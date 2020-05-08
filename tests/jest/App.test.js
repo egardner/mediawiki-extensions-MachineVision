@@ -23,7 +23,11 @@ describe( 'App', () => {
 				popular: [],
 				user: []
 			},
-			pending: {
+			fetchPending: {
+				popular: false,
+				user: false
+			},
+			fetchError: {
 				popular: false,
 				user: false
 			},

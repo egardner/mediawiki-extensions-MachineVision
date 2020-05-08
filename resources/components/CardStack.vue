@@ -2,6 +2,12 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
+		<wbmad-fade-in v-else-if="isError">
+			<mw-message class="wbmad-cardstack-message" type="error">
+				<p v-i18n-html:machinevision-failure-message />
+			</mw-message>
+		</wbmad-fade-in>
+
 		<transition v-else-if="shouldDisplayImage"
 			name="wbmad-fade"
 			appear
@@ -38,8 +44,10 @@ var mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CardStackPlaceholder = require( './CardStackPlaceholder.vue' ),
+	FadeIn = require( './FadeIn.vue' ),
 	ImageCard = require( './ImageCard.vue' ),
-	UserImage = require( './UserMessage.vue' );
+	UserImage = require( './UserMessage.vue' ),
+	Message = require( './base/Message.vue' );
 
 // @vue/component
 module.exports = {
@@ -47,8 +55,10 @@ module.exports = {
 
 	components: {
 		'wbmad-cardstack-placeholder': CardStackPlaceholder,
+		'wbmad-fade-in': FadeIn,
 		'wbmad-image-card': ImageCard,
-		'wbmad-user-message': UserImage
+		'wbmad-user-message': UserImage,
+		'mw-message': Message
 	},
 
 	props: {
@@ -60,7 +70,8 @@ module.exports = {
 
 	computed: $.extend( {}, mapState( [
 		'currentTab',
-		'pending',
+		'fetchPending',
+		'fetchError',
 		'images',
 		'userStats'
 	] ), mapGetters( [
@@ -78,7 +89,15 @@ module.exports = {
 		 * @return {bool}
 		 */
 		isPending: function () {
-			return this.pending[ this.queue ];
+			return this.fetchPending[ this.queue ];
+		},
+
+		/**
+		 * Fetch error state is queue-specific
+		 * @return {bool}
+		 */
+		isError: function () {
+			return this.fetchError[ this.queue ];
 		},
 
 		/**
@@ -105,7 +124,7 @@ module.exports = {
 		 * @return {boolean}
 		 */
 		userHasLabeledUploads: function () {
-			return this.userStats.total > 0;
+			return this.userStats.total ? this.userStats.total > 0 : false;
 		},
 
 		/**
@@ -175,6 +194,15 @@ module.exports = {
 .wbmad-user-cta--generic-no-images {
 	.wbmad-user-message-icon {
 		background-image: url( ../icons/empty-state-icon-no-uploads.svg );
+	}
+}
+
+.wbmad-cardstack-message {
+	// Avoid a major layout jump for items below cardstack.
+	margin-bottom: 150px;
+
+	p {
+		margin: 0;
 	}
 }
 

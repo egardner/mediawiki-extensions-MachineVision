@@ -10,7 +10,11 @@ var MvImage = require( '../models/Image.js' ),
 	serialization = require( 'wikibase.serialization' ),
 	mvConfig = require( 'ext.MachineVision.config' ),
 	ensureTabExists = require( './utils.js' ).ensureTabExists,
-	getCategories = require( './utils.js' ).getCategories;
+	getCategories = require( './utils.js' ).getCategories,
+	queues = {
+		POPULAR: 'popular',
+		USER: 'user'
+	};
 
 module.exports = {
 	/**
@@ -53,14 +57,19 @@ module.exports = {
 
 		ensureTabExists( context.state, queue );
 
-		if ( queue === 'user' ) {
+		if ( queue === queues.USER ) {
 			query.guiluploader = mw.user.getId();
 			query.ilstate = 'unreviewed|withheld';
 		}
 
-		context.commit( 'setPending', {
+		// Set pending to true and reset error state.
+		context.commit( 'setFetchPending', {
 			queue: queue,
 			pending: true
+		} );
+		context.commit( 'setFetchError', {
+			queue: queue,
+			error: false
 		} );
 
 		// Request images from the API
@@ -109,14 +118,18 @@ module.exports = {
 			} catch ( e ) {
 				// Use default state values.
 			}
-
-			// Remove the pending state
-			context.commit( 'setPending', {
+		} ).catch( function ( /* errorCode, error */ ) {
+			// Show a generic error message if fetch fails.
+			context.commit( 'setFetchError', {
+				queue: queue,
+				error: true
+			} );
+		} ).always( function () {
+			// Remove the fetch pending state
+			context.commit( 'setFetchPending', {
 				queue: queue,
 				pending: false
 			} );
-		} ).catch( function ( /* error */ ) {
-			// @TODO error handling logic
 		} );
 	},
 
@@ -141,9 +154,19 @@ module.exports = {
 				return tag.confirmed;
 			} ),
 			setClaimsRequest = context.dispatch( 'setDepictsStatements', confirmedTags ),
-			isUserImage = context.state.currentTab === 'user',
+			isUserImage = context.state.currentTab === queues.USER,
 			reviewBatch,
-			reviewImageLabelsRequest;
+			reviewImageLabelsRequest,
+			successToast = {
+				messageKey: 'machinevision-success-message',
+				type: 'success',
+				duration: 4
+			},
+			errorToast = {
+				messageKey: 'machinevision-publish-error-message',
+				type: 'error',
+				duration: 8
+			};
 
 		// Set the review state for non-user-provided tags which could be
 		// displayed to the user
@@ -171,19 +194,20 @@ module.exports = {
 			batch: JSON.stringify( reviewBatch )
 		} );
 
-		context.dispatch( 'updatePublishStatus', 'pending' );
+		context.dispatch( 'updatePublishPending', 'true' );
 
-		// Set claims, review labels, update publish status, and skip to next image
+		// Set claims, review labels, show toast notification, and skip to next image
 		$.when( setClaimsRequest, reviewImageLabelsRequest ).done( function () {
-			context.dispatch( 'updatePublishStatus', 'success' );
+			context.dispatch( 'showImageMessage', successToast );
 
 			if ( isUserImage ) {
 				context.commit( 'decrementUnreviewedCount' );
 			}
 		} ).fail( function () {
-			context.dispatch( 'updatePublishStatus', 'error' );
+			context.dispatch( 'showImageMessage', errorToast );
 		} ).always( function () {
 			context.dispatch( 'skipImage' );
+			context.dispatch( 'updatePublishPending', false );
 		} );
 	},
 
@@ -248,13 +272,13 @@ module.exports = {
 	},
 
 	/**
-	 * Set the publish status to show or clear notifications.
+	 * Set publish pending status so we can show a spinner during publish process.
 	 *
 	 * @param {Object} context
-	 * @param {string} publishStatus
+	 * @param {boolean} publishPendingStatus
 	 */
-	updatePublishStatus: function ( context, publishStatus ) {
-		context.commit( 'setPublishStatus', publishStatus );
+	updatePublishPending: function ( context, publishPendingStatus ) {
+		context.commit( 'setPublishPending', publishPendingStatus );
 	},
 
 	addCustomTag: function ( context, tag ) {
@@ -264,5 +288,31 @@ module.exports = {
 		suggestion.confirmed = true;
 
 		context.commit( 'addSuggestionToCurrentImage', suggestion );
+	},
+
+	/**
+	 * Display a message related to a specific image.
+	 *
+	 * In practice, we're using this for toast notifications after publish.
+	 *
+	 * @param {Object} context
+	 * @param {Object} messageData
+	 * @param {string} messageData.messageKey The i18n message key to display
+	 * @param {string} messageData.type The message type (success, error, etc.)
+	 * @param {number} messageData.duration Display duration in seconds
+	 */
+	showImageMessage: function ( context, messageData ) {
+		messageData.key = messageData.type + Date.now();
+		context.commit( 'setImageMessage', messageData );
+	},
+
+	/**
+	 * Hide a message related to a specific image.
+	 *
+	 * @param {Object} context
+	 * @param {string} key Unique key of the Vue component to be hidden
+	 */
+	hideImageMessage: function ( context, key ) {
+		context.commit( 'removeImageMessage', key );
 	}
 };

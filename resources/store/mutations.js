@@ -16,21 +16,37 @@ module.exports = {
 	},
 
 	/**
-	 * Sets the pending state
+	 * Sets the fetch pending state
 	 *
 	 * @param {Object} state
 	 * @param {Object} payload
 	 * @param {bool} payload.pending
 	 * @param {string} [payload.queue]
 	 */
-	setPending: function ( state, payload ) {
+	setFetchPending: function ( state, payload ) {
 		if ( payload.queue ) {
 			ensureTabExists( state, payload.queue );
-			state.pending[ payload.queue ] = !!payload.pending;
+			state.fetchPending[ payload.queue ] = !!payload.pending;
 		} else {
-			state.pending[ state.currentTab ] = !!payload.pending;
+			state.fetchPending[ state.currentTab ] = !!payload.pending;
 		}
+	},
 
+	/**
+	 * Sets the fetch error state
+	 *
+	 * @param {Object} state
+	 * @param {Object} payload
+	 * @param {bool} payload.error
+	 * @param {string} [payload.queue]
+	 */
+	setFetchError: function ( state, payload ) {
+		if ( payload.queue ) {
+			ensureTabExists( state, payload.queue );
+			state.fetchError[ payload.queue ] = !!payload.error;
+		} else {
+			state.fetchError[ state.currentTab ] = !!payload.error;
+		}
 	},
 
 	/**
@@ -74,7 +90,7 @@ module.exports = {
 	 */
 	clearImages: function ( state ) {
 		state.images[ state.currentTab ] = [];
-		state.pending[ state.currentTab ] = true;
+		state.fetchPending[ state.currentTab ] = true;
 	},
 
 	/**
@@ -95,13 +111,13 @@ module.exports = {
 	},
 
 	/**
-	 * Set the publish status (to success, error, pending or null).
+	 * Set publish pending status.
 	 *
 	 * @param {Object} state
-	 * @param {string|null} publishStatus
+	 * @param {boolean} publishPendingStatus
 	 */
-	setPublishStatus: function ( state, publishStatus ) {
-		state.publishStatus = publishStatus;
+	setPublishPending: function ( state, publishPendingStatus ) {
+		state.publishPending = publishPendingStatus;
 	},
 
 	setUserStats: function ( state, payload ) {
@@ -110,6 +126,7 @@ module.exports = {
 
 	/**
 	 * Set the initial count of user's unreviewed images
+	 *
 	 * @param {Object} state
 	 * @param {number} count
 	 */
@@ -122,5 +139,31 @@ module.exports = {
 	 */
 	decrementUnreviewedCount: function ( state ) {
 		state.unreviewedCount--;
+	},
+
+	/**
+	 * Add a new image message to the store.
+	 *
+	 * @param {Object} state
+	 * @param {Object} messageData
+	 * @param {string} messageData.key Unique key for the toast component
+	 * @param {string} messageData.messageKey The i18n message key to display
+	 * @param {string} messageData.type The message type (success, error, etc.)
+	 * @param {number} messageData.duration Display duration in seconds
+	 */
+	setImageMessage: function ( state, messageData ) {
+		state.imageMessages = state.imageMessages.concat( [ messageData ] );
+	},
+
+	/**
+	 * Remove an image message from the store.
+	 *
+	 * @param {Object} state
+	 * @param {string} key Unique key of the Vue component to be hidden
+	 */
+	removeImageMessage: function ( state, key ) {
+		state.imageMessages = state.imageMessages.filter( function ( message ) {
+			return message.key !== key;
+		} );
 	}
 };

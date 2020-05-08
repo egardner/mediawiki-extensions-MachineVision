@@ -51,6 +51,11 @@ describe( 'getters', () => {
 
 	describe( 'getImages', () => {
 		it( 'makes a GET request to the API with the correct parameters', () => {
+			var deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			mockApi.get.mockReturnValue( promise );
+
 			actions.getImages( context );
 			expect( mockApi.get ).toHaveBeenCalled();
 			expect( mockApi.get ).toHaveBeenCalledWith(
@@ -73,33 +78,46 @@ describe( 'getters', () => {
 		} );
 
 		it( 'defaults to fetching images for the current tab queue if no "queue" option is provided', () => {
+			var deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			mockApi.get.mockReturnValue( promise );
+
 			context.state.currentTab = 'popular';
 			actions.getImages( context );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+			expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 				queue: 'popular',
 				pending: true
 			} );
 
 			context.state.currentTab = 'user';
 			actions.getImages( context );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+			expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 				queue: 'user',
 				pending: true
 			} );
 		} );
 
 		it( 'fetches user images if a "user" queue option is provided', () => {
+			var deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			mockApi.get.mockReturnValue( promise );
+
 			context.state.currentTab = 'popular';
 			actions.getImages( context, { queue: 'user' } );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+			expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 				queue: 'user',
 				pending: true
 			} );
 		} );
 
 		it( 'Commits an addImage mutation for each image in the response', done => {
-			var apiImages = apiResponse.query.pages;
-			mockApi.get.mockResolvedValue( apiResponse );
+			var apiImages = apiResponse.query.pages,
+				deferred = $.Deferred(),
+				promise = deferred.resolve( apiResponse ).promise();
+
+			mockApi.get.mockReturnValue( promise );
 
 			actions.getImages( context ).then( () => {
 				var mutations = context.commit.mock.calls,
@@ -113,11 +131,14 @@ describe( 'getters', () => {
 		} );
 
 		it( 'Removes the pending state on the appropriate queue when request completes', done => {
+			var deferred = $.Deferred(),
+				promise = deferred.resolve( apiResponse ).promise();
+
 			context.state.currentTab = 'popular';
-			mockApi.get.mockResolvedValue( apiResponse );
+			mockApi.get.mockReturnValue( promise );
 
 			actions.getImages( context ).then( () => {
-				expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+				expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 					queue: 'popular',
 					pending: false
 				} );
@@ -125,11 +146,39 @@ describe( 'getters', () => {
 			} );
 		} );
 
-		test.todo( 'Handles errors successfully' );
+		it( 'Handles fetch errors successfully', done => {
+			var deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			context.state.currentTab = 'popular';
+			mockApi.get.mockReturnValue( promise );
+
+			actions.getImages( context );
+
+			promise.then( () => {
+				// We only care about errors here, so do nothing
+			} ).catch( () => {
+				expect( context.commit ).toHaveBeenCalledWith( 'setFetchError', {
+					queue: 'popular',
+					error: true
+				} );
+			} ).always( () => {
+				expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
+					queue: 'popular',
+					pending: false
+				} );
+				done();
+			} );
+
+			deferred.reject( {} );
+		} );
 
 		it( 'commits a setUnreviewedCount action when request completes', done => {
+			var deferred = $.Deferred(),
+				promise = deferred.resolve( apiResponse ).promise();
+
+			mockApi.get.mockReturnValue( promise );
 			context.state.currentTab = 'popular';
-			mockApi.get.mockResolvedValue( apiResponse );
 
 			actions.getImages( context ).then( () => {
 				expect( context.commit ).toHaveBeenCalledWith(
@@ -221,10 +270,15 @@ describe( 'getters', () => {
 		// For these tests, mockApi needs to return jQuery deferred objects
 		// rather than vanilla promises
 
-		it( 'updates publish status to "success" if requests are successful', done => {
+		it( 'shows success toast notification if requests are successful', done => {
 			var suggestions = fixtures[ 0 ].suggestions,
 				deferred = $.Deferred(),
-				promise = deferred.promise();
+				promise = deferred.promise(),
+				successToast = {
+					messageKey: 'machinevision-success-message',
+					type: 'success',
+					duration: 4
+				};
 
 			suggestions[ 0 ].confirmed = true;
 
@@ -245,14 +299,14 @@ describe( 'getters', () => {
 			actions.publishTags( context );
 
 			promise.always( () => {
-				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishStatus', 'success' );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'showImageMessage', successToast );
 				done();
 			} );
 
 			deferred.resolve( {} );
 		} );
 
-		it( 'updates publish status to error if requests fail', done => {
+		it( 'sets publishPending to false after successful request completes', done => {
 			var suggestions = fixtures[ 0 ].suggestions,
 				deferred = $.Deferred(),
 				promise = deferred.promise();
@@ -276,7 +330,74 @@ describe( 'getters', () => {
 			actions.publishTags( context );
 
 			promise.always( () => {
-				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishStatus', 'error' );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishPending', false );
+				done();
+			} );
+
+			deferred.resolve( {} );
+		} );
+
+		it( 'shows error toast notification if requests fail', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise(),
+				toast = {
+					messageKey: 'machinevision-publish-error-message',
+					type: 'error',
+					duration: 8
+				};
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'showImageMessage', toast );
+				done();
+			} );
+
+			deferred.reject( {} );
+		} );
+
+		it( 'sets publishPending to false after failed request completes', done => {
+			var suggestions = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			suggestions[ 0 ].confirmed = true;
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			Object.defineProperty( context.getters, 'currentImageSuggestions', {
+				get: jest.fn().mockReturnValue( suggestions )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageTitle', {
+				get: jest.fn().mockReturnValue( 'Test' )
+			} );
+
+			Object.defineProperty( context.getters, 'currentImageNonDisplayableSuggestions', {
+				get: jest.fn().mockReturnValue( [] )
+			} );
+
+			actions.publishTags( context );
+
+			promise.always( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'updatePublishPending', false );
 				done();
 			} );
 
@@ -464,13 +585,13 @@ describe( 'getters', () => {
 		} );
 	} );
 
-	describe( 'updatePublishStatus', () => {
-		it( 'commits the setPublishStatus mutation with the payload as an argument', () => {
-			actions.updatePublishStatus( context, true );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPublishStatus', true );
+	describe( 'updatePublishPending', () => {
+		it( 'commits the setPublishPending mutation with the payload as an argument', () => {
+			actions.updatePublishPending( context, true );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPublishPending', true );
 
-			actions.updatePublishStatus( context, false );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPublishStatus', false );
+			actions.updatePublishPending( context, false );
+			expect( context.commit ).toHaveBeenCalledWith( 'setPublishPending', false );
 		} );
 	} );
 } );

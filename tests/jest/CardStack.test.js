@@ -24,7 +24,11 @@ describe( 'CardStack', () => {
 				popular: imageData, // contains 4 images
 				user: []
 			},
-			pending: {
+			fetchPending: {
+				popular: false,
+				user: false
+			},
+			fetchError: {
 				popular: false,
 				user: false
 			},
