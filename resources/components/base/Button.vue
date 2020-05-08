@@ -1,9 +1,12 @@
 <template>
-	<button
+	<a
 		class="mw-button"
+		role="button"
 		v-bind:class="builtInClasses"
-		v-bind:disabled="disabled"
-		v-on:click="$emit( 'click' )"
+		v-bind:aria-disabled="disabled ? 'true' : 'false'"
+		v-bind:tabindex="tabIndex"
+		v-bind:rel="noFollow ? 'nofollow' : false"
+		v-on:click="onClick"
 	>
 		<icon
 			v-if="icon"
@@ -11,7 +14,7 @@
 			v-bind:invert="invert"
 		/>
 		<slot />
-	</button>
+	</a>
 </template>
 
 <script>
@@ -29,13 +32,16 @@ module.exports = {
 		disabled: {
 			type: Boolean
 		},
+
 		frameless: {
 			type: Boolean
 		},
+
 		icon: {
 			type: String,
 			default: null
 		},
+
 		// In OOUI, flags are passed in as an array (or a string or an object)
 		// and are handled by a separate mixin. Passing them in individually is
 		// a bit more readable and intuitive, plus it makes the code in this
@@ -43,17 +49,29 @@ module.exports = {
 		progressive: {
 			type: Boolean
 		},
+
 		destructive: {
 			type: Boolean
 		},
+
 		primary: {
 			type: Boolean
+		},
+
+		// We're not supposed to use boolean props that default to true, but
+		// the code is much simpler if we set it this way. Otherwise, we'd
+		// need to declare a new variable in data and set it to this.noFollow
+		// if it exists and true otherwise. Change my mind.
+		noFollow: {
+			type: Boolean,
+			default: true
 		}
 	},
 
 	computed: {
 		builtInClasses: function () {
 			return {
+				'mw-button--disabled': this.disabled,
 				'mw-button--framed': !this.frameless,
 				'mw-button--icon': this.icon,
 				'mw-button--progressive': this.progressive,
@@ -61,8 +79,23 @@ module.exports = {
 				'mw-button--primary': this.primary
 			};
 		},
+
 		invert: function () {
 			return ( this.primary || this.disabled ) && !this.frameless;
+		},
+
+		tabIndex: function () {
+			return this.disabled ? -1 : 0;
+		}
+	},
+
+	methods: {
+		onClick: function () {
+			if ( this.disabled ) {
+				return;
+			}
+
+			this.$emit( 'click' );
 		}
 	}
 };
@@ -75,18 +108,27 @@ module.exports = {
 .mw-button {
 	.transition( ~'background-color 100ms, color 100ms, border-color 100ms, box-shadow 100ms' );
 	background-color: transparent;
-	border: 0;
+	border: @border-width-base @border-style-base transparent;
+	border-radius: 2px;
 	color: @color-base;
 	cursor: pointer;
 	font-size: inherit;
 	font-weight: bold;
 	padding: 6px;
+	text-decoration: none;
 	user-select: none;
 
-	&:hover,
-	&:focus {
+	&:hover {
 		background-color: rgba( 0, 24, 73, 0.02745098 );
 		color: @color-base--emphasized;
+		text-decoration: none;
+	}
+
+	&:focus {
+		border-color: @color-primary;
+		box-shadow: @box-shadow-base--focus;
+		outline: 0;
+		text-decoration: none;
 	}
 
 	.mw-icon {
@@ -110,12 +152,10 @@ module.exports = {
 
 	&--framed {
 		background-color: @background-color-framed;
-		border: @border-base;
-		border-radius: 2px;
+		border-color: @border-color-base;
 		padding: 6px 12px;
 
-		&:hover,
-		&:focus {
+		&:hover {
 			background-color: @background-color-framed--hover;
 			color: @color-base--hover;
 		}
@@ -134,16 +174,13 @@ module.exports = {
 	&--progressive {
 		color: @color-primary;
 
-		&:hover,
-		&:focus {
+		&:hover {
 			color: @color-primary--hover;
 		}
 
 		&.mw-button--framed {
-			&:hover,
-			&:focus {
-				border-color: @color-primary;
-				color: @color-primary;
+			&:hover {
+				border-color: @color-primary--hover;
 			}
 		}
 	}
@@ -151,16 +188,23 @@ module.exports = {
 	&--destructive {
 		color: @color-destructive;
 
-		&:hover,
-		&:focus {
+		&:hover {
 			color: @color-destructive--hover;
 		}
 
+		&:focus {
+			border-color: @color-destructive;
+			box-shadow: inset 0 0 0 1px @color-destructive;
+		}
+
 		&.mw-button--framed {
-			&:hover,
+			&:hover {
+				border-color: @color-destructive--hover;
+			}
+
 			&:focus {
-				border-color: @color-destructive;
-				color: @color-destructive;
+				box-shadow: inset 0 0 0 1px @color-destructive,
+					inset 0 0 0 2px @color-base--inverted;
 			}
 		}
 	}
@@ -172,31 +216,34 @@ module.exports = {
 			border-color: @color-primary;
 			color: @color-base--inverted;
 
-			&:hover,
-			&:focus {
+			&:hover {
 				background-color: @color-primary--hover;
 				border-color: @color-primary--hover;
-				box-shadow: inset 0 0 0 1px @color-primary--hover;
-				color: @color-base--inverted;
+			}
+
+			&:focus {
+				box-shadow: @box-shadow-primary--focus;
 			}
 
 			&.mw-button--destructive {
 				background-color: @color-destructive;
 				border-color: @color-destructive;
 
-				&:hover,
-				&:focus {
+				&:hover {
 					background-color: @color-destructive--hover;
 					border-color: @color-destructive--hover;
-					box-shadow: inset 0 0 0 1px @color-destructive--hover;
+				}
+
+				&:focus {
+					box-shadow: inset 0 0 0 1px @color-destructive,
+						inset 0 0 0 2px @color-base--inverted;
 				}
 			}
 		}
 	}
 
-	&:disabled {
+	&--disabled {
 		color: @color-base--disabled;
-		cursor: auto;
 
 		&:hover,
 		&:focus {
@@ -212,7 +259,7 @@ module.exports = {
 			&:focus {
 				background-color: @background-color-filled--disabled;
 				border-color: @border-color-base--disabled;
-				box-shadow: inset 0 0 0 1px @background-color-filled--disabled;
+				box-shadow: none;
 			}
 		}
 
@@ -220,5 +267,10 @@ module.exports = {
 			opacity: 0.51;
 		}
 	}
+}
+
+// Necessary specificity match.
+a.mw-button--disabled {
+	cursor: default;
 }
 </style>

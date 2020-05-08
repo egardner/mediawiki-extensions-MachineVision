@@ -55,7 +55,7 @@ describe( 'ImageCard', () => {
 		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue, mocks: { $i18n } } );
 		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
 
-		expect( publishButton.attributes( 'disabled' ) ).toBe( 'disabled' );
+		expect( publishButton.attributes( 'aria-disabled' ) ).toBe( 'true' );
 		expect( actions.publishTags ).not.toHaveBeenCalled();
 
 		publishButton.trigger( 'click' );
@@ -76,7 +76,7 @@ describe( 'ImageCard', () => {
 		const wrapper = VueTestUtils.mount( ImageCard, { store, localVue, mocks: { $i18n } } );
 		const publishButton = wrapper.find( '.wbmad-action-buttons__publish' );
 
-		expect( publishButton.attributes( 'disabled' ) ).not.toBe( 'disabled' );
+		expect( publishButton.attributes( 'aria-disabled' ) ).toBe( 'false' );
 	} );
 
 	it( 'dispatches the publish action when the publish button is clicked', () => {
