@@ -68,7 +68,7 @@
  * - Control access to this feature: user should only see tabs
  *   if they are authenticated and autoconfirmed.
  *
- * - Dispatch a modal dialogue if necessary (onboarding dialogue)
+ * - Dispatch a modal dialog if necessary (onboarding dialog)
  *
  * - Handle URL params and listen for changes: on initial load
  *   this component should parse the URL and determine whether the
@@ -211,7 +211,7 @@ module.exports = {
 
 	watch: {
 		currentTab: function ( newVal ) {
-			if ( newVal === 'user' ) {
+			if ( this.isAuthenticated && newVal === 'user' ) {
 				this.showOnboardingDialog();
 			}
 		}
