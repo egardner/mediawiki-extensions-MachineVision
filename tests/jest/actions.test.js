@@ -411,12 +411,49 @@ describe( 'getters', () => {
 
 	describe( 'setDepictsStatements', () => {
 		it( 'makes a wbsetclaim POST request for each confirmed tag provided in the payload', done => {
-			var tags = fixtures[ 0 ].suggestions;
+			var tags = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			mockApi.postWithToken.mockReturnValue( promise );
 
 			actions.setDepictsStatements( context, tags ).then( () => {
 				expect( mockApi.postWithToken ).toHaveBeenCalledTimes( tags.length );
 				done();
 			} );
+
+			deferred.resolve( {} );
+		} );
+
+		it( 'Assigns the correct edit tag for machine-suggested labels', done => {
+			var tags = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			actions.setDepictsStatements( context, tags ).then( () => {
+				expect( mockApi.postWithToken.mock.calls[ 0 ][ 1 ].tags ).toBe( 'computer-aided-tagging' );
+				done();
+			} );
+
+			deferred.resolve( {} );
+		} );
+
+		it( 'Assigns the correct edit tag for user-provided labels', done => {
+			var tags = fixtures[ 0 ].suggestions,
+				deferred = $.Deferred(),
+				promise = deferred.promise();
+
+			tags[ 0 ].custom = true;
+			mockApi.postWithToken.mockReturnValue( promise );
+
+			actions.setDepictsStatements( context, tags ).then( () => {
+				expect( mockApi.postWithToken.mock.calls[ 0 ][ 1 ].tags ).toBe( 'computer-aided-tagging-manual' );
+				done();
+			} );
+
+			deferred.resolve( {} );
 		} );
 	} );
 
