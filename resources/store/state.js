@@ -13,13 +13,16 @@ module.exports = {
 		user: false
 	},
 
+	fetchError: {
+		popular: false,
+		user: false
+	},
+
 	publishPending: false,
 
 	unreviewedCount: 0,
 
 	userStats: {},
 
-	toastNotifications: [],
-
-	cardStackMessage: null
+	imageMessages: []
 };

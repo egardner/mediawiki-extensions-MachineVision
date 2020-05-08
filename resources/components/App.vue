@@ -3,10 +3,10 @@
 		<div class="wbmad-suggested-tags-page">
 			<template v-if="showToasts">
 				<mw-toast-notification
-					v-for="toast in toastNotifications"
-					v-bind:key="toast.key"
-					v-bind:type="toast.type"
-					v-bind:duration="toast.duration"
+					v-for="message in imageMessages"
+					v-bind:key="message.key"
+					v-bind:type="message.type"
+					v-bind:duration="message.duration"
 					v-on:leave="onToastLeave"
 				>
 					<p>{{ $i18n( toast.messageKey ) }}</p>
@@ -105,7 +105,7 @@ module.exports = {
 
 	computed: $.extend( {}, mapState( [
 		'currentTab',
-		'toastNotifications'
+		'imageMessages'
 	] ), mapGetters( [
 		'isAuthenticated',
 		'isAutoconfirmed',
@@ -140,14 +140,14 @@ module.exports = {
 		},
 
 		showToasts: function () {
-			return this.toastNotifications && this.toastNotifications.length > 0;
+			return this.imageMessages && this.imageMessages.length > 0;
 		}
 	} ),
 
 	methods: $.extend( {}, mapActions( [
 		'updateCurrentTab',
 		'getImages',
-		'hideToastNotification'
+		'hideImageMessage'
 	] ), {
 		/**
 		 * Watch the tab change events emitted by the <Tabs> component
@@ -166,7 +166,7 @@ module.exports = {
 		 * @param {string} toastKey
 		 */
 		onToastLeave: function ( toastKey ) {
-			this.hideToastNotification( toastKey );
+			this.hideImageMessage( toastKey );
 		},
 
 		/**

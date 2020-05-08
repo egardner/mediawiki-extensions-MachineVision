@@ -10,7 +10,11 @@ var MvImage = require( '../models/Image.js' ),
 	serialization = require( 'wikibase.serialization' ),
 	mvConfig = require( 'ext.MachineVision.config' ),
 	ensureTabExists = require( './utils.js' ).ensureTabExists,
-	getCategories = require( './utils.js' ).getCategories;
+	getCategories = require( './utils.js' ).getCategories,
+	queues = {
+		POPULAR: 'popular',
+		USER: 'user'
+	};
 
 module.exports = {
 	/**
@@ -53,16 +57,20 @@ module.exports = {
 
 		ensureTabExists( context.state, queue );
 
-		if ( queue === 'user' ) {
+		if ( queue === queues.USER ) {
 			query.guiluploader = mw.user.getId();
 			query.ilstate = 'unreviewed|withheld';
 		}
 
+		// Set pending to true and reset error state.
 		context.commit( 'setFetchPending', {
 			queue: queue,
 			pending: true
 		} );
-		context.commit( 'hideCardStackMessage' );
+		context.commit( 'setFetchError', {
+			queue: queue,
+			error: false
+		} );
 
 		// Request images from the API
 		return api.get( query ).then( function ( res ) {
@@ -112,12 +120,12 @@ module.exports = {
 			}
 		} ).catch( function ( /* errorCode, error */ ) {
 			// Show a generic error message if fetch fails.
-			context.dispatch( 'showCardStackMessage', {
-				messageKey: 'machinevision-failure-message',
-				type: 'error'
+			context.commit( 'setFetchError', {
+				queue: queue,
+				error: true
 			} );
 		} ).always( function () {
-			// Remove the pending state
+			// Remove the fetch pending state
 			context.commit( 'setFetchPending', {
 				queue: queue,
 				pending: false
@@ -146,7 +154,7 @@ module.exports = {
 				return tag.confirmed;
 			} ),
 			setClaimsRequest = context.dispatch( 'setDepictsStatements', confirmedTags ),
-			isUserImage = context.state.currentTab === 'user',
+			isUserImage = context.state.currentTab === queues.USER,
 			reviewBatch,
 			reviewImageLabelsRequest,
 			successToast = {
@@ -190,13 +198,13 @@ module.exports = {
 
 		// Set claims, review labels, show toast notification, and skip to next image
 		$.when( setClaimsRequest, reviewImageLabelsRequest ).done( function () {
-			context.dispatch( 'showToastNotification', successToast );
+			context.dispatch( 'showImageMessage', successToast );
 
 			if ( isUserImage ) {
 				context.commit( 'decrementUnreviewedCount' );
 			}
 		} ).fail( function () {
-			context.dispatch( 'showToastNotification', errorToast );
+			context.dispatch( 'showImageMessage', errorToast );
 		} ).always( function () {
 			context.dispatch( 'skipImage' );
 			context.dispatch( 'updatePublishPending', false );
@@ -279,47 +287,28 @@ module.exports = {
 	},
 
 	/**
-	 * Display a toast notification.
+	 * Display a message related to a specific image.
 	 *
-	 * @param {Object} context
-	 * @param {Object} toastData
-	 * @param {string} toastData.messageKey The i18n message key to display
-	 * @param {string} toastData.type The message type (success, error, etc.)
-	 * @param {number} toastData.duration Display duration in seconds
-	 */
-	showToastNotification: function ( context, toastData ) {
-		toastData.key = toastData.type + Date.now();
-		context.commit( 'setToastNotification', toastData );
-	},
-
-	/**
-	 * Hide a toast notification.
-	 *
-	 * @param {Object} context
-	 * @param {string} toastKey Unique key of the toast to be hidden
-	 */
-	hideToastNotification: function ( context, toastKey ) {
-		context.commit( 'removeToastNotification', toastKey );
-	},
-
-	/**
-	 * Display a standard message, to be shown in the CardStack component.
+	 * In practice, we're using this for toast notifications after publish.
 	 *
 	 * @param {Object} context
 	 * @param {Object} messageData
 	 * @param {string} messageData.messageKey The i18n message key to display
 	 * @param {string} messageData.type The message type (success, error, etc.)
+	 * @param {number} messageData.duration Display duration in seconds
 	 */
-	showCardStackMessage: function ( context, messageData ) {
-		context.commit( 'setCardStackMessage', messageData );
+	showImageMessage: function ( context, messageData ) {
+		messageData.key = messageData.type + Date.now();
+		context.commit( 'setImageMessage', messageData );
 	},
 
 	/**
-	 * Hide CardStack message.
+	 * Hide a message related to a specific image.
 	 *
 	 * @param {Object} context
+	 * @param {string} key Unique key of the Vue component to be hidden
 	 */
-	hideCardStackMessage: function ( context ) {
-		context.commit( 'removeCardStackMessage' );
+	hideImageMessage: function ( context, key ) {
+		context.commit( 'removeImageMessage', key );
 	}
 };

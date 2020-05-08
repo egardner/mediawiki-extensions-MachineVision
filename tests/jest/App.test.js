@@ -27,6 +27,10 @@ describe( 'App', () => {
 				popular: false,
 				user: false
 			},
+			fetchError: {
+				popular: false,
+				user: false
+			},
 			userStats: {
 				total: 20,
 				unreviewed: 10

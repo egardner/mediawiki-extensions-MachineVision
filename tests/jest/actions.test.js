@@ -158,9 +158,9 @@ describe( 'getters', () => {
 			promise.then( () => {
 				// We only care about errors here, so do nothing
 			} ).catch( () => {
-				expect( context.dispatch ).toHaveBeenCalledWith( 'showCardStackMessage', {
-					messageKey: 'machinevision-failure-message',
-					type: 'error'
+				expect( context.commit ).toHaveBeenCalledWith( 'setFetchError', {
+					queue: 'popular',
+					error: true
 				} );
 			} ).always( () => {
 				expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
@@ -299,7 +299,7 @@ describe( 'getters', () => {
 			actions.publishTags( context );
 
 			promise.always( () => {
-				expect( context.dispatch ).toHaveBeenCalledWith( 'showToastNotification', successToast );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'showImageMessage', successToast );
 				done();
 			} );
 
@@ -366,7 +366,7 @@ describe( 'getters', () => {
 			actions.publishTags( context );
 
 			promise.always( () => {
-				expect( context.dispatch ).toHaveBeenCalledWith( 'showToastNotification', toast );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'showImageMessage', toast );
 				done();
 			} );
 

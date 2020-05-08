@@ -2,12 +2,9 @@
 	<div class="wbmad-suggested-tags-cardstack">
 		<wbmad-cardstack-placeholder v-if="isPending" />
 
-		<wbmad-fade-in v-else-if="cardStackMessage">
-			<mw-message
-				class="wbmad-cardstack-message"
-				v-bind:type="cardStackMessage.type"
-			>
-				<p v-i18n-html="cardStackMessage.messageKey" />
+		<wbmad-fade-in v-else-if="isError">
+			<mw-message class="wbmad-cardstack-message" type="error">
+				<p v-i18n-html:machinevision-failure-message />
 			</mw-message>
 		</wbmad-fade-in>
 
@@ -74,9 +71,9 @@ module.exports = {
 	computed: $.extend( {}, mapState( [
 		'currentTab',
 		'fetchPending',
+		'fetchError',
 		'images',
-		'userStats',
-		'cardStackMessage'
+		'userStats'
 	] ), mapGetters( [
 		'currentImage'
 	] ), {
@@ -93,6 +90,14 @@ module.exports = {
 		 */
 		isPending: function () {
 			return this.fetchPending[ this.queue ];
+		},
+
+		/**
+		 * Fetch error state is queue-specific
+		 * @return {bool}
+		 */
+		isError: function () {
+			return this.fetchError[ this.queue ];
 		},
 
 		/**
@@ -119,7 +124,7 @@ module.exports = {
 		 * @return {boolean}
 		 */
 		userHasLabeledUploads: function () {
-			return this.userStats.total > 0;
+			return this.userStats.total ? this.userStats.total > 0 : false;
 		},
 
 		/**

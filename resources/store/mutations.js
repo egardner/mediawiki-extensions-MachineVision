@@ -30,7 +30,23 @@ module.exports = {
 		} else {
 			state.fetchPending[ state.currentTab ] = !!payload.pending;
 		}
+	},
 
+	/**
+	 * Sets the fetch error state
+	 *
+	 * @param {Object} state
+	 * @param {Object} payload
+	 * @param {bool} payload.error
+	 * @param {string} [payload.queue]
+	 */
+	setFetchError: function ( state, payload ) {
+		if ( payload.queue ) {
+			ensureTabExists( state, payload.queue );
+			state.fetchError[ payload.queue ] = !!payload.error;
+		} else {
+			state.fetchError[ state.currentTab ] = !!payload.error;
+		}
 	},
 
 	/**
@@ -126,49 +142,28 @@ module.exports = {
 	},
 
 	/**
-	 * Add a new toast notification to the store.
-	 *
-	 * @param {Object} state
-	 * @param {Object} toastData
-	 * @param {string} toastData.key Unique key for the toast component
-	 * @param {string} toastData.messageKey The i18n message key to display
-	 * @param {string} toastData.type The message type (success, error, etc.)
-	 * @param {number} toastData.duration Display duration in seconds
-	 */
-	setToastNotification: function ( state, toastData ) {
-		state.toastNotifications = state.toastNotifications.concat( [ toastData ] );
-	},
-
-	/**
-	 * Remove a toast notification from the store.
-	 *
-	 * @param {Object} state
-	 * @param {string} toastKey Unique key of the toast to be hidden
-	 */
-	removeToastNotification: function ( state, toastKey ) {
-		state.toastNotifications = state.toastNotifications.filter( function ( toast ) {
-			return toast.key !== toastKey;
-		} );
-	},
-
-	/**
-	 * Add a CardStack message to the store.
+	 * Add a new image message to the store.
 	 *
 	 * @param {Object} state
 	 * @param {Object} messageData
+	 * @param {string} messageData.key Unique key for the toast component
 	 * @param {string} messageData.messageKey The i18n message key to display
 	 * @param {string} messageData.type The message type (success, error, etc.)
+	 * @param {number} messageData.duration Display duration in seconds
 	 */
-	setCardStackMessage: function ( state, messageData ) {
-		state.cardStackMessage = messageData;
+	setImageMessage: function ( state, messageData ) {
+		state.imageMessages = state.imageMessages.concat( [ messageData ] );
 	},
 
 	/**
-	 * Remove CardStack message from the store.
+	 * Remove an image message from the store.
 	 *
 	 * @param {Object} state
+	 * @param {string} key Unique key of the Vue component to be hidden
 	 */
-	removeCardStackMessage: function ( state ) {
-		state.cardStackMessage = null;
+	removeImageMessage: function ( state, key ) {
+		state.imageMessages = state.imageMessages.filter( function ( message ) {
+			return message.key !== key;
+		} );
 	}
 };
