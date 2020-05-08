@@ -16,19 +16,19 @@ module.exports = {
 	},
 
 	/**
-	 * Sets the pending state
+	 * Sets the fetch pending state
 	 *
 	 * @param {Object} state
 	 * @param {Object} payload
 	 * @param {bool} payload.pending
 	 * @param {string} [payload.queue]
 	 */
-	setPending: function ( state, payload ) {
+	setFetchPending: function ( state, payload ) {
 		if ( payload.queue ) {
 			ensureTabExists( state, payload.queue );
-			state.pending[ payload.queue ] = !!payload.pending;
+			state.fetchPending[ payload.queue ] = !!payload.pending;
 		} else {
-			state.pending[ state.currentTab ] = !!payload.pending;
+			state.fetchPending[ state.currentTab ] = !!payload.pending;
 		}
 
 	},
@@ -74,7 +74,7 @@ module.exports = {
 	 */
 	clearImages: function ( state ) {
 		state.images[ state.currentTab ] = [];
-		state.pending[ state.currentTab ] = true;
+		state.fetchPending[ state.currentTab ] = true;
 	},
 
 	/**

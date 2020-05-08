@@ -12,7 +12,7 @@ describe( 'mutations', () => {
 				user: []
 			},
 
-			pending: {
+			fetchPending: {
 				popular: false,
 				user: false
 			},
@@ -39,24 +39,24 @@ describe( 'mutations', () => {
 		} );
 	} );
 
-	describe( 'setPending', () => {
+	describe( 'setFetchPending', () => {
 		it( 'sets the pending state of the specified queue to the specified value', () => {
-			mutations.setPending( state, {
+			mutations.setFetchPending( state, {
 				queue: 'user',
 				pending: true
 			} );
 
-			expect( state.pending.user ).toBe( true );
+			expect( state.fetchPending.user ).toBe( true );
 		} );
 
 		it( 'sets the pending state of the current tab queue if no queue is provided', () => {
-			mutations.setPending( state, { pending: true } );
-			expect( state.pending.popular ).toBe( true );
+			mutations.setFetchPending( state, { pending: true } );
+			expect( state.fetchPending.popular ).toBe( true );
 		} );
 
 		it( 'throws an error if desired tab does not exist as a key in state.images', () => {
 			expect( () => {
-				mutations.setPending( state, {
+				mutations.setFetchPending( state, {
 					queue: 'foo',
 					pending: true
 				} );
@@ -119,7 +119,7 @@ describe( 'mutations', () => {
 		it( 'resets pending state of the current tab to true', () => {
 			state.images.popular = fixtures;
 			mutations.clearImages( state );
-			expect( state.pending.popular ).toBe( true );
+			expect( state.fetchPending.popular ).toBe( true );
 		} );
 	} );
 

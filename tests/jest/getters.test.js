@@ -14,7 +14,7 @@ describe( 'getters', () => {
 				user: []
 			},
 
-			pending: {
+			fetchPending: {
 				popular: false,
 				user: false
 			},

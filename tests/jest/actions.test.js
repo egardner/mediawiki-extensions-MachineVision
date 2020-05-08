@@ -85,14 +85,14 @@ describe( 'getters', () => {
 
 			context.state.currentTab = 'popular';
 			actions.getImages( context );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+			expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 				queue: 'popular',
 				pending: true
 			} );
 
 			context.state.currentTab = 'user';
 			actions.getImages( context );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+			expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 				queue: 'user',
 				pending: true
 			} );
@@ -106,7 +106,7 @@ describe( 'getters', () => {
 
 			context.state.currentTab = 'popular';
 			actions.getImages( context, { queue: 'user' } );
-			expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+			expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 				queue: 'user',
 				pending: true
 			} );
@@ -138,7 +138,7 @@ describe( 'getters', () => {
 			mockApi.get.mockReturnValue( promise );
 
 			actions.getImages( context ).then( () => {
-				expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+				expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 					queue: 'popular',
 					pending: false
 				} );
@@ -155,15 +155,15 @@ describe( 'getters', () => {
 
 			actions.getImages( context );
 
-			promise.always( () => {
-				// Error message should be added.
-				expect( context.commit ).toHaveBeenCalledWith( 'showCardStackMessage', {
+			promise.then( () => {
+				// We only care about errors here, so do nothing
+			} ).catch( () => {
+				expect( context.dispatch ).toHaveBeenCalledWith( 'showCardStackMessage', {
 					messageKey: 'machinevision-failure-message',
 					type: 'error'
 				} );
-
-				// Pending state should be removed.
-				expect( context.commit ).toHaveBeenCalledWith( 'setPending', {
+			} ).always( () => {
+				expect( context.commit ).toHaveBeenCalledWith( 'setFetchPending', {
 					queue: 'popular',
 					pending: false
 				} );

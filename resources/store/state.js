@@ -8,14 +8,14 @@ module.exports = {
 		user: []
 	},
 
-	pending: {
+	fetchPending: {
 		popular: false,
 		user: false
 	},
 
-	unreviewedCount: 0,
-
 	publishPending: false,
+
+	unreviewedCount: 0,
 
 	userStats: {},
 

@@ -58,7 +58,7 @@ module.exports = {
 			query.ilstate = 'unreviewed|withheld';
 		}
 
-		context.commit( 'setPending', {
+		context.commit( 'setFetchPending', {
 			queue: queue,
 			pending: true
 		} );
@@ -118,7 +118,7 @@ module.exports = {
 			} );
 		} ).always( function () {
 			// Remove the pending state
-			context.commit( 'setPending', {
+			context.commit( 'setFetchPending', {
 				queue: queue,
 				pending: false
 			} );

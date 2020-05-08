@@ -73,7 +73,7 @@ module.exports = {
 
 	computed: $.extend( {}, mapState( [
 		'currentTab',
-		'pending',
+		'fetchPending',
 		'images',
 		'userStats',
 		'cardStackMessage'
@@ -92,7 +92,7 @@ module.exports = {
 		 * @return {bool}
 		 */
 		isPending: function () {
-			return this.pending[ this.queue ];
+			return this.fetchPending[ this.queue ];
 		},
 
 		/**
