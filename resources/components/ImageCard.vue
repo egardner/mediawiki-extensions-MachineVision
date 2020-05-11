@@ -162,6 +162,16 @@ module.exports = {
 		},
 
 		/**
+		 * Return an array of the wikidata IDs of existing suggestions.
+		 * @return {Object}
+		 */
+		wikidataIds: function () {
+			return this.currentImageSuggestions.map( function ( suggestion ) {
+				return suggestion.wikidataId;
+			} );
+		},
+
+		/**
 		 * @return {Object}
 		 */
 		containerClasses: function () {
@@ -206,6 +216,9 @@ module.exports = {
 		 * Launch the "add custom tag" dialog (OOUI modal)
 		 */
 		launchCustomTagDialog: function () {
+			// Set filter on EntityAutocompleteInputWidget to remove existing
+			// suggestions from autocomplete results.
+			this.addCustomTagDialog.setFilter( this.wikidataIds );
 			this.windowManager.openWindow( this.addCustomTagDialog );
 		}
 	} ),
