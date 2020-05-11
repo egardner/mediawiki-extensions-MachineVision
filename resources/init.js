@@ -4,6 +4,7 @@
 	var Vue = require( 'vue' ),
 		App = require( './components/App.vue' ),
 		api = require( './plugins/api.js' ),
+		logger = require( './plugins/logger.js' ),
 		store = require( './store/index.js' );
 
 	// Remove placeholder UI
@@ -16,6 +17,7 @@
 	 * https://vuejs.org/v2/guide/plugins.html
 	 */
 	Vue.use( api );
+	Vue.use( logger );
 
 	// Create the Vue instance
 	// eslint-disable-next-line no-new

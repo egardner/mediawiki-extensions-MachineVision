@@ -191,6 +191,12 @@ module.exports = {
 				imgTitle: this.imgTitle
 			} ).connect( this, { confirm: 'publishTags' } );
 
+			this.$logEvent( {
+				action: 'publish',
+				// eslint-disable-next-line camelcase
+				approved_count: this.confirmedSuggestions.length
+			} );
+
 			this.windowManager.addWindows( [ this.confirmTagsDialog ] );
 			this.windowManager.openWindow( this.confirmTagsDialog );
 		},
@@ -199,6 +205,7 @@ module.exports = {
 		 * Skip the image (remove it from the Vuex queue).
 		 */
 		onSkip: function () {
+			this.$logEvent( { action: 'skip' } );
 			this.skipImage();
 		},
 
