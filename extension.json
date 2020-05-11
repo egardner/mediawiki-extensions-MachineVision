@@ -261,6 +261,7 @@
 				"widgets/EntityAutocompleteInputWidget.js",
 				"widgets/UserMessage.js",
 				"plugins/api.js",
+				"plugins/logger.js",
 				"store/index.js",
 				"store/state.js",
 				"store/mutations.js",

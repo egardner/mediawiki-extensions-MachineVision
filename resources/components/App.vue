@@ -9,7 +9,7 @@
 					v-bind:duration="message.duration"
 					v-on:leave="onToastLeave"
 				>
-					<p>{{ $i18n( toast.messageKey ) }}</p>
+					<p>{{ $i18n( message.messageKey ) }}</p>
 				</mw-toast-notification>
 			</template>
 
