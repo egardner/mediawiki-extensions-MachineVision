@@ -86,6 +86,18 @@ AddCustomTagDialog.prototype.getActionProcess = function ( action ) {
 };
 
 /**
+ * @inheritdoc
+ */
+AddCustomTagDialog.prototype.getReadyProcess = function ( data ) {
+	var self = this;
+	return AddCustomTagDialog.parent.prototype.getReadyProcess.call( this, data )
+		.next( function () {
+			// Once dialog opens, set focus on the input.
+			self.input.focus();
+		} );
+};
+
+/**
  * Enable the "Add" button when an item is selected.
  */
 AddCustomTagDialog.prototype.onLookupMenuChoose = function () {
