@@ -22,13 +22,14 @@ module.exports = {
 		 */
 		Vue.prototype.$logEvent = function ( data ) {
 			/* eslint-disable camelcase */
-			var event = $.extend( {}, data, {
-				image_title: this.$store.getters.currentImageTitle,
-				suggestions_count: this.$store.getters.currentImageSuggestions,
-				is_mobile: mw.config.get( 'skin' ) === 'minerva',
-				tab: this.$store.state.currentTab,
-				user_id: mw.user.getId()
-			} );
+			var currentTab = this.$store.state.currentTab,
+				event = $.extend( {}, data, {
+					image_title: this.$store.getters.currentImageTitle,
+					suggestions_count: this.$store.getters.currentImageSuggestions.length,
+					is_mobile: mw.config.get( 'skin' ) === 'minerva',
+					tab: currentTab === 'user' ? 'personal' : currentTab,
+					user_id: mw.user.getId()
+				} );
 			/* eslint-enable camelcase */
 
 			return mw.eventLog.logEvent( 'SuggestedTagsAction', event );

@@ -189,7 +189,7 @@ module.exports = {
 				} ).join( ', ' ),
 				imgUrl: this.thumbUrl,
 				imgTitle: this.imgTitle
-			} ).connect( this, { confirm: 'publishTags' } );
+			} ).connect( this, { confirm: 'onFinalConfirm' } );
 
 			this.$logEvent( {
 				action: 'publish',
@@ -199,6 +199,18 @@ module.exports = {
 
 			this.windowManager.addWindows( [ this.confirmTagsDialog ] );
 			this.windowManager.openWindow( this.confirmTagsDialog );
+		},
+
+		/**
+		 * Log an event and dispatch publishTags action.
+		 */
+		onFinalConfirm: function () {
+			this.$logEvent( {
+				action: 'confirm',
+				// eslint-disable-next-line camelcase
+				approved_count: this.confirmedSuggestions.length
+			} );
+			this.publishTags();
 		},
 
 		/**
